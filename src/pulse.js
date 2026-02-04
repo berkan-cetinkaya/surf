@@ -1,0 +1,347 @@
+/**
+ * Pulse Module
+ * 
+ * A Pulse represents user intent that triggers a server interaction.
+ * Examples: navigation, form submission, refresh.
+ * 
+ * Defined with: d-pulse, d-target
+ * 
+ * Pulse types:
+ * - navigate: GET request, replace surface
+ * - commit: POST form data, apply patch
+ * - refresh: GET current URL, refresh surface
+ */
+
+import * as Surface from './surface.js';
+import * as Patch from './patch.js';
+import * as Echo from './echo.js';
+
+const PULSE_ATTR = 'd-pulse';
+const TARGET_ATTR = 'd-target';
+const ACTION_ATTR = 'd-action';
+
+// Event emitter for pulse lifecycle
+const listeners = {
+  'before:pulse': [],
+  'after:patch': [],
+  'error:network': []
+};
+
+/**
+ * Emit an event to listeners
+ * @param {string} event 
+ * @param {Object} detail 
+ */
+function emit(event, detail) {
+  if (listeners[event]) {
+    listeners[event].forEach(cb => {
+      try {
+        cb(detail);
+      } catch (e) {
+        console.error(`[Surf] Error in ${event} listener:`, e);
+      }
+    });
+  }
+}
+
+/**
+ * Register an event listener
+ * @param {string} event 
+ * @param {function} callback 
+ */
+export function on(event, callback) {
+  if (listeners[event]) {
+    listeners[event].push(callback);
+  }
+}
+
+/**
+ * Remove an event listener
+ * @param {string} event 
+ * @param {function} callback 
+ */
+export function off(event, callback) {
+  if (listeners[event]) {
+    const index = listeners[event].indexOf(callback);
+    if (index > -1) {
+      listeners[event].splice(index, 1);
+    }
+  }
+}
+
+/**
+ * Apply patches to surfaces with Echo preservation
+ * @param {Array<{target: string, content: string}>} patches 
+ */
+function applyPatches(patches) {
+  patches.forEach(({ target, content }) => {
+    const surface = Surface.getBySelector(target) || document.querySelector(target);
+    
+    if (!surface) {
+      console.warn(`[Surf] Target not found for patch: ${target}`);
+      return;
+    }
+    
+    Echo.withPreservation(surface, content, () => {
+      Surface.replace(target, content);
+    });
+  });
+}
+
+/**
+ * Send a pulse request to the server
+ * @param {string} url 
+ * @param {Object} options 
+ * @param {string} targetSelector 
+ */
+async function sendPulse(url, options, targetSelector) {
+  emit('before:pulse', { url, options, target: targetSelector });
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Accept': 'text/html',
+        'X-Surf-Request': 'true',
+        ...options.headers
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const html = await response.text();
+    
+    // Check if response is a patch
+    if (Patch.isPatch(html)) {
+      const patches = Patch.parse(html);
+      applyPatches(patches);
+    } else {
+      // Treat as single surface replacement
+      if (targetSelector) {
+        const surface = Surface.getBySelector(targetSelector) || document.querySelector(targetSelector);
+        if (surface) {
+          // Check for swap mode (inner, append, prepend) from options or element
+          const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
+          
+          Echo.withPreservation(surface, html, () => {
+            if (swapMode === 'append') {
+              Surface.append(surface, html);
+            } else if (swapMode === 'prepend') {
+              Surface.prepend(surface, html);
+            } else {
+              Surface.replace(surface, html);
+            }
+          });
+        }
+      }
+    }
+    
+    emit('after:patch', { url, target: targetSelector });
+    
+  } catch (error) {
+    console.error('[Surf] Pulse error:', error);
+    emit('error:network', { url, error });
+  }
+}
+
+/**
+ * Handle navigate pulse (GET request)
+ * @param {string} url 
+ * @param {string} targetSelector 
+ * @param {Object} options
+ */
+export async function navigate(url, targetSelector, options = {}) {
+  await sendPulse(url, { method: 'GET', ...options }, targetSelector);
+  
+  // Update browser history
+  if (targetSelector) {
+    history.pushState({ surf: true, url, target: targetSelector }, '', url);
+  }
+}
+
+/**
+ * Handle commit pulse (POST form data)
+ * @param {HTMLFormElement} form 
+ * @param {string} targetSelector 
+ */
+export async function commit(form, targetSelector) {
+  const method = form.method?.toUpperCase() || 'POST';
+  let url = form.action || window.location.href;
+  const formData = new FormData(form);
+  const swap = form.getAttribute('d-swap');
+  const options = swap ? { swap } : {};
+  
+  // Convert FormData to URLSearchParams for standard form encoding
+  const params = new URLSearchParams();
+  formData.forEach((value, key) => params.append(key, value));
+  
+  // GET requests cannot have a body - append as URL params instead
+  if (method === 'GET') {
+    const separator = url.includes('?') ? '&' : '?';
+    url = url + separator + params.toString();
+    
+    await sendPulse(url, { method: 'GET', ...options }, targetSelector);
+  } else {
+    await sendPulse(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: params.toString(),
+      ...options
+    }, targetSelector);
+  }
+}
+
+/**
+ * Handle refresh pulse (GET current content)
+ * @param {string} targetSelector 
+ */
+export async function refresh(targetSelector) {
+  const url = window.location.href;
+  const surface = Surface.getBySelector(targetSelector) || document.querySelector(targetSelector);
+  const swap = surface?.getAttribute('d-swap'); // Refresh usually respects surface preference
+  await sendPulse(url, { method: 'GET', swap }, targetSelector);
+}
+
+/**
+ * Handle action pulse (POST data to server)
+ * @param {string} url - Action endpoint URL
+ * @param {Object} data - Data to send
+ * @param {string} targetSelector - Surface to update with response
+ * @param {Object} options
+ */
+export async function action(url, data = {}, targetSelector, options = {}) {
+  await sendPulse(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data),
+    ...options
+  }, targetSelector);
+}
+
+/**
+ * Handle click events on pulse elements
+ * @param {Event} event 
+ */
+async function handleClick(event) {
+  const element = event.target.closest(`[${PULSE_ATTR}]`);
+  if (!element) return;
+  
+  const pulseType = element.getAttribute(PULSE_ATTR);
+  const targetSelector = element.getAttribute(TARGET_ATTR);
+  const actionUrl = element.getAttribute(ACTION_ATTR);
+  const swap = element.getAttribute('d-swap');
+  const options = swap ? { swap } : {};
+  
+  // Handle anchor navigation
+  if (element.tagName === 'A' && pulseType === 'navigate') {
+    event.preventDefault();
+    const url = element.href;
+    navigate(url, targetSelector, options);
+    return;
+  }
+  
+  // Handle refresh
+  if (pulseType === 'refresh') {
+    event.preventDefault();
+    refresh(targetSelector);
+    return;
+  }
+  
+  // Handle action - send POST to d-action URL
+  if (pulseType === 'action' && actionUrl) {
+    event.preventDefault();
+    
+    // Collect data from data-* attributes on the element
+    const data = {};
+    for (const attr of element.attributes) {
+      if (attr.name.startsWith('data-') && attr.name !== 'data-surf-ready') {
+        const key = attr.name.slice(5); // Remove 'data-' prefix
+        data[key] = attr.value;
+      }
+    }
+    
+    // Also include Cell state if element is inside a d-cell
+    const parentCell = element.closest('[d-cell]');
+    if (parentCell) {
+      const Cell = await import('./cell.js');
+      const cellState = Cell.default ? Cell.default.getState(parentCell) : Cell.getState(parentCell);
+      if (cellState) {
+        Object.assign(data, cellState);
+      }
+    }
+    
+    action(actionUrl, data, targetSelector, options);
+    return;
+  }
+}
+
+/**
+ * Handle form submission on pulse elements
+ * @param {Event} event 
+ */
+function handleSubmit(event) {
+  const form = event.target;
+  if (!form.hasAttribute(PULSE_ATTR)) return;
+  
+  const pulseType = form.getAttribute(PULSE_ATTR);
+  const targetSelector = form.getAttribute(TARGET_ATTR);
+  
+  if (pulseType === 'commit') {
+    event.preventDefault();
+    commit(form, targetSelector);
+  }
+}
+
+/**
+ * Handle browser back/forward navigation
+ * @param {PopStateEvent} event 
+ */
+function handlePopState(event) {
+  if (event.state?.surf) {
+    sendPulse(event.state.url, { method: 'GET' }, event.state.target);
+  }
+}
+
+/**
+ * Initialize pulse handling
+ */
+export function init() {
+  // Delegate click events
+  document.addEventListener('click', handleClick);
+  
+  // Delegate form submissions
+  document.addEventListener('submit', handleSubmit);
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', handlePopState);
+  
+  // Handle browser navigation
+  window.addEventListener('popstate', handlePopState);
+}
+
+/**
+ * Programmatic navigation (Surf.go)
+ * @param {string} url 
+ * @param {Object} options 
+ */
+export async function go(url, options = {}) {
+  const target = options.target || 'body';
+  await navigate(url, target, options);
+}
+
+export default {
+  on,
+  off,
+  navigate,
+  commit,
+  refresh,
+  action,
+  go,
+  init
+};
