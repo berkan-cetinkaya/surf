@@ -79,6 +79,7 @@ function evaluate(expr, state) {
     const propVal = state[prop];
     const compareVal = value === 'true' ? true : 
                        value === 'false' ? false : 
+                       value.startsWith('"') || value.startsWith("'") ? value.slice(1, -1) :
                        Number(value);
     return propVal !== compareVal;
   }
@@ -282,7 +283,7 @@ export function updateBindings(cellElement) {
     const attrExpr = el.getAttribute(ATTR_ATTR);
     
     // Check for class.className: expression format
-    const classMatch = attrExpr.match(/^class\.([\\w-]+):\\s*(.+)$/);
+    const classMatch = attrExpr.match(/^class\.([\w-]+):\s*(.+)$/);
     if (classMatch) {
       const [, className, expr] = classMatch;
       const shouldAdd = evaluate(expr.trim(), state);
@@ -296,7 +297,7 @@ export function updateBindings(cellElement) {
     }
     
     // Standard attr:expression format
-    const match = attrExpr.match(/^(\\w+):(.+)$/);
+    const match = attrExpr.match(/^(\w+):(.+)$/);
     if (!match) return;
 
     const [, attrName, expr] = match;
