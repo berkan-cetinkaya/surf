@@ -21,3 +21,8 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+
+# Test Artifacts
+.npm-cache/
+tmp/
+coverage/
