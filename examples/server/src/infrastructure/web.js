@@ -93,31 +93,6 @@ export async function createServer() {
         });
     });
 
-    // Landing page variations for preview
-    fastify.get('/v1', async (req, reply) => {
-        return reply.view('templates/landing-v1-minimal.ejs', { title: 'SURF - V1 Minimal' });
-    });
-    fastify.get('/v2', async (req, reply) => {
-        return reply.view('templates/landing-v2-split.ejs', { title: 'SURF - V2 Split' });
-    });
-    fastify.get('/v3', async (req, reply) => {
-        return reply.view('templates/landing-v3-terminal.ejs', { title: 'SURF - V3 Terminal' });
-    });
-    fastify.get('/v4', async (req, reply) => {
-        return reply.view('templates/landing-v4-glass.ejs', { title: 'SURF - V4 Glass' });
-    });
-    
-    // Alternative landing pages
-    fastify.get('/alt-a', async (req, reply) => {
-        return reply.view('templates/landing-alt-a.ejs', { title: 'SURF - Vercel Style' });
-    });
-    fastify.get('/alt-b', async (req, reply) => {
-        return reply.view('templates/landing-alt-b.ejs', { title: 'SURF - Linear Style' });
-    });
-    fastify.get('/alt-c', async (req, reply) => {
-        return reply.view('templates/landing-alt-c.ejs', { title: 'SURF - Stripe Style' });
-    });
-
     // API: Server time for Surface demo
     fastify.get('/api/time', async (req, reply) => {
         reply.header('Content-Type', 'text/html');
@@ -132,11 +107,30 @@ export async function createServer() {
     });
 
     // Examples Index
-    fastify.get('/examples', async (req, reply) => {
+    const renderExamples = async (req, reply) => {
         return reply.view('templates/examples/index.ejs', {
             title: 'SURF Examples'
         });
-    });
+    };
+    fastify.get('/examples', renderExamples);
+    fastify.get('/examples/', renderExamples);
+
+    // Kanban Board Example
+    fastify.get('/examples/kanban', handlers.handleKanbanBoard);
+    fastify.get('/examples/kanban/backlog', handlers.handleKanbanBacklog);
+    fastify.post('/examples/kanban/add', handlers.handleKanbanAdd);
+    fastify.post('/examples/kanban/move', handlers.handleKanbanMove);
+    fastify.post('/examples/kanban/delete', handlers.handleKanbanDelete);
+
+    fastify.get('/examples/kanban/task/:taskId/modal', handlers.handleKanbanGetTaskModal);
+    fastify.get('/examples/kanban/task/:taskId', handlers.handleKanbanGetTaskPage);
+    fastify.post('/examples/kanban/task/:taskId', handlers.handleKanbanUpdateTaskDetails);
+    fastify.get('/examples/kanban/search', handlers.handleKanbanSearch);
+    fastify.post('/examples/kanban/task/:taskId/comments', handlers.handleKanbanAddComment);
+    fastify.post('/examples/kanban/comments/:commentId/delete', handlers.handleKanbanDeleteComment);
+    fastify.post('/examples/kanban/sprint/create', handlers.handleKanbanCreateSprint);
+    fastify.post('/examples/kanban/sprint/delete', handlers.handleKanbanDeleteSprint);
+    fastify.post('/examples/kanban/sprint/reorder', handlers.handleKanbanReorderSprint);
 
     // Category Index (e.g., /examples/01-interaction)
     fastify.get('/examples/:category', async (req, reply) => {
