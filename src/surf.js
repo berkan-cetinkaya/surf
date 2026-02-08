@@ -96,6 +96,9 @@ const Surf = {
       if (surface) {
         Echo.withPreservation(surface, content, () => {
           Surface.replace(target, content);
+          // Re-initialize signals and cells on the updated surface
+          Cell.initAll(surface);
+          Signal.initAll(surface);
         });
       }
     });
@@ -109,6 +112,20 @@ const Surf = {
   register(name, module) {
     Signal.register(name, module);
   },
+
+  /**
+   * Install a plugin
+   * @param {Object} plugin - Plugin object with install method
+   * @param {Object} options - Plugin options
+   */
+  use(plugin, options = {}) {
+    if (plugin && typeof plugin.install === 'function') {
+      plugin.install(this, options);
+    }
+    return this;
+  },
+
+
   
 
   
@@ -138,6 +155,9 @@ function init() {
   
   // Initialize pulse (event interception)
   Pulse.init();
+
+  // Register core modules for signals
+  Signal.register('Pulse', Pulse);
   
   console.log(`[Surf] Initialized v${Surf.version}`);
 }

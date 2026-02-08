@@ -153,11 +153,12 @@ async function sendPulse(url, options, targetSelector) {
  * @param {Object} options
  */
 export async function navigate(url, targetSelector, options = {}) {
-  await sendPulse(url, { method: 'GET', ...options }, targetSelector);
+  const target = targetSelector || 'body';
+  await sendPulse(url, { method: 'GET', ...options }, target);
   
   // Update browser history
-  if (targetSelector) {
-    history.pushState({ surf: true, url, target: targetSelector }, '', url);
+  if (target) {
+    history.pushState({ surf: true, url, target }, '', url);
   }
 }
 
@@ -172,6 +173,7 @@ export async function commit(form, targetSelector) {
   const formData = new FormData(form);
   const swap = form.getAttribute('d-swap');
   const options = swap ? { swap } : {};
+  const target = targetSelector || 'body';
   
   // Convert FormData to URLSearchParams for standard form encoding
   const params = new URLSearchParams();
@@ -182,7 +184,7 @@ export async function commit(form, targetSelector) {
     const separator = url.includes('?') ? '&' : '?';
     url = url + separator + params.toString();
     
-    await sendPulse(url, { method: 'GET', ...options }, targetSelector);
+    await sendPulse(url, { method: 'GET', ...options }, target);
   } else {
     await sendPulse(url, {
       method,
@@ -191,7 +193,7 @@ export async function commit(form, targetSelector) {
       },
       body: params.toString(),
       ...options
-    }, targetSelector);
+    }, target);
   }
 }
 
@@ -201,9 +203,10 @@ export async function commit(form, targetSelector) {
  */
 export async function refresh(targetSelector) {
   const url = window.location.href;
-  const surface = Surface.getBySelector(targetSelector) || document.querySelector(targetSelector);
+  const target = targetSelector || 'body';
+  const surface = Surface.getBySelector(target) || document.querySelector(target);
   const swap = surface?.getAttribute('d-swap'); // Refresh usually respects surface preference
-  await sendPulse(url, { method: 'GET', swap }, targetSelector);
+  await sendPulse(url, { method: 'GET', swap }, target);
 }
 
 /**
@@ -214,6 +217,7 @@ export async function refresh(targetSelector) {
  * @param {Object} options
  */
 export async function action(url, data = {}, targetSelector, options = {}) {
+  const target = targetSelector || 'body';
   await sendPulse(url, {
     method: 'POST',
     headers: {
@@ -221,7 +225,7 @@ export async function action(url, data = {}, targetSelector, options = {}) {
     },
     body: JSON.stringify(data),
     ...options
-  }, targetSelector);
+  }, target);
 }
 
 /**
@@ -335,6 +339,23 @@ export async function go(url, options = {}) {
   await navigate(url, target, options);
 }
 
+/**
+ * Programmatic form submission (Surf.submit)
+ * @param {Element} element - Element within a form
+ */
+export function submit(element) {
+  const form = element.tagName === 'FORM' ? element : element.closest('form');
+  if (form) {
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else {
+      form.submit();
+    }
+  } else {
+    console.warn('[Surf] No form found to submit for element:', element);
+  }
+}
+
 export default {
   on,
   off,
@@ -343,5 +364,6 @@ export default {
   refresh,
   action,
   go,
+  submit,
   init
 };
