@@ -1,0 +1,177 @@
+<aside class="dashboard-sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-box">S</div>
+        <span class="logo-text">SURF</span>
+    </div>
+
+    <div class="sidebar-group">
+        <h3 class="group-title">Workspace</h3>
+        <nav class="nav-menu">
+            <a href="/examples/kanban" class="nav-item">
+                <span class="icon">⊞</span>
+                Board
+            </a>
+            <a href="/examples/kanban/backlog" class="nav-item">
+                <span class="icon">≣</span>
+                Planning
+            </a>
+        </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="engine-card">
+            <div class="engine-header">
+                <span class="flash-icon">⚡</span>
+                <span class="engine-title">SURF Engine</span>
+            </div>
+            <p class="engine-status">Running <span class="version">v0.1.0</span>. Server-driven reactivity is active.
+            </p>
+        </div>
+    </div>
+</aside>
+
+<style>
+    /* Sidebar Styles */
+    .dashboard-sidebar {
+        width: 260px;
+        background: rgba(15, 23, 42, 0.6);
+        border-right: 1px solid var(--border-subtle);
+        backdrop-filter: blur(12px);
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 2rem;
+        height: 100vh;
+        /* Fixed height for sticky sidebar */
+    }
+
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+    }
+
+    .logo-box {
+        width: 32px;
+        height: 32px;
+        background: var(--brand-primary);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: white;
+    }
+
+    .logo-text {
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: 0.05em;
+    }
+
+    .group-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        padding-left: 0.75rem;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0.75rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .nav-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+    }
+
+    .nav-item.active {
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--brand-primary);
+    }
+
+    .nav-item .icon {
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .dot.success {
+        background: var(--success);
+        box-shadow: 0 0 8px var(--success);
+    }
+
+    .dot.info {
+        background: var(--brand-primary);
+        box-shadow: 0 0 8px var(--brand-primary);
+    }
+
+    .dot.warning {
+        background: var(--danger);
+        box-shadow: 0 0 8px var(--danger);
+    }
+
+    /* Sidebar Footer */
+    .sidebar-footer {
+        margin-top: auto;
+    }
+
+    .engine-card {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 8px;
+        padding: 1rem;
+        border: 1px solid var(--border-subtle);
+    }
+
+    .engine-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .flash-icon {
+        color: var(--brand-primary);
+    }
+
+    .engine-title {
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .engine-status {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .version {
+        color: var(--brand-secondary);
+        font-family: monospace;
+    }
+</style>

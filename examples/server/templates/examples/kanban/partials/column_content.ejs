@@ -1,0 +1,86 @@
+<div class="column-header">
+    <div class="header-title">
+        <% if (column.id==='todo' ) { %><span class="dot-indicator todo"></span>
+            <% } %>
+                <% if (column.id==='doing' ) { %><span class="dot-indicator doing"></span>
+                    <% } %>
+                        <% if (column.id==='done' ) { %><span class="dot-indicator done"></span>
+                            <% } %>
+                                <%= column.title %>
+    </div>
+    <span class="column-count">
+        <%= column.tasks.length %>
+    </span>
+</div>
+
+<div class="task-list" d-drop-zone="true" d-drop-url="/examples/kanban/move"
+    d-drop-data='{"toCol": "<%= column.id %>"<%= (typeof activeSprintId !== "undefined" && activeSprintId) ? `, "toSprintId": "${activeSprintId}"` : "" %>}'>
+    <% column.tasks.forEach(task=> { %>
+        <%- include('card.ejs', { task, currentColumnId: column.id }) %>
+            <% }); %>
+</div>
+
+<% if (column.id==='todo' ) { %>
+    <form class="add-task-form" d-pulse="commit" method="POST" d-target="#col-<%= column.id %>"
+        action="/examples/kanban/add" d-swap="replace">
+        <input type="hidden" name="columnId" value="<%= column.id %>">
+        <% if (typeof activeSprintId !=='undefined' && activeSprintId) { %>
+            <input type="hidden" name="sprintId" value="<%= activeSprintId %>">
+            <% } %>
+
+                <!-- Toggle Button -->
+                <button type="button" class="ghost-add-btn" onclick="const form = this.parentElement; 
+                         const input = form.querySelector('.add-input'); 
+                         const uiGroup = form.querySelector('.input-group');
+                         uiGroup.style.display='flex'; 
+                         input.focus(); 
+                         this.style.display='none';">
+                    + New Task
+                </button>
+
+                <!-- Input Group (Hidden by default) -->
+                <div class="input-group" style="display: none; gap: 0.5rem; width: 100%;">
+                    <input type="text" name="title" class="add-input" placeholder="Enter task title..." required
+                        onkeydown="if(event.key==='Escape') { 
+                        this.parentElement.style.display='none'; 
+                        this.form.querySelector('.ghost-add-btn').style.display='block'; 
+                        this.value=''; 
+                    }" onblur="if(this.value==='') { 
+                        // Small delay to allow button click to register
+                        setTimeout(() => {
+                            if (!document.activeElement.closest('.add-task-form')) {
+                                this.parentElement.style.display='none';
+                                this.form.querySelector('.ghost-add-btn').style.display='block'; 
+                            }
+                        }, 200);
+                    }">
+
+                    <!-- Explicit Submit Button -->
+                    <button type="submit" class="submit-btn-mini" title="Add Task">↵</button>
+                </div>
+    </form>
+    <style>
+        .input-group {
+            align-items: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .submit-btn-mini {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn-mini:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+    <% } %>

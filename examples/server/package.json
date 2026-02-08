@@ -1,0 +1,22 @@
+{
+    "name": "surf-example-server",
+    "version": "1.0.0",
+    "description": "Example server for Surf framework",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "node --watch index.js"
+    },
+    "dependencies": {
+        "fastify": "^5.0.0",
+        "@fastify/static": "^8.0.0",
+        "@fastify/view": "^10.0.0",
+        "@fastify/formbody": "^8.0.0",
+        "ejs": "^3.1.10",
+        "better-sqlite3": "^11.0.0"
+    },
+    "imports": {
+        "#helpers/*": "./src/helpers/*"
+    }
+}

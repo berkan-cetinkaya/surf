@@ -1,0 +1,287 @@
+<div id="backlog-section">
+    <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Planning</h2>
+
+        <form d-pulse="commit" method="POST" action="/examples/kanban/sprint/create" style="display: flex; gap: 0.5rem;"
+            onsubmit="setTimeout(()=>this.reset(), 100)">
+            <input type="text" name="title" placeholder="New Sprint Name"
+                style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 0.5rem; border-radius: 6px;"
+                required>
+            <button type="submit"
+                style="background: var(--brand-secondary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                Create Sprint
+            </button>
+        </form>
+    </div>
+
+    <% backlogBuckets.forEach(function(bucket, index) { %>
+        <div class="backlog-container" style="margin-bottom: 2rem;">
+            <div class="backlog-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h3>
+                        <%= bucket.title %> <span style="font-size: 0.8rem; opacity: 0.6; font-weight: normal;">
+                                <%= bucket.sprintId ? '(Sprint)' : '(Backlog)' %>
+                            </span>
+                    </h3>
+                    <% if (bucket.sprintId) { %>
+                        <div style="display: flex; gap: 4px;">
+                            <% if (index> 0) { %>
+                                <form d-pulse="commit" method="POST" action="/examples/kanban/sprint/reorder"
+                                    style="margin:0;">
+                                    <input type="hidden" name="sprintId" value="<%= bucket.sprintId %>">
+                                    <input type="hidden" name="direction" value="up">
+                                    <button type="submit" class="icon-btn" title="Move Up">↑</button>
+                                </form>
+                                <% } %>
+                                    <% if (index < backlogBuckets.length - 2) { %>
+                                        <!-- -2 because last bucket is General Backlog -->
+                                        <form d-pulse="commit" method="POST" action="/examples/kanban/sprint/reorder"
+                                            style="margin:0;">
+                                            <input type="hidden" name="sprintId" value="<%= bucket.sprintId %>">
+                                            <input type="hidden" name="direction" value="down">
+                                            <button type="submit" class="icon-btn" title="Move Down">↓</button>
+                                        </form>
+                                        <% } %>
+                        </div>
+
+                        <form d-pulse="commit" method="POST" action="/examples/kanban/sprint/delete" style="margin:0;">
+                            <input type="hidden" name="sprintId" value="<%= bucket.sprintId %>">
+                            <button type="submit"
+                                style="background: none; border: 1px solid var(--danger); color: var(--danger); border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 0.75rem; opacity: 0.7;"
+                                title="Delete Sprint">
+                                × Delete Sprint
+                            </button>
+                        </form>
+                        <% } %>
+                </div>
+                <span class="badge" id="badge-<%= bucket.id %>">
+                    <%= bucket.tasks.length %>
+                </span>
+
+                <form d-pulse="commit" method="POST" action="/examples/kanban/add" class="backlog-add-form"
+                    onsubmit="setTimeout(()=>this.reset(), 100)">
+                    <% if (bucket.sprintId) { %>
+                        <!-- Tasks added to a Sprint default to 'todo' so they appear on Board -->
+                        <input type="hidden" name="columnId" value="todo">
+                        <input type="hidden" name="sprintId" value="<%= bucket.sprintId %>">
+                        <input type="hidden" name="view" value="planning">
+                        <% } else { %>
+                            <input type="hidden" name="columnId" value="backlog">
+                            <% } %>
+                                <input type="text" name="title" placeholder="Add task to <%= bucket.title %>..."
+                                    class="backlog-input" required>
+                                <button type="submit" class="add-btn">+</button>
+                </form>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="backlog-table">
+                    <thead>
+                        <tr>
+                            <th width="40"></th>
+                            <th>Task</th>
+                            <th width="60">Assignee</th>
+                            <th width="100">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backlog-content-<%= bucket.id %>" d-drop-zone d-drop-url="/examples/kanban/move"
+                        d-drop-data='{"toCol": "<%= bucket.sprintId ? "todo" : "backlog" %>", "toSprintId": "<%= bucket.sprintId %>", "view": "planning"}'>
+
+                        <%- include('backlog_content.ejs', { tasks: bucket.tasks, sprintId: bucket.sprintId }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% }); %>
+</div>
+
+<style>
+    .backlog-container {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 1.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Rest of style preserved via previous definitions or global css? 
+       Actually this partial contained the styles. I need to keep them. 
+    */
+    .backlog-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .backlog-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .badge {
+        /* Assuming badge style exists globally or add it here */
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+    }
+
+    .backlog-add-form {
+        margin-left: auto;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .backlog-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 6px 12px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        min-width: 250px;
+    }
+
+    .backlog-input:focus {
+        border-color: var(--brand-primary);
+        outline: none;
+    }
+
+    .add-btn {
+        background: var(--brand-primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .table-wrapper {
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .backlog-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .backlog-table th {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 500;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .backlog-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        vertical-align: middle;
+    }
+
+    .backlog-row {
+        transition: background-color 0.2s;
+        cursor: grab;
+    }
+
+    .backlog-row:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .backlog-row.dragging {
+        background: rgba(56, 189, 248, 0.2) !important;
+        outline: 2px dashed var(--brand-primary);
+        outline-offset: -2px;
+    }
+
+    /* Drop Zone feedback */
+    tbody.drag-over {
+        background: rgba(56, 189, 248, 0.05);
+    }
+
+    tbody.drag-over .empty-state {
+        border-color: var(--brand-primary);
+        background: rgba(56, 189, 248, 0.1);
+        color: var(--brand-primary);
+    }
+
+    /* Delete Button Style */
+    .btn-delete-task {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        opacity: 0.8;
+    }
+
+    .btn-delete-task:hover {
+        background: var(--danger);
+        color: white;
+        opacity: 1;
+    }
+
+    .btn-delete-task .icon {
+        font-size: 1.1rem;
+        line-height: 1;
+        font-weight: bold;
+    }
+
+    .icon-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-muted);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+        border-color: var(--brand-primary);
+    }
+
+    .assignee-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .avatar-placeholder {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+</style>

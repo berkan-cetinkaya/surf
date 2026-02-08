@@ -1,0 +1,10 @@
+<script src="/dist/surf.min.js"></script>
+<script src="/dist/plugins/drag-and-drop.js"></script>
+<script src="/dist/plugins/debounce.js"></script>
+<script>
+    // Initialize plugins
+    if (window.Surf) {
+        if (window.SurfDragAndDrop) window.Surf.use(window.SurfDragAndDrop);
+        if (window.SurfDebounce) window.Surf.use(window.SurfDebounce);
+    }
+</script>

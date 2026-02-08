@@ -1,0 +1,111 @@
+<% if (tasks && tasks.length> 0) { %>
+    <div class="search-dropdown">
+        <% tasks.forEach(task=> { %>
+            <a href="/examples/kanban/task/<%= task.id %>" class="search-item" d-pulse="navigate" d-target="body">
+
+                <div class="search-icon">
+                    <% if (task.type==='bug' ) { %>
+                        <span style="color: var(--danger)">●</span>
+                        <% } else if (task.type==='feature' ) { %>
+                            <span style="color: var(--brand-primary)">●</span>
+                            <% } else { %>
+                                <span style="color: var(--text-muted)">●</span>
+                                <% } %>
+                </div>
+
+                <div class="search-content">
+                    <div class="search-title">
+                        <%= task.title %>
+                    </div>
+                    <div class="search-meta">
+                        <span class="meta-tag">
+                            <%= task.sprintId ? 'Sprint' : 'Backlog' %>
+                        </span>
+                        <span class="meta-tag">
+                            <%= task.columnId.toUpperCase() %>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            <% }); %>
+    </div>
+    <% } else { %>
+        <div class="search-dropdown empty">
+            <div class="search-empty-state">
+                No tasks found.
+            </div>
+        </div>
+        <% } %>
+
+            <style>
+                .search-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-subtle);
+                    border-radius: 8px;
+                    margin-top: 0.5rem;
+                    max-height: 300px;
+                    overflow-y: auto;
+                    box-shadow: var(--shadow-lg);
+                    z-index: 50;
+                    animation: slideDown 0.1s ease-out;
+                }
+
+                .search-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.75rem 1rem;
+                    cursor: pointer;
+                    transition: background 0.1s;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+                    text-decoration: none;
+                    color: inherit;
+                }
+
+                .search-item:last-child {
+                    border-bottom: none;
+                }
+
+                .search-item:hover {
+                    background: var(--bg-card-hover);
+                }
+
+                .search-content {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .search-title {
+                    font-size: 0.9rem;
+                    color: var(--text-main);
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    font-weight: 500;
+                }
+
+                .search-meta {
+                    display: flex;
+                    gap: 0.5rem;
+                    margin-top: 2px;
+                }
+
+                .meta-tag {
+                    font-size: 0.7rem;
+                    color: var(--text-muted);
+                    background: rgba(255, 255, 255, 0.05);
+                    padding: 1px 4px;
+                    border-radius: 4px;
+                }
+
+                .search-empty-state {
+                    padding: 1rem;
+                    text-align: center;
+                    color: var(--text-muted);
+                    font-size: 0.9rem;
+                }
+            </style>
