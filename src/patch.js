@@ -42,9 +42,10 @@ export function parse(html) {
       return;
     }
     
+    const template = surface.querySelector('template');
     patches.push({
       target,
-      content: surface.innerHTML
+      content: template ? template.innerHTML : surface.innerHTML
     });
   });
   

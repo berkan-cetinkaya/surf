@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Feed - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #00d4ff;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .explanation {
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: #a78bfa;
+        }
+
+        .explanation strong {
+            color: #00d4ff;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .status {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .status.active {
+            color: #22c55e;
+        }
+
+        /* News Feed Styles */
+        .news-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .update-time {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .news-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .news-item:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .news-item.breaking {
+            border-color: rgba(239, 68, 68, 0.5);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .category.breaking {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .time {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .news-title {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #eee;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .news-title:hover {
+            color: #00d4ff;
+        }
+
+        .read-indicator {
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #22c55e;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        .news-item[data-read="true"] {
+            opacity: 0.7;
+        }
+
+        .news-item[data-read="true"] .news-title {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back">← Back</a>
+
+    <div class="container">
+        <h1>📰 News Feed with Server Sync</h1>
+        <p class="subtitle">d-auto-refresh + d-action pattern</p>
+
+        <div class="explanation">
+            <strong>🔑 Declarative Pattern:</strong> Click on news titles to mark as "read".
+            <br><br>
+            <strong>SURF handles:</strong>
+            <ol style="margin-left: 1rem; margin-top: 0.5rem; line-height: 1.8;">
+                <li><code>d-auto-refresh</code> polls server every 5 seconds</li>
+                <li><code>d-pulse="action"</code> sends POST on click</li>
+                <li>Echo preserves read state across refreshes</li>
+            </ol>
+        </div>
+
+        <div class="status" id="status">Auto-refreshing every 5 seconds</div>
+
+        <!-- Surface with auto-refresh - NO JS needed! -->
+        <div id="news-surface" d-surface d-auto-refresh="5000" d-auto-refresh-url="/api/news">
+            <div class="loading">Loading news feed...</div>
+        </div>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+    <script>
+        // Minimal JS: just update status on patch
+        Surf.on('after:patch', () => {
+            document.getElementById('status').textContent =
+                'Updated at ' + new Date().toLocaleTimeString();
+        });
+    </script>
+</body>
+
+</html>

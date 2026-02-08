@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= locals.title || 'SURF Examples' %>
+    </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #eee;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #7c3aed;
+            --accent-purple-light: #a78bfa;
+            --gradient-primary: linear-gradient(90deg, #7c3aed, #00d4ff);
+            --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* Layout */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 60px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .app-header h1 {
+            font-size: 1.25rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-header .breadcrumb {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .app-header .breadcrumb a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .app-header .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Sidebar */
+        .app-sidebar {
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--border-color);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-purple-light);
+        }
+
+        .sidebar-nav .category-icon {
+            margin-right: 0.5rem;
+        }
+
+        .sidebar-nav .example-count {
+            float: right;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+        }
+
+        /* Main Content */
+        .app-main {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+        }
+
+        /* Example-specific styles can be added via <%- locals.extraStyles || '' %> */
+        <%=locals.extraStyles || '' %>
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <%- include('../partials/header', { title: locals.title, breadcrumb: locals.breadcrumb }) %>
+            <%- include('../partials/sidebar', { activeCategory: locals.activeCategory, activeExample:
+                locals.activeExample }) %>
+
+                <main class="app-main">
+                    <%- body %>
+                </main>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+    <%- locals.extraScripts || '' %>
+</body>
+
+</html>

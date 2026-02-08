@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #eee;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #00d4ff;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .field {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        input.error {
+            border-color: #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        .note {
+            margin-top: 2rem;
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            color: #a78bfa;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back">← Back</a>
+
+    <div class="container">
+        <h1>Form Validation Example</h1>
+        <p class="subtitle">Server-side validation with HTML patches</p>
+
+        <!-- Surface for form updates -->
+        <div id="form-surface" d-surface class="form-container">
+            <form action="/api/form" method="POST" d-pulse="commit" d-target="#form-surface">
+                <div class="field">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name">
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email">
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Min 8 characters">
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <div class="note">
+            <strong>Try it:</strong> Submit with empty fields to see server-side validation errors.
+            Fill all fields correctly (name 2+ chars, valid email, password 8+ chars) for success.
+        </div>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+    <script>
+        // Mock server response for demo purposes
+        Surf.on('before:pulse', (e) => {
+            console.log('[Demo] Form would be submitted to server');
+            console.log('[Demo] Server validates and returns HTML patch');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabs - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #eee;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #00d4ff;
+        }
+
+        .tabs-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .tab-btn:hover {
+            color: #999;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn[data-active="true"] {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        .tab-content {
+            padding: 2rem;
+            text-align: left;
+        }
+
+        .tab-panel h3 {
+            color: #7c3aed;
+            margin-bottom: 1rem;
+        }
+
+        .tab-panel p {
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        code {
+            display: block;
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: #888;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back">← Back</a>
+
+    <div class="container">
+        <h1>Tabs Example</h1>
+
+        <div class="tabs-container" d-cell="{ tab: 1 }">
+            <div class="tab-buttons">
+                <button class="tab-btn" d-signal="click: tab = 1" d-attr="data-active:tab == 1">
+                    Overview
+                </button>
+                <button class="tab-btn" d-signal="click: tab = 2" d-attr="data-active:tab == 2">
+                    Features
+                </button>
+                <button class="tab-btn" d-signal="click: tab = 3" d-attr="data-active:tab == 3">
+                    Pricing
+                </button>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-panel" d-show="tab == 1">
+                    <h3>Overview</h3>
+                    <p>SURF is an HTML-first framework that puts the server in control. The client handles only local,
+                        temporary interactions like these tabs.</p>
+                </div>
+
+                <div class="tab-panel" d-show="tab == 2">
+                    <h3>Features</h3>
+                    <p>Surfaces for server-driven updates. Cells for local state. Signals for reactivity. Pulses for
+                        server communication. Echo for state preservation.</p>
+                </div>
+
+                <div class="tab-panel" d-show="tab == 3">
+                    <h3>Pricing</h3>
+                    <p>SURF is open source and free forever. No hidden costs, no premium tiers, no vendor lock-in.</p>
+                </div>
+            </div>
+        </div>
+
+        <code>
+&lt;div d-cell="{ tab: 1 }"&gt;
+  &lt;button d-signal="click: tab = 1" d-attr="data-active:tab == 1"&gt;Tab 1&lt;/button&gt;
+  &lt;div d-show="tab == 1"&gt;Content 1&lt;/div&gt;
+&lt;/div&gt;
+    </code>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+</body>
+
+</html>

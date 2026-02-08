@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Cell from '../../src/cell.js';
 
 describe('Cell Module', () => {
@@ -54,12 +54,14 @@ describe('Cell Module', () => {
     
     it('should handle invalid syntax gracefully', () => {
         // e.g. a syntax error
+        const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const el = document.createElement('div');
         el.setAttribute('d-cell', 'count: ;;;');
         container.appendChild(el);
 
         const state = Cell.init(el);
         expect(state).toEqual({}); // Checks that it returns empty object on error
+        spy.mockRestore();
     });
   });
 

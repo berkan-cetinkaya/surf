@@ -1,0 +1,77 @@
+<aside class="app-sidebar">
+    <div class="sidebar-section">
+        <h3>Categories</h3>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="/examples/01-interaction"
+                    class="<%= locals.activeCategory === '01-interaction' ? 'active' : '' %>">
+                    <span class="category-icon">🧱</span>
+                    I. Interaction
+                    <span class="example-count">15</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/02-server-data"
+                    class="<%= locals.activeCategory === '02-server-data' ? 'active' : '' %>">
+                    <span class="category-icon">📡</span>
+                    II. Server Data
+                    <span class="example-count">15</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/03-navigation"
+                    class="<%= locals.activeCategory === '03-navigation' ? 'active' : '' %>">
+                    <span class="category-icon">🧭</span>
+                    III. Navigation
+                    <span class="example-count">15</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/04-forms" class="<%= locals.activeCategory === '04-forms' ? 'active' : '' %>">
+                    <span class="category-icon">📝</span>
+                    IV. Forms
+                    <span class="example-count">15</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/05-state-survival"
+                    class="<%= locals.activeCategory === '05-state-survival' ? 'active' : '' %>">
+                    <span class="category-icon">💾</span>
+                    V. State Survival
+                    <span class="example-count">10</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/06-layout" class="<%= locals.activeCategory === '06-layout' ? 'active' : '' %>">
+                    <span class="category-icon">🖼️</span>
+                    VI. Layout
+                    <span class="example-count">10</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/07-failure" class="<%= locals.activeCategory === '07-failure' ? 'active' : '' %>">
+                    <span class="category-icon">⚠️</span>
+                    VII. Failure
+                    <span class="example-count">10</span>
+                </a>
+            </li>
+            <li>
+                <a href="/examples/08-performance"
+                    class="<%= locals.activeCategory === '08-performance' ? 'active' : '' %>">
+                    <span class="category-icon">⚡</span>
+                    VIII. Performance
+                    <span class="example-count">10</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <% if (locals.activeCategory) { %>
+        <div class="sidebar-section">
+            <h3>Examples</h3>
+            <ul class="sidebar-nav" id="example-list">
+                <!-- Dynamically populated based on category -->
+            </ul>
+        </div>
+        <% } %>
+</aside>

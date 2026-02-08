@@ -33,7 +33,7 @@ export class Patch {
     }
 
     const surfaceHtml = this.surfaces
-      .map(s => `  <surface target="${escapeHtml(s.target)}">${s.content}</surface>`)
+      .map(s => `  <surface target="${escapeHtml(s.target)}"><template>${s.content}</template></surface>`)
       .join('\n');
 
     return `<d-patch>\n${surfaceHtml}\n</d-patch>`;

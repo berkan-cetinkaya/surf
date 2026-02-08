@@ -159,5 +159,47 @@ describe('Signal Module', () => {
       const state = Cell.getState(cell);
       expect(state.count).toBe(1);
     });
+
+    it('should support this.method() calls', () => {
+      const cell = createCell('val: 0');
+      const input = document.createElement('input');
+      
+      // Mock a method on the element
+      input.myMethod = vi.fn();
+      
+      input.setAttribute('d-signal', 'input: this.myMethod()');
+      cell.appendChild(input);
+      
+      Signal.initAll(container);
+      
+      input.dispatchEvent(new Event('input'));
+      
+      expect(input.myMethod).toHaveBeenCalled();
+    });
+    
+    it('should support reset command with delay', async () => {
+      const cell = createCell('val: 0');
+      const form = document.createElement('form');
+      form.reset = vi.fn();
+      
+      const btn = document.createElement('button');
+      btn.type = 'submit';
+      btn.setAttribute('d-signal', 'click: reset');
+      form.appendChild(btn);
+      cell.appendChild(form);
+      
+      Signal.initAll(container);
+      
+      // Trigger
+      btn.click();
+      
+      // Should not be called immediately (due to setTimeout)
+      expect(form.reset).not.toHaveBeenCalled();
+      
+      // Wait for next tick
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      expect(form.reset).toHaveBeenCalled();
+    });
   });
 });

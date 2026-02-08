@@ -1,11 +1,13 @@
 import { NewsUseCase } from '../usecases/news_usecase.js';
 import { SeatUseCase } from '../usecases/seat_usecase.js';
+import * as KanbanUseCase from '../usecases/kanban_usecase.js';
 import { FormUseCase } from '../usecases/form_usecase.js';
 import { createPatch } from '#helpers/node/patch.js';
 
 const newsUC = new NewsUseCase();
 const seatUC = new SeatUseCase();
 const formUC = new FormUseCase();
+// Kanban uses functional exports, no instantiation needed
 
 export async function handleNews(req, reply) {
     const data = newsUC.getFeed();
@@ -60,3 +62,21 @@ export async function handleForm(req, reply) {
     const html = await reply.view('templates/form_success.ejs', { name, email });
     return createPatch().addSurface('#form-surface', html).render();
 }
+
+// Kanban
+export { 
+    getBoard as handleKanbanBoard, 
+    getBacklogPage as handleKanbanBacklog,
+    createSprint as handleKanbanCreateSprint,
+    deleteSprint as handleKanbanDeleteSprint,
+    reorderSprint as handleKanbanReorderSprint,
+    getTaskModal as handleKanbanGetTaskModal,
+    getTaskPage as handleKanbanGetTaskPage,
+    updateTaskDetails as handleKanbanUpdateTaskDetails,
+    addTask as handleKanbanAdd,
+    moveTask as handleKanbanMove,
+    deleteTask as handleKanbanDelete,
+    searchTasks as handleKanbanSearch,
+    addComment as handleKanbanAddComment,
+    deleteComment as handleKanbanDeleteComment
+} from '../usecases/kanban_usecase.js';

@@ -1,0 +1,17 @@
+<header class="app-header">
+    <h1>SURF</h1>
+    <% if (locals.breadcrumb) { %>
+        <nav class="breadcrumb">
+            <a href="/examples">Examples</a>
+            <% breadcrumb.forEach((item, i)=> { %>
+                / <% if (item.href) { %><a href="<%= item.href %>">
+                        <%= item.label %>
+                    </a>
+                    <% } else { %><span>
+                            <%= item.label %>
+                        </span>
+                        <% } %>
+                            <% }) %>
+        </nav>
+        <% } %>
+</header>

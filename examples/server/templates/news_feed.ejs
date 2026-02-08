@@ -1,0 +1,36 @@
+<div class="news-feed">
+  <div class="feed-header">
+    <span>📰 Live Feed</span>
+    <span class="update-time">Updated: <%= lastUpdated %></span>
+  </div>
+
+  <% if (hasBreaking) { %>
+    <article class="news-item breaking" d-cell="{read: false}" d-cell-id="news-breaking">
+      <div class="news-header">
+        <span class="category breaking">BREAKING</span>
+        <span class="time">just now</span>
+      </div>
+      <h3 class="news-title" d-pulse="action" d-action="/api/news/breaking/read" data-id="breaking">
+        🔴 New Story Just In!
+      </h3>
+      <div class="read-indicator" d-show="read">✓ Read</div>
+    </article>
+    <% } %>
+
+      <% items.forEach(function(item) { %>
+        <article class="news-item" d-cell="{read: false}" d-cell-id="news-<%= item.id %>">
+          <div class="news-header">
+            <span class="category">
+              <%= item.category %>
+            </span>
+            <span class="time">
+              <%= item.time %>
+            </span>
+          </div>
+          <h3 class="news-title" d-pulse="action" d-action="/api/news/<%= item.id %>/read" data-id="<%= item.id %>">
+            <%= item.title %>
+          </h3>
+          <div class="read-indicator" d-show="read">✓ Read</div>
+        </article>
+        <% }); %>
+</div>

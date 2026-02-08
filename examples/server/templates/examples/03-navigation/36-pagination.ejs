@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagination - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #00d4ff;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .explanation {
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: #a78bfa;
+        }
+
+        .explanation strong {
+            color: #00d4ff;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        /* Items List */
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .item-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-desc {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .page-link {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .page-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .page-link.active {
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-link.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .page-info {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/examples/index" class="back">← Back</a>
+
+    <div class="container">
+        <h1>📄 Pagination Demo</h1>
+        <p class="subtitle">d-pulse="navigate" for page links</p>
+
+        <div class="explanation">
+            <strong>🔑 Zero JavaScript Pagination:</strong>
+            <br><br>
+            <ul style="margin-left: 1rem; line-height: 1.8;">
+                <li><code>d-pulse="navigate"</code> on links</li>
+                <li><code>d-target</code> specifies which surface to update</li>
+                <li>Server returns HTML patch with new content</li>
+                <li>URL updates for bookmarkable pages</li>
+            </ul>
+        </div>
+
+        <!-- Paginated content surface (Simulating SSR: Initial content pre-rendered) -->
+        <div id="content-surface" d-surface>
+            <%- locals.content || '<div class="loading">Loading initial data...</div>' %>
+        </div>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+    <!-- Zero custom JavaScript needed! -->
+</body>
+
+</html>

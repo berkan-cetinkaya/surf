@@ -1,13 +1,16 @@
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import Patch from '../../src/patch.js';
 
 describe('Patch Module', () => {
     describe('parse', () => {
         it('should return empty array for non-patch HTML', () => {
+            const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
             const html = '<div>Just content</div>';
             const patches = Patch.parse(html);
             expect(patches).toEqual([]);
+            expect(spy).toHaveBeenCalled();
+            spy.mockRestore();
         });
 
         it('should parse simple patch', () => {
@@ -38,6 +41,7 @@ describe('Patch Module', () => {
         });
         
         it('should ignore surfaces without target', () => {
+             const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
              const html = `
                 <d-patch>
                     <surface>Missing Target</surface>
@@ -47,6 +51,8 @@ describe('Patch Module', () => {
             const patches = Patch.parse(html);
             expect(patches).toHaveLength(1);
             expect(patches[0].target).toBe('#valid');
+            expect(spy).toHaveBeenCalled();
+            spy.mockRestore();
         });
     });
 

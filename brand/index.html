@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURF Color Palettes</title>
+    <link rel="stylesheet" href="palettes.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #f0f0f0;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: #888;
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .palettes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .palette-card {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .palette-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .palette-header {
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .palette-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .palette-number {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .color-swatches {
+            display: flex;
+            height: 60px;
+        }
+
+        .swatch {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 0.25rem;
+            font-size: 0.6rem;
+            font-family: monospace;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .palette-card:hover .swatch {
+            opacity: 1;
+        }
+
+        .accent-bar {
+            height: 4px;
+        }
+
+        .palette-footer {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.8rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .palette-footer span {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        /* Demo Button */
+        .demo-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎨 SURF Palettes</h1>
+    <p class="subtitle">25 color schemes for developer tools</p>
+
+    <h2 class="section-title">🌙 Dark Palettes (1-15)</h2>
+    <div class="palettes" id="dark-palettes"></div>
+
+    <h2 class="section-title">☀️ Light Palettes (16-20)</h2>
+    <div class="palettes" id="light-palettes"></div>
+
+    <h2 class="section-title">✨ Inspired By (21-25)</h2>
+    <div class="palettes" id="special-palettes"></div>
+
+    <script>
+        const palettes = [
+            // Dark (1-15)
+            { id: 'midnight-ocean', name: 'Midnight Ocean', num: '01', bg: '#0a0e17', surface: '#151d2b', text: '#e8f1f8', accent: '#00b4d8', gradient: 'linear-gradient(135deg, #00b4d8, #0077b6)' },
+            { id: 'neon-synthwave', name: 'Neon Synthwave', num: '02', bg: '#0d0221', surface: '#1a0a40', text: '#fff0f5', accent: '#ff0080', gradient: 'linear-gradient(135deg, #ff0080, #7b2cbf)' },
+            { id: 'forest-night', name: 'Forest Night', num: '03', bg: '#0a120e', surface: '#152318', text: '#e8f5e9', accent: '#4caf50', gradient: 'linear-gradient(135deg, #4caf50, #2e7d32)' },
+            { id: 'ember-glow', name: 'Ember Glow', num: '04', bg: '#141210', surface: '#252119', text: '#fff3e0', accent: '#ff9800', gradient: 'linear-gradient(135deg, #ff9800, #e65100)' },
+            { id: 'electric-violet', name: 'Electric Violet', num: '05', bg: '#0c0a14', surface: '#1a1728', text: '#f0ebff', accent: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' },
+            { id: 'arctic-aurora', name: 'Arctic Aurora', num: '06', bg: '#0a1014', surface: '#131c22', text: '#e0f7fa', accent: '#22d3ee', gradient: 'linear-gradient(135deg, #22d3ee, #10b981)' },
+            { id: 'rose-gold-dark', name: 'Rose Gold Dark', num: '07', bg: '#121015', surface: '#201c26', text: '#fdf2f8', accent: '#f472b6', gradient: 'linear-gradient(135deg, #f472b6, #db2777)' },
+            { id: 'obsidian-gold', name: 'Obsidian Gold', num: '08', bg: '#0a0a0a', surface: '#1a1a1a', text: '#fafafa', accent: '#d4af37', gradient: 'linear-gradient(135deg, #d4af37, #b8960b)' },
+            { id: 'crimson-night', name: 'Crimson Night', num: '09', bg: '#0f0a0a', surface: '#1c1414', text: '#fef2f2', accent: '#ef4444', gradient: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+            { id: 'quantum-blue', name: 'Quantum Blue', num: '10', bg: '#0d1117', surface: '#21262d', text: '#f0f6fc', accent: '#388bfd', gradient: 'linear-gradient(135deg, #388bfd, #1f6feb)' },
+            { id: 'cosmic-purple', name: 'Cosmic Purple', num: '11', bg: '#13111c', surface: '#231f30', text: '#ede9fe', accent: '#a78bfa', gradient: 'linear-gradient(135deg, #a78bfa, #8b5cf6)' },
+            { id: 'matrix-green', name: 'Matrix Green', num: '12', bg: '#0a0f0a', surface: '#141f14', text: '#dcfce7', accent: '#22c55e', gradient: 'linear-gradient(135deg, #22c55e, #16a34a)' },
+            { id: 'slate-storm', name: 'Slate Storm', num: '13', bg: '#0f1115', surface: '#1c2028', text: '#f1f5f9', accent: '#64748b', gradient: 'linear-gradient(135deg, #64748b, #475569)' },
+            { id: 'sunset-blaze', name: 'Sunset Blaze', num: '14', bg: '#12100e', surface: '#231e1a', text: '#fff7ed', accent: '#fb923c', gradient: 'linear-gradient(135deg, #fb923c, #ef4444)' },
+            { id: 'deep-space', name: 'Deep Space', num: '15', bg: '#030712', surface: '#111827', text: '#f9fafb', accent: '#6366f1', gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)' },
+            // Light (16-20)
+            { id: 'clean-slate', name: 'Clean Slate', num: '16', bg: '#ffffff', surface: '#f1f5f9', text: '#0f172a', accent: '#2563eb', gradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)', light: true },
+            { id: 'warm-paper', name: 'Warm Paper', num: '17', bg: '#fefcf8', surface: '#f5efe6', text: '#292524', accent: '#b45309', gradient: 'linear-gradient(135deg, #b45309, #92400e)', light: true },
+            { id: 'fresh-mint', name: 'Fresh Mint', num: '18', bg: '#f8fffa', surface: '#dcfce7', text: '#14532d', accent: '#16a34a', gradient: 'linear-gradient(135deg, #16a34a, #15803d)', light: true },
+            { id: 'sky-blue', name: 'Sky Blue', num: '19', bg: '#f8fcff', surface: '#e0f2fe', text: '#0c4a6e', accent: '#0ea5e9', gradient: 'linear-gradient(135deg, #0ea5e9, #0284c7)', light: true },
+            { id: 'lavender-mist', name: 'Lavender Mist', num: '20', bg: '#fdfcff', surface: '#f3e8ff', text: '#3b0764', accent: '#9333ea', gradient: 'linear-gradient(135deg, #9333ea, #7e22ce)', light: true },
+            // Special (21-25)
+            { id: 'vercel', name: 'Vercel', num: '21', bg: '#000000', surface: '#171717', text: '#fafafa', accent: '#ffffff', gradient: 'linear-gradient(135deg, #ffffff, #a1a1aa)' },
+            { id: 'linear', name: 'Linear', num: '22', bg: '#09090a', surface: '#18181b', text: '#fafafa', accent: '#5e6ad2', gradient: 'linear-gradient(135deg, #5e6ad2, #c678dd, #e879f9)' },
+            { id: 'stripe', name: 'Stripe', num: '23', bg: '#0a2540', surface: '#103d64', text: '#f6f9fc', accent: '#00d4ff', gradient: 'linear-gradient(135deg, #00d4ff, #0ea5e9)' },
+            { id: 'discord', name: 'Discord', num: '24', bg: '#1e1f22', surface: '#313338', text: '#f2f3f5', accent: '#5865f2', gradient: 'linear-gradient(135deg, #5865f2, #4752c4)' },
+            { id: 'github-dark', name: 'GitHub Dark', num: '25', bg: '#0d1117', surface: '#21262d', text: '#c9d1d9', accent: '#58a6ff', gradient: 'linear-gradient(135deg, #58a6ff, #1f6feb)' },
+        ];
+
+        function createCard(p) {
+            return `
+                <div class="palette-card" style="background: ${p.bg}; border: 1px solid ${p.light ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'}">
+                    <div class="palette-header" style="color: ${p.text}">
+                        <span class="palette-name">${p.name}</span>
+                        <span class="palette-number">#${p.num}</span>
+                    </div>
+                    <div class="color-swatches">
+                        <div class="swatch" style="background: ${p.bg}; color: ${p.text}">${p.bg}</div>
+                        <div class="swatch" style="background: ${p.surface}; color: ${p.text}">${p.surface}</div>
+                        <div class="swatch" style="background: ${p.accent}; color: ${p.bg}">${p.accent}</div>
+                    </div>
+                    <div class="accent-bar" style="background: ${p.gradient}"></div>
+                    <div class="palette-footer" style="background: ${p.surface}">
+                        <button class="demo-btn" style="background: ${p.gradient}; color: ${p.light ? '#fff' : p.bg}">Button</button>
+                        <span style="background: ${p.accent}20; color: ${p.accent}">Badge</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.getElementById('dark-palettes').innerHTML = palettes.slice(0, 15).map(createCard).join('');
+        document.getElementById('light-palettes').innerHTML = palettes.slice(15, 20).map(createCard).join('');
+        document.getElementById('special-palettes').innerHTML = palettes.slice(20, 25).map(createCard).join('');
+    </script>
+</body>
+
+</html>

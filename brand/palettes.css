@@ -1,0 +1,424 @@
+/* 
+ * SURF Color Palettes
+ * 25 carefully curated color schemes for developer tools & frameworks
+ * Each palette includes: background, surface, text, accent colors
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK PALETTES (1-15)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 01. Midnight Ocean - Deep blues with cyan accents */
+.palette-midnight-ocean {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #0f1521;
+    --bg-surface: #151d2b;
+    --border: rgba(0, 180, 216, 0.15);
+    --text-primary: #e8f1f8;
+    --text-secondary: #7a8fa6;
+    --text-muted: #4a5a6a;
+    --accent-primary: #00b4d8;
+    --accent-secondary: #0077b6;
+    --accent-tertiary: #90e0ef;
+    --gradient: linear-gradient(135deg, #00b4d8, #0077b6);
+}
+
+/* 02. Neon Synthwave - Retro-futuristic purple/pink */
+.palette-neon-synthwave {
+    --bg-primary: #0d0221;
+    --bg-secondary: #150734;
+    --bg-surface: #1a0a40;
+    --border: rgba(255, 0, 128, 0.15);
+    --text-primary: #fff0f5;
+    --text-secondary: #b088c0;
+    --text-muted: #6a4a7a;
+    --accent-primary: #ff0080;
+    --accent-secondary: #7b2cbf;
+    --accent-tertiary: #e0aaff;
+    --gradient: linear-gradient(135deg, #ff0080, #7b2cbf);
+}
+
+/* 03. Forest Night - Natural greens on dark */
+.palette-forest-night {
+    --bg-primary: #0a120e;
+    --bg-secondary: #0f1a14;
+    --bg-surface: #152318;
+    --border: rgba(76, 175, 80, 0.15);
+    --text-primary: #e8f5e9;
+    --text-secondary: #81a784;
+    --text-muted: #4a6a4e;
+    --accent-primary: #4caf50;
+    --accent-secondary: #2e7d32;
+    --accent-tertiary: #a5d6a7;
+    --gradient: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+/* 04. Ember Glow - Warm oranges on charcoal */
+.palette-ember-glow {
+    --bg-primary: #141210;
+    --bg-secondary: #1c1915;
+    --bg-surface: #252119;
+    --border: rgba(255, 152, 0, 0.15);
+    --text-primary: #fff3e0;
+    --text-secondary: #c9a87c;
+    --text-muted: #7a6450;
+    --accent-primary: #ff9800;
+    --accent-secondary: #e65100;
+    --accent-tertiary: #ffcc80;
+    --gradient: linear-gradient(135deg, #ff9800, #e65100);
+}
+
+/* 05. Electric Violet - Bold purple tech aesthetic */
+.palette-electric-violet {
+    --bg-primary: #0c0a14;
+    --bg-secondary: #12101c;
+    --bg-surface: #1a1728;
+    --border: rgba(139, 92, 246, 0.15);
+    --text-primary: #f0ebff;
+    --text-secondary: #a78bfa;
+    --text-muted: #6b5a8a;
+    --accent-primary: #8b5cf6;
+    --accent-secondary: #6d28d9;
+    --accent-tertiary: #c4b5fd;
+    --gradient: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+/* 06. Arctic Aurora - Cool cyan and green */
+.palette-arctic-aurora {
+    --bg-primary: #0a1014;
+    --bg-secondary: #0e1519;
+    --bg-surface: #131c22;
+    --border: rgba(34, 211, 238, 0.15);
+    --text-primary: #e0f7fa;
+    --text-secondary: #80deea;
+    --text-muted: #4a7a8a;
+    --accent-primary: #22d3ee;
+    --accent-secondary: #06b6d4;
+    --accent-tertiary: #67e8f9;
+    --gradient: linear-gradient(135deg, #22d3ee, #10b981);
+}
+
+/* 07. Rose Gold Dark - Elegant pink on slate */
+.palette-rose-gold-dark {
+    --bg-primary: #121015;
+    --bg-secondary: #18151c;
+    --bg-surface: #201c26;
+    --border: rgba(244, 114, 182, 0.15);
+    --text-primary: #fdf2f8;
+    --text-secondary: #f9a8d4;
+    --text-muted: #9a6a8a;
+    --accent-primary: #f472b6;
+    --accent-secondary: #db2777;
+    --accent-tertiary: #fbcfe8;
+    --gradient: linear-gradient(135deg, #f472b6, #db2777);
+}
+
+/* 08. Obsidian Gold - Luxury black and gold */
+.palette-obsidian-gold {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-surface: #1a1a1a;
+    --border: rgba(212, 175, 55, 0.15);
+    --text-primary: #fafafa;
+    --text-secondary: #d4af37;
+    --text-muted: #6a6a6a;
+    --accent-primary: #d4af37;
+    --accent-secondary: #b8960b;
+    --accent-tertiary: #f4e4a6;
+    --gradient: linear-gradient(135deg, #d4af37, #b8960b);
+}
+
+/* 09. Crimson Night - Deep red on black */
+.palette-crimson-night {
+    --bg-primary: #0f0a0a;
+    --bg-secondary: #150e0e;
+    --bg-surface: #1c1414;
+    --border: rgba(239, 68, 68, 0.15);
+    --text-primary: #fef2f2;
+    --text-secondary: #fca5a5;
+    --text-muted: #8a5a5a;
+    --accent-primary: #ef4444;
+    --accent-secondary: #dc2626;
+    --accent-tertiary: #fecaca;
+    --gradient: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* 10. Quantum Blue - IBM-inspired professional blue */
+.palette-quantum-blue {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-surface: #21262d;
+    --border: rgba(56, 139, 253, 0.15);
+    --text-primary: #f0f6fc;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
+    --accent-primary: #388bfd;
+    --accent-secondary: #1f6feb;
+    --accent-tertiary: #79c0ff;
+    --gradient: linear-gradient(135deg, #388bfd, #1f6feb);
+}
+
+/* 11. Cosmic Purple - Space-inspired deep purple */
+.palette-cosmic-purple {
+    --bg-primary: #13111c;
+    --bg-secondary: #1a1725;
+    --bg-surface: #231f30;
+    --border: rgba(167, 139, 250, 0.15);
+    --text-primary: #ede9fe;
+    --text-secondary: #a78bfa;
+    --text-muted: #6d6087;
+    --accent-primary: #a78bfa;
+    --accent-secondary: #8b5cf6;
+    --accent-tertiary: #c4b5fd;
+    --gradient: linear-gradient(135deg, #a78bfa, #8b5cf6);
+}
+
+/* 12. Matrix Green - Hacker aesthetic */
+.palette-matrix-green {
+    --bg-primary: #0a0f0a;
+    --bg-secondary: #0e150e;
+    --bg-surface: #141f14;
+    --border: rgba(34, 197, 94, 0.15);
+    --text-primary: #dcfce7;
+    --text-secondary: #86efac;
+    --text-muted: #4a8a5a;
+    --accent-primary: #22c55e;
+    --accent-secondary: #16a34a;
+    --accent-tertiary: #bbf7d0;
+    --gradient: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+/* 13. Slate Storm - Neutral professional gray */
+.palette-slate-storm {
+    --bg-primary: #0f1115;
+    --bg-secondary: #14181e;
+    --bg-surface: #1c2028;
+    --border: rgba(148, 163, 184, 0.15);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --accent-primary: #64748b;
+    --accent-secondary: #475569;
+    --accent-tertiary: #cbd5e1;
+    --gradient: linear-gradient(135deg, #64748b, #475569);
+}
+
+/* 14. Sunset Blaze - Warm gradient orange to red */
+.palette-sunset-blaze {
+    --bg-primary: #12100e;
+    --bg-secondary: #1a1614;
+    --bg-surface: #231e1a;
+    --border: rgba(251, 146, 60, 0.15);
+    --text-primary: #fff7ed;
+    --text-secondary: #fed7aa;
+    --text-muted: #8a6a50;
+    --accent-primary: #fb923c;
+    --accent-secondary: #f97316;
+    --accent-tertiary: #fdba74;
+    --gradient: linear-gradient(135deg, #fb923c, #ef4444);
+}
+
+/* 15. Deep Space - Almost black with blue hints */
+.palette-deep-space {
+    --bg-primary: #030712;
+    --bg-secondary: #0a1120;
+    --bg-surface: #111827;
+    --border: rgba(99, 102, 241, 0.12);
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #4b5563;
+    --accent-primary: #6366f1;
+    --accent-secondary: #4f46e5;
+    --accent-tertiary: #a5b4fc;
+    --gradient: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT PALETTES (16-20)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 16. Clean Slate - Minimal white with blue */
+.palette-clean-slate {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-surface: #f1f5f9;
+    --border: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --accent-primary: #2563eb;
+    --accent-secondary: #1d4ed8;
+    --accent-tertiary: #3b82f6;
+    --gradient: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* 17. Warm Paper - Soft cream with brown accents */
+.palette-warm-paper {
+    --bg-primary: #fefcf8;
+    --bg-secondary: #faf6f0;
+    --bg-surface: #f5efe6;
+    --border: rgba(120, 80, 40, 0.1);
+    --text-primary: #292524;
+    --text-secondary: #57534e;
+    --text-muted: #a8a29e;
+    --accent-primary: #b45309;
+    --accent-secondary: #92400e;
+    --accent-tertiary: #d97706;
+    --gradient: linear-gradient(135deg, #b45309, #92400e);
+}
+
+/* 18. Fresh Mint - Clean green on white */
+.palette-fresh-mint {
+    --bg-primary: #f8fffa;
+    --bg-secondary: #f0fdf4;
+    --bg-surface: #dcfce7;
+    --border: rgba(22, 163, 74, 0.1);
+    --text-primary: #14532d;
+    --text-secondary: #166534;
+    --text-muted: #86efac;
+    --accent-primary: #16a34a;
+    --accent-secondary: #15803d;
+    --accent-tertiary: #22c55e;
+    --gradient: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* 19. Sky Blue - Light blue professional */
+.palette-sky-blue {
+    --bg-primary: #f8fcff;
+    --bg-secondary: #f0f9ff;
+    --bg-surface: #e0f2fe;
+    --border: rgba(14, 165, 233, 0.1);
+    --text-primary: #0c4a6e;
+    --text-secondary: #0369a1;
+    --text-muted: #7dd3fc;
+    --accent-primary: #0ea5e9;
+    --accent-secondary: #0284c7;
+    --accent-tertiary: #38bdf8;
+    --gradient: linear-gradient(135deg, #0ea5e9, #0284c7);
+}
+
+/* 20. Lavender Mist - Soft purple on light */
+.palette-lavender-mist {
+    --bg-primary: #fdfcff;
+    --bg-secondary: #faf5ff;
+    --bg-surface: #f3e8ff;
+    --border: rgba(147, 51, 234, 0.1);
+    --text-primary: #3b0764;
+    --text-secondary: #6b21a8;
+    --text-muted: #c4b5fd;
+    --accent-primary: #9333ea;
+    --accent-secondary: #7e22ce;
+    --accent-tertiary: #a855f7;
+    --gradient: linear-gradient(135deg, #9333ea, #7e22ce);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SPECIAL/UNIQUE PALETTES (21-25)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 21. Vercel Inspired - Clean black and white */
+.palette-vercel {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-surface: #171717;
+    --border: rgba(255, 255, 255, 0.1);
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --accent-primary: #ffffff;
+    --accent-secondary: #ededed;
+    --accent-tertiary: #a1a1aa;
+    --gradient: linear-gradient(135deg, #ffffff, #a1a1aa);
+}
+
+/* 22. Linear Inspired - Purple gradient magic */
+.palette-linear {
+    --bg-primary: #09090a;
+    --bg-secondary: #101012;
+    --bg-surface: #18181b;
+    --border: rgba(139, 92, 246, 0.12);
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
+    --accent-primary: #5e6ad2;
+    --accent-secondary: #4c52b3;
+    --accent-tertiary: #8b92e6;
+    --gradient: linear-gradient(135deg, #5e6ad2, #c678dd, #e879f9);
+}
+
+/* 23. Stripe Inspired - Clean blue focus */
+.palette-stripe {
+    --bg-primary: #0a2540;
+    --bg-secondary: #0d3152;
+    --bg-surface: #103d64;
+    --border: rgba(99, 179, 237, 0.15);
+    --text-primary: #f6f9fc;
+    --text-secondary: #adbdcc;
+    --text-muted: #6b7c8f;
+    --accent-primary: #00d4ff;
+    --accent-secondary: #0ea5e9;
+    --accent-tertiary: #80e9ff;
+    --gradient: linear-gradient(135deg, #00d4ff, #0ea5e9);
+}
+
+/* 24. Discord Inspired - Blurple theme */
+.palette-discord {
+    --bg-primary: #1e1f22;
+    --bg-secondary: #2b2d31;
+    --bg-surface: #313338;
+    --border: rgba(88, 101, 242, 0.15);
+    --text-primary: #f2f3f5;
+    --text-secondary: #b5bac1;
+    --text-muted: #6d6f78;
+    --accent-primary: #5865f2;
+    --accent-secondary: #4752c4;
+    --accent-tertiary: #7983f5;
+    --gradient: linear-gradient(135deg, #5865f2, #4752c4);
+}
+
+/* 25. GitHub Dark - Familiar developer theme */
+.palette-github-dark {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-surface: #21262d;
+    --border: rgba(48, 54, 61, 0.8);
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
+    --accent-primary: #58a6ff;
+    --accent-secondary: #1f6feb;
+    --accent-tertiary: #79c0ff;
+    --gradient: linear-gradient(135deg, #58a6ff, #1f6feb);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   USAGE EXAMPLE
+   ═══════════════════════════════════════════════════════════════════════════
+
+   1. Add a palette class to your root element:
+      <html class="palette-midnight-ocean">
+
+   2. Use CSS variables in your styles:
+      body {
+          background: var(--bg-primary);
+          color: var(--text-primary);
+      }
+
+      .card {
+          background: var(--bg-surface);
+          border: 1px solid var(--border);
+      }
+
+      .button {
+          background: var(--gradient);
+          color: var(--bg-primary);
+      }
+
+      .link {
+          color: var(--accent-primary);
+      }
+
+   ═══════════════════════════════════════════════════════════════════════════ */

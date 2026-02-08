@@ -117,7 +117,7 @@ Server returns HTML patches to update Surfaces.
 
 ```javascript
 // Navigate to URL
-Surf.visit('/page', { target: '#main' });
+Surf.go('/page', { target: '#main' });
 
 // Refresh a surface
 Surf.refresh('#main');

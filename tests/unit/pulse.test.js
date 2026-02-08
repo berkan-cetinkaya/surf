@@ -68,6 +68,7 @@ describe('Pulse Module', () => {
         });
         
         it('should handle network errors', async () => {
+             const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
              global.fetch.mockRejectedValue(new Error('Network Error'));
              const errorSpy = vi.fn();
              Pulse.on('error:network', errorSpy);
@@ -75,6 +76,8 @@ describe('Pulse Module', () => {
              await Pulse.navigate('/fail', '#main');
 
              expect(errorSpy).toHaveBeenCalled();
+             expect(spy).toHaveBeenCalled();
+             spy.mockRestore();
         });
     });
     
