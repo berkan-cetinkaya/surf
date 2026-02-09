@@ -173,7 +173,7 @@ export async function createServer() {
     // Porting the Page routes for consistent SURF behavior
     fastify.get('/page/:name', async (req, reply) => {
         const { name } = req.params;
-        const validPages = ['home', 'about', 'products', 'contact'];
+        const validPages = ['home', 'about', 'products', 'contact', 'why-surf'];
         
         if (!validPages.includes(name)) return reply.callNotFound();
 
