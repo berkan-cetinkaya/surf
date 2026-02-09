@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Signal from '../../src/signal.js';
 import Cell from '../../src/cell.js';
 
