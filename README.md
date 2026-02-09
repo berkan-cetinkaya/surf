@@ -1,4 +1,4 @@
-# SURF
+# SURF [![Build Status](https://ci.berkan.cc/api/badges/2/status.svg)](https://ci.berkan.cc/repos/2)
 
 HTML-first, server-driven UI framework with local client-side state.
 
