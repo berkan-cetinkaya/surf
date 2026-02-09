@@ -58,13 +58,50 @@ A Cell is a local, client-side state container. Cells survive Surface updates.
 
 Signals define reactive behavior inside a Cell.
 
-| Attribute | Purpose | Type |
-|-----------|---------|------|
 | `d-signal` | Event handler | `d-signal="click: open = true"` |
 | `d-text` | Text binding | `d-text="count"` |
 | `d-show` | Conditional display | `d-show="open"` |
 | `d-attr` | Attribute binding | `d-attr="disabled: loading"` |
 | `d-attr` | Class toggling | `d-attr="class.active: isActive"` |
+
+### Signal Features
+
+**Form Resetting:**
+Use the `reset` keyword to clear forms declaratively. Surf automatically ensures this happens *after* submission data is captured.
+
+```html
+<form d-pulse="commit" d-signal="submit: reset">
+  <input name="msg">
+</form>
+```
+
+**Native Methods (`this.method()`):**
+Call native DOM methods on the element triggering the signal.
+
+```html
+<input type="text" d-signal="focus: this.select()">
+<video d-signal="mouseenter: this.play()"></video>
+```
+
+### Plugins
+
+Surf supports a lightweight plugin system.
+
+```javascript
+import Surf from './surf.js';
+import DragAndDrop from './plugins/drag-and-drop.js';
+
+Surf.use(DragAndDrop);
+```
+
+**Drag & Drop Plugin:**
+Enable drag-and-drop reordering with simple attributes.
+
+```html
+<div d-drag-zone="group-name" d-drag-url="/api/move">
+  <div d-drag-handle>...</div>
+</div>
+```
 
 ### Pulse
 
