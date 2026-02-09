@@ -1,0 +1,16 @@
+steps:
+  install:
+    image: node:20
+    commands:
+      - npm install
+      - npm install --prefix examples/server
+
+  build:
+    image: node:20
+    commands:
+      - npm run build
+
+  test:
+    image: node:20
+    commands:
+      - npm test
