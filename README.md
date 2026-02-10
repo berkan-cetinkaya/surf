@@ -22,13 +22,13 @@ HTML-first, server-driven UI framework with local client-side state.
 ## Installation
 
 ```html
-<script src="https://unpkg.com/surf@latest/dist/surf.min.js"></script>
+<script src="https://unpkg.com/surf-core@latest/dist/surf.min.js"></script>
 ```
 
 Or install via npm:
 
 ```bash
-npm install surf
+npm install surf-core
 ```
 
 ## Core Concepts
