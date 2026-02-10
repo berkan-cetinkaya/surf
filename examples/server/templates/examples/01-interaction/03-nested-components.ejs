@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nested Components - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            color: #eee;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+            text-align: center;
+        }
+
+        p.description {
+            color: #ccc;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 700px;
+            backdrop-filter: blur(10px);
+        }
+
+        .outer-card {
+            border-left: 5px solid #7c3aed;
+        }
+
+        .inner-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 5px solid #00d4ff;
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        h2,
+        h3 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #a78bfa;
+        }
+
+        h3 {
+            color: #7dd3fc;
+            font-size: 1.2rem;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #eee;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .debug-text {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            display: block;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 0.5rem;
+        }
+
+        code {
+            display: block;
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #888;
+            text-align: left;
+            max-width: 700px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="../01-interaction" class="back">← Back</a>
+
+    <h1>Nested Components Demo</h1>
+    <p class="description">
+        This example demonstrates how nested <code style="display:inline; padding:2px 6px; margin:0;">d-cell</code>
+        elements
+        maintain their own isolated state even when using identical variable names (e.g., <code
+            style="display:inline; padding:2px 6px; margin:0;">mode</code>).
+    </p>
+
+    <!-- 
+      OUTER COMPONENT: Project Manager 
+      State: { mode: 'view' }
+    -->
+    <div class="card outer-card" d-cell="{ mode: 'view' }">
+        <h2>📦 Project Manager (Outer Cell)</h2>
+        <p>
+            Current Mode: <span class="status-badge" d-text="mode"></span>
+        </p>
+
+        <div style="margin-top: 1rem; margin-bottom: 1rem;">
+            <button class="btn" d-signal="click: mode = 'view'">Set View Mode</button>
+            <button class="btn" d-signal="click: mode = 'admin'">Set Admin Mode</button>
+        </div>
+
+        <!-- 
+          INNER COMPONENT: Task Item 1
+          State: { mode: 'pending' } -> Uses SAME variable name 'mode' to test isolation!
+        -->
+        <div class="card inner-card" d-cell="{ mode: 'pending', title: 'Fix Bug #123' }">
+            <h3>📄 Task Item 1 (Inner Cell)</h3>
+
+            <p style="margin-bottom: 0.5rem">Task: <strong d-text="title" style="color: #fff"></strong></p>
+
+            <!-- This 'd-text="mode"' refers to the INNER cell's state, NOT the outer one -->
+            <p>
+                Status: <span class="status-badge" d-text="mode"></span>
+            </p>
+
+            <div style="margin-top: 1rem;">
+                <button class="btn" d-signal="click: mode = 'pending'">Mark Pending</button>
+                <button class="btn" d-signal="click: mode = 'progress'">In Progress</button>
+                <button class="btn" d-signal="click: mode = 'done'">Mark Done</button>
+            </div>
+
+            <small class="debug-text">
+                Debug: Inner mode is '<span d-text="mode"></span>'. Outer 'mode' changes do not affect this.
+            </small>
+        </div>
+
+        <!-- 
+          INNER COMPONENT: Task Item 2
+          State: { mode: 'done' }
+        -->
+        <div class="card inner-card" d-cell="{ mode: 'done', title: 'Write Documentation' }">
+            <h3>📄 Task Item 2 (Inner Cell)</h3>
+            <p style="margin-bottom: 0.5rem">Task: <strong d-text="title" style="color: #fff"></strong></p>
+            <p>
+                Status: <span class="status-badge" d-text="mode"></span>
+            </p>
+            <div style="margin-top: 1rem;">
+                <button class="btn" d-signal="click: mode = 'pending'">Mark Pending</button>
+                <button class="btn" d-signal="click: mode = 'progress'">In Progress</button>
+                <button class="btn" d-signal="click: mode = 'done'">Mark Done</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <p style="color: #888; font-size: 0.9rem;">
+                Debug: Outer mode is '<span d-text="mode" style="color: #fff"></span>'
+            </p>
+        </div>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+</body>
+
+</html>

@@ -303,12 +303,16 @@ function resolvePath(obj, path) {
  * Update all reactive bindings in a cell
  * @param {Element} cellElement 
  */
+
 export function updateBindings(cellElement) {
   const state = Cell.getState(cellElement);
   
   // Update d-text bindings
   const textElements = cellElement.querySelectorAll(`[${TEXT_ATTR}]`);
   textElements.forEach(el => {
+    // Only update if this element belongs to the current cell (not a nested cell)
+    if (findParentCell(el) !== cellElement) return;
+
     const prop = el.getAttribute(TEXT_ATTR);
     const value = evaluate(prop, state);
     if (value !== undefined) {
@@ -319,6 +323,9 @@ export function updateBindings(cellElement) {
   // Update d-show bindings
   const showElements = cellElement.querySelectorAll(`[${SHOW_ATTR}]`);
   showElements.forEach(el => {
+    // Only update if this element belongs to the current cell
+    if (findParentCell(el) !== cellElement) return;
+
     const expr = el.getAttribute(SHOW_ATTR);
     const visible = evaluate(expr, state);
     el.style.display = visible ? '' : 'none';
@@ -328,6 +335,9 @@ export function updateBindings(cellElement) {
   // Format: attr:expression or class.className:expression
   const attrElements = cellElement.querySelectorAll(`[${ATTR_ATTR}]`);
   attrElements.forEach(el => {
+    // Only update if this element belongs to the current cell
+    if (findParentCell(el) !== cellElement) return;
+
     const attrExpr = el.getAttribute(ATTR_ATTR);
     
     // Check for class.className: expression format
@@ -365,6 +375,7 @@ export function updateBindings(cellElement) {
     }
   });
 }
+
 
 /**
  * Split signal expression string into individual signals,

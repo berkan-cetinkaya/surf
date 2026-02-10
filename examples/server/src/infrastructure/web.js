@@ -38,7 +38,8 @@ function getCategoryExamples(category) {
     const examples = {
         '01-interaction': [
             { id: '01-toggle-state', title: 'Toggle State' },
-            { id: '02-counter', title: 'Counter' }
+            { id: '02-counter', title: 'Counter' },
+            { id: '03-nested-components', title: 'Nested Components (Isolation)' }
         ],
         '02-server-data': [
             { id: '16-get-request', title: 'GET Request Updates Surface' }
