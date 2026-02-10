@@ -1,6 +1,6 @@
 {
     "name": "surf-core",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "HTML-first, server-driven UI framework with local client-side state",
     "main": "dist/surf.min.js",
     "module": "src/surf.js",
