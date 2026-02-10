@@ -561,6 +561,160 @@
             font-size: 0.75rem;
             color: var(--dim);
         }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay[style*="display: block"],
+        .modal-overlay:not([style*="display: none"]) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay:not([style*="display: none"]) .modal {
+            transform: translateY(0);
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: var(--cyan);
+        }
+
+        .modal-code-wrapper {
+            position: relative;
+            margin: 1rem 0;
+            background: var(--surface-2);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+        }
+
+        .modal-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--fg);
+            word-break: break-all;
+            text-align: left;
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 6px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--fg);
+            color: var(--fg);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .copy-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .modal-note {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .live-preview {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .live-preview h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .preview-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            min-width: 2ch;
+            text-align: center;
+        }
+
+        .modal-close {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+        }
     </style>
 </head>
 
@@ -569,12 +723,11 @@
         <a href="/" class="nav-logo">SURF</a>
         <ul class="nav-links">
             <li><a href="/examples">Examples</a></li>
-            <li><a href="#">Docs</a></li>
-            <li><a href="https://github.com/nicholasareed/surf">GitHub</a></li>
+            <li><a href="https://github.com/berkan-cetinkaya/surf">GitHub</a></li>
         </ul>
     </nav>
 
-    <section class="hero">
+    <section class="hero" d-cell="{ modal: false }">
         <span class="badge">
             <span class="badge-dot"></span>
             v0.1.0 — HTML-first framework
@@ -588,14 +741,50 @@
         </p>
 
         <div class="cta-group">
-            <a href="/examples" class="btn btn-primary">Explore Examples</a>
-            <a href="https://github.com/nicholasareed/surf" class="btn btn-secondary">GitHub →</a>
+            <a href="/page/why-surf" class="btn btn-secondary">Why SURF?</a>
+            <button class="btn btn-primary" d-signal="click: modal = true">Quick Start ⚡</button>
+            <a href="/examples" class="btn btn-secondary">Explore Examples</a>
+            <a href="https://github.com/berkan-cetinkaya/surf" class="btn btn-secondary">GitHub →</a>
         </div>
 
-        <div class="api-stats">
-            <div class="stat-pill">10 Attributes</div>
-            <div class="stat-pill">9 Methods</div>
-            <div class="stat-pill">0 Build Steps</div>
+        <!-- Quick Start Modal -->
+        <div class="modal-overlay" d-show="modal" d-signal="click: modal = false" style="display: none;">
+            <div class="modal" d-signal="click: $event.stopPropagation()">
+                <h3>Install in seconds</h3>
+                <p>Add this script tag to your <code>&lt;head&gt;</code>:</p>
+
+                <div class="modal-code-wrapper" d-cell="{ copied: false }">
+                    <code
+                        class="modal-code">&lt;script src="https://unpkg.com/@surf/core" defer&gt;&lt;/script&gt;</code>
+                    <button class="copy-btn" d-attr="class: 'copy-btn ' + (copied ? 'copied' : '')"
+                        d-signal="click: navigator.clipboard.writeText('<script src=&quot;https://unpkg.com/@surf/core&quot; defer></script>').then(() => { copied = true; setTimeout(() => copied = false, 2000) })">
+                        <span d-text="copied ? 'Copied!' : 'Copy'">Copy</span>
+                    </button>
+                </div>
+
+                <p class="modal-note">No build step required. Just HTML.</p>
+
+                <div class="live-preview">
+                    <h4>Try it yourself</h4>
+                    <p class="modal-note" style="margin-bottom: 1rem;">Create an <code>index.html</code> file and paste
+                        this:</p>
+
+                    <div class="modal-code-wrapper" d-cell="{ copiedCode: false }">
+                        <code class="modal-code" style="white-space: pre-wrap;">&lt;!DOCTYPE html&gt;
+&lt;script src="https://unpkg.com/@surf/core" defer&gt;&lt;/script&gt;
+
+&lt;button d-cell="{ count: 0 }" d-signal="click: count++"&gt;
+  Clicked &lt;span d-text="count"&gt;0&lt;/span&gt; times
+&lt;/button&gt;</code>
+                        <button class="copy-btn" d-attr="class: 'copy-btn ' + (copiedCode ? 'copied' : '')"
+                            d-signal="click: navigator.clipboard.writeText('<!DOCTYPE html>\n<script src=&quot;https://unpkg.com/@surf/core&quot; defer></script>\n\n<button d-cell=&quot;{ count: 0 }&quot; d-signal=&quot;click: count++&quot;>\n  Clicked <span d-text=&quot;count&quot;>0</span> times\n</button>').then(() => { copiedCode = true; setTimeout(() => copiedCode = false, 2000) })">
+                            <span d-text="copiedCode ? 'Copied!' : 'Copy'">Copy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="modal-close" d-signal="click: modal = false">Got it</button>
+            </div>
         </div>
     </section>
 
@@ -645,20 +834,31 @@
             </div>
             <div class="demo-footer">
                 <div class="demo-code"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span
-                        class="val">"time"</span> <span class="attr">d-surface</span><span class="tag">&gt;</span>
-                    <span class="tag">&lt;%=</span> serverTime <span class="tag">%&gt;</span>
-                    <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"/api/time"</span>
-                    <span class="attr">d-pulse</span>=<span class="val">"navigate"</span> <span
-                        class="attr">d-target</span>=<span class="val">"#time"</span><span
-                        class="tag">&gt;</span>Refresh<span class="tag">&lt;/a&gt;</span>
+                        class="val">"server-time"</span> <span class="attr">d-surface</span><span
+                        class="tag">&gt;</span>
+                    <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
+                    <span class="tag">&lt;form</span> <span class="attr">action</span>=<span
+                        class="val">"/api/time"</span>
+                    <span class="attr">d-pulse</span>=<span class="val">"commit"</span> <span
+                        class="attr">d-target</span>=<span class="val">"#server-time"</span><span
+                        class="tag">&gt;</span>
+                    <span class="tag">&lt;button&gt;</span>Refresh<span class="tag">&lt;/button&gt;</span>
+                    <span class="tag">&lt;/form&gt;</span>
                     <span class="tag">&lt;/div&gt;</span>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- API Stats Summary -->
+    <div class="api-stats" style="margin: 4rem auto 2rem;">
+        <div class="stat-pill">10 Attributes</div>
+        <div class="stat-pill">9 Methods</div>
+        <div class="stat-pill">0 Build Steps</div>
+    </div>
+
     <!-- API Details Grid -->
-    <section class="api-details">
+    <section class="api-details" style="padding-top: 2rem; margin-top: 0; border-top: none;">
         <div class="api-grid">
             <div class="api-category">
                 <h3>10 Attributes</h3>
@@ -778,7 +978,7 @@
 
     <!-- Why SURF -->
     <section class="why-section">
-        <h2>Why SURF?</h2>
+        <h2>The Best of Both Worlds</h2>
         <p class="subtitle">
             Most frameworks force you to choose between <strong>server simplicity</strong> and <strong>client
                 speed</strong>.<br>
