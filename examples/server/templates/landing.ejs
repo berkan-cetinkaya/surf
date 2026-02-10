@@ -755,9 +755,9 @@
 
                 <div class="modal-code-wrapper" d-cell="{ copied: false }">
                     <code
-                        class="modal-code">&lt;script src="https://unpkg.com/@surf/core" defer&gt;&lt;/script&gt;</code>
+                        class="modal-code">&lt;script src="https://unpkg.com/surf-core" defer&gt;&lt;/script&gt;</code>
                     <button class="copy-btn" d-attr="class: 'copy-btn ' + (copied ? 'copied' : '')"
-                        d-signal="click: navigator.clipboard.writeText('<script src=&quot;https://unpkg.com/@surf/core&quot; defer></script>').then(() => { copied = true; setTimeout(() => copied = false, 2000) })">
+                        d-signal="click: navigator.clipboard.writeText('<script src=&quot;https://unpkg.com/surf-core&quot; defer></script>').then(() => { copied = true; setTimeout(() => copied = false, 2000) })">
                         <span d-text="copied ? 'Copied!' : 'Copy'">Copy</span>
                     </button>
                 </div>
@@ -771,13 +771,13 @@
 
                     <div class="modal-code-wrapper" d-cell="{ copiedCode: false }">
                         <code class="modal-code" style="white-space: pre-wrap;">&lt;!DOCTYPE html&gt;
-&lt;script src="https://unpkg.com/@surf/core" defer&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/surf-core" defer&gt;&lt;/script&gt;
 
 &lt;button d-cell="{ count: 0 }" d-signal="click: count++"&gt;
   Clicked &lt;span d-text="count"&gt;0&lt;/span&gt; times
 &lt;/button&gt;</code>
                         <button class="copy-btn" d-attr="class: 'copy-btn ' + (copiedCode ? 'copied' : '')"
-                            d-signal="click: navigator.clipboard.writeText('<!DOCTYPE html>\n<script src=&quot;https://unpkg.com/@surf/core&quot; defer></script>\n\n<button d-cell=&quot;{ count: 0 }&quot; d-signal=&quot;click: count++&quot;>\n  Clicked <span d-text=&quot;count&quot;>0</span> times\n</button>').then(() => { copiedCode = true; setTimeout(() => copiedCode = false, 2000) })">
+                            d-signal="click: navigator.clipboard.writeText('<!DOCTYPE html>\n<script src=&quot;https://unpkg.com/surf-core&quot; defer></script>\n\n<button d-cell=&quot;{ count: 0 }&quot; d-signal=&quot;click: count++&quot;>\n  Clicked <span d-text=&quot;count&quot;>0</span> times\n</button>').then(() => { copiedCode = true; setTimeout(() => copiedCode = false, 2000) })">
                             <span d-text="copiedCode ? 'Copied!' : 'Copy'">Copy</span>
                         </button>
                     </div>
