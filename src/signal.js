@@ -339,40 +339,46 @@ export function updateBindings(cellElement) {
     if (findParentCell(el) !== cellElement) return;
 
     const attrExpr = el.getAttribute(ATTR_ATTR);
+    if (!attrExpr) return;
+
+    // Support multiple bindings separated by ;
+    const bindings = splitSignals(attrExpr);
     
-    // Check for class.className: expression format
-    const classMatch = attrExpr.match(/^class\.([\w-]+):\s*(.+)$/);
-    if (classMatch) {
-      const [, className, expr] = classMatch;
-      const shouldAdd = evaluate(expr.trim(), state);
-      
-      if (shouldAdd) {
-        el.classList.add(className);
-      } else {
-        el.classList.remove(className);
+    bindings.forEach(binding => {
+      // Check for class.className: expression format
+      const classMatch = binding.match(/^class\.([\w-]+):\s*(.+)$/);
+      if (classMatch) {
+        const [, className, expr] = classMatch; // fixed destructuring
+        const shouldAdd = evaluate(expr.trim(), state);
+        
+        if (shouldAdd) {
+          el.classList.add(className);
+        } else {
+          el.classList.remove(className);
+        }
+        return;
       }
-      return;
-    }
-    
-    // Standard attr:expression format
-    const match = attrExpr.match(/^(\w+):(.+)$/);
-    if (!match) return;
+      
+      // Standard attr:expression format
+      const match = binding.match(/^(\w+):(.+)$/);
+      if (!match) return;
 
-    const [, attrName, expr] = match;
-    const value = evaluate(expr.trim(), state);
+      const [, attrName, expr] = match;
+      const value = evaluate(expr.trim(), state);
 
-    if (value === undefined) return;
+      if (value === undefined) return;
 
-    if (typeof value !== 'boolean') {
-      el.setAttribute(attrName, String(value));
-      return;
-    }
+      if (typeof value !== 'boolean') {
+        el.setAttribute(attrName, String(value));
+        return;
+      }
 
-    if (value) {
-      el.setAttribute(attrName, '');
-    } else {
-      el.removeAttribute(attrName);
-    }
+      if (value) {
+        el.setAttribute(attrName, '');
+      } else {
+        el.removeAttribute(attrName);
+      }
+    });
   });
 }
 
