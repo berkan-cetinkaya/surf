@@ -1,26 +1,33 @@
-/**
- * Vitest Setup File
- * 
- * Provides polyfills for JSDOM missing or incomplete features.
- */
+import { vi } from 'vitest';
 
-// JSDOM doesn't implement requestSubmit(), but it exists on the prototype
-// and throws "Not implemented". We override it with a working version.
+console.log('[Setup] Polyfilling requestSubmit');
+
+// JSDOM polyfill for requestSubmit
 if (typeof window !== 'undefined' && typeof HTMLFormElement !== 'undefined') {
-  HTMLFormElement.prototype.requestSubmit = function(submitter) {
-    if (submitter) {
-      if (!(submitter instanceof HTMLElement)) throw new TypeError('The submitter is not an HTMLElement.');
-      if (submitter.type !== 'submit') throw new TypeError('The submitter is not a submit button.');
-      if (submitter.form !== this) throw new DOMException('The submitter is not associated with this form.', 'NotFoundError');
-      submitter.click();
-    } else {
-      // Create a temporary submit button and click it to trigger validation/submit event
-      const submitButton = document.createElement('input');
-      submitButton.type = 'submit';
-      submitButton.style.display = 'none';
-      this.appendChild(submitButton);
-      submitButton.click();
-      this.removeChild(submitButton);
-    }
-  };
+  Object.defineProperty(HTMLFormElement.prototype, 'requestSubmit', {
+    value: function(submitter) {
+      if (submitter) {
+        if (submitter.form !== this) {
+          throw new DOMException('The submitter is not associated with this form.', 'NotFoundError');
+        }
+      }
+      
+      // Manually dispatch the 'submit' event
+      const event = new Event('submit', { bubbles: true, cancelable: true });
+      
+      // Attach submitter to the event if provided
+      if (submitter) {
+        Object.defineProperty(event, 'submitter', { value: submitter, enumerable: true });
+      }
+      
+      const cancelled = !this.dispatchEvent(event);
+      
+      // If the event was not cancelled, proceed with form submission
+      if (!cancelled) {
+        this.submit();
+      }
+    },
+    writable: true,
+    configurable: true
+  });
 }

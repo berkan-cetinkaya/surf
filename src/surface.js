@@ -52,6 +52,77 @@ export function getBySelector(selector) {
  * @param {string} html - New HTML content
  * @returns {Element|null} - The updated surface element
  */
+/**
+ * Helper to generate signature for diffing
+ * @param {Element} node 
+ * @returns {string} 
+ */
+export function getSignature(node) {
+  if (node.tagName === 'TITLE') return 'TITLE';
+  if (node.tagName === 'LINK' && node.href) return `LINK:${node.getAttribute('href')}`;
+  if (node.tagName === 'META' && node.getAttribute('name')) return `META:${node.getAttribute('name')}`;
+  if (node.tagName === 'SCRIPT' && node.src) return `SCRIPT:${node.getAttribute('src')}`;
+  if (node.tagName === 'STYLE') return `STYLE:${node.textContent.trim().substring(0, 50)}`; 
+  return node.outerHTML; 
+}
+
+/**
+ * Handle smart head replacement to prevent CSS flicker
+ * @param {Element} newHead 
+ */
+export function smartReplaceHead(newHead) {
+    const currentHead = document.head;
+    
+    // Update title
+    const newTitle = newHead.querySelector('title');
+    if (newTitle) {
+      document.title = newTitle.textContent;
+    }
+
+    const currentNodes = Array.from(currentHead.children);
+    const currentMap = new Map();
+    
+    // Map signature to ARRAY of nodes to handle duplicates
+    currentNodes.forEach(node => {
+      const sig = getSignature(node);
+      if (sig === 'TITLE') return;
+      
+      if (!currentMap.has(sig)) {
+        currentMap.set(sig, []);
+      }
+      currentMap.get(sig).push(node);
+    });
+
+    const newNodes = Array.from(newHead.children);
+    newNodes.forEach(newNode => {
+      const sig = getSignature(newNode);
+      if (sig === 'TITLE') return;
+
+      if (currentMap.has(sig) && currentMap.get(sig).length > 0) {
+        // Keep one existing instance (remove from deletion list)
+        currentMap.get(sig).shift();
+      } else {
+        // New node, append it
+        currentHead.appendChild(newNode);
+      }
+    });
+
+    // Remove remaining nodes (not in new head)
+    currentMap.forEach(list => {
+      list.forEach(node => {
+        if (node.parentNode) {
+          node.remove();
+        }
+      });
+    });
+}
+
+/**
+ * Replace surface content with new HTML
+ * @param {string|Element} selectorOrElement - Target surface selector or element
+ * @param {string} html - New HTML content
+ * @returns {Element|null} - The updated surface element
+ */
 export function replace(selectorOrElement, html) {
   // Handle both selector strings and element references
   let surface;
@@ -64,6 +135,22 @@ export function replace(selectorOrElement, html) {
   if (!surface) {
     console.warn(`[Surf] Surface not found: ${selectorOrElement}`);
     return null;
+  }
+
+  // Special handling for full document replacement
+  if (surface === document.documentElement) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Replace head and body content
+    const newHead = document.adoptNode(doc.head);
+    const newBody = document.adoptNode(doc.body);
+    
+    smartReplaceHead(newHead);
+    
+    document.body.replaceWith(newBody);
+    
+    return surface;
   }
   
   // Create a template to parse the HTML

@@ -153,12 +153,20 @@ async function sendPulse(url, options, targetSelector) {
  * @param {Object} options
  */
 export async function navigate(url, targetSelector, options = {}) {
-  const target = targetSelector || 'body';
+  const target = targetSelector || 'html';
   await sendPulse(url, { method: 'GET', ...options }, target);
   
   // Update browser history
   if (target) {
-    history.pushState({ surf: true, url, target }, '', url);
+    const currentUrl = new URL(window.location.href);
+    const nextUrl = new URL(url, window.location.origin);
+    
+    // If navigating to the same URL, replace state instead of pushing
+    if (currentUrl.href === nextUrl.href) {
+      history.replaceState({ surf: true, url: nextUrl.href, target }, '', nextUrl.href);
+    } else {
+      history.pushState({ surf: true, url: nextUrl.href, target }, '', nextUrl.href);
+    }
   }
 }
 
@@ -173,7 +181,7 @@ export async function commit(form, targetSelector) {
   const formData = new FormData(form);
   const swap = form.getAttribute('d-swap');
   const options = swap ? { swap } : {};
-  const target = targetSelector || 'body';
+  const target = targetSelector || 'html';
   
   // Convert FormData to URLSearchParams for standard form encoding
   const params = new URLSearchParams();
@@ -203,7 +211,7 @@ export async function commit(form, targetSelector) {
  */
 export async function refresh(targetSelector) {
   const url = window.location.href;
-  const target = targetSelector || 'body';
+  const target = targetSelector || 'html';
   const surface = Surface.getBySelector(target) || document.querySelector(target);
   const swap = surface?.getAttribute('d-swap'); // Refresh usually respects surface preference
   await sendPulse(url, { method: 'GET', swap }, target);
@@ -217,7 +225,7 @@ export async function refresh(targetSelector) {
  * @param {Object} options
  */
 export async function action(url, data = {}, targetSelector, options = {}) {
-  const target = targetSelector || 'body';
+  const target = targetSelector || 'html';
   await sendPulse(url, {
     method: 'POST',
     headers: {
@@ -308,7 +316,13 @@ function handleSubmit(event) {
  */
 function handlePopState(event) {
   if (event.state?.surf) {
-    sendPulse(event.state.url, { method: 'GET' }, event.state.target);
+    sendPulse(event.state.url, { method: 'GET' }, event.state.target || 'html');
+  } else {
+    // If we land on a state without surf data (e.g. external link or hard refresh),
+    // we should probably let the browser handle it or reload.
+    // But since we are here, browser has already navigated url.
+    // If the content is stale, we might want to refresh 'body'.
+    window.location.reload();
   }
 }
 
@@ -325,8 +339,16 @@ export function init() {
   // Handle browser navigation
   window.addEventListener('popstate', handlePopState);
   
-  // Handle browser navigation
-  window.addEventListener('popstate', handlePopState);
+
+
+  // Initialize history state if missing
+  if (!history.state) {
+    history.replaceState({
+      surf: true,
+      url: window.location.href,
+      target: 'html'
+    }, '', window.location.href);
+  }
 }
 
 /**
@@ -335,7 +357,7 @@ export function init() {
  * @param {Object} options 
  */
 export async function go(url, options = {}) {
-  const target = options.target || 'body';
+  const target = options.target || 'html';
   await navigate(url, target, options);
 }
 
