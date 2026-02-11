@@ -27,8 +27,16 @@ describe('Echo Module', () => {
         Cell.setState(el, { count: 5 }); // Change state
         
         // Echo.withPreservation simulates a replacement
-        Echo.withPreservation(container, 'ignored_content', () => {
+        Echo.withPreservation(container, () => {
              // Simulate replacement: destroy old, create new with same ID/seed
+             // Note: Echo finds matching cells by ID. Old element is gone.
+             
+             // In real world, Surf uses replace() logic. Here we manually clear and append new.
+             // Wait, if replace() destroys old element, Echo snapshot must capture state BEFORE.
+             
+             // The test code inside withPreservation MUST create the new element 
+             // that Echo restores state to.
+             
              container.innerHTML = '';
              const newEl = document.createElement('div');
              newEl.id = 'counter'; // Same ID matches
@@ -45,7 +53,7 @@ describe('Echo Module', () => {
     });
     
     it('should initialize new cells found in content', () => {
-         Echo.withPreservation(container, 'content', () => {
+         Echo.withPreservation(container, () => {
              const newEl = document.createElement('div');
              newEl.setAttribute('d-cell', 'val: 10');
              container.appendChild(newEl);

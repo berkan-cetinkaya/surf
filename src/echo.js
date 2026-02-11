@@ -45,7 +45,7 @@ export function after(surface, snapshot) {
  * @param {string} newContent - The new HTML content
  * @param {function} replaceFn - Function that performs the actual replacement
  */
-export function withPreservation(surface, newContent, replaceFn) {
+export function withPreservation(surface, replaceFn) {
   // Before: snapshot state
   const snapshot = before(surface);
   

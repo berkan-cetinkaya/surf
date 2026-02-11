@@ -82,7 +82,7 @@ function applyPatches(patches) {
       return;
     }
     
-    Echo.withPreservation(surface, content, () => {
+    Echo.withPreservation(surface, () => {
       Surface.replace(target, content);
     });
   });
@@ -125,7 +125,7 @@ async function sendPulse(url, options, targetSelector) {
           // Check for swap mode (inner, append, prepend) from options or element
           const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
           
-          Echo.withPreservation(surface, html, () => {
+          Echo.withPreservation(surface, () => {
             if (swapMode === 'append') {
               Surface.append(surface, html);
             } else if (swapMode === 'prepend') {
