@@ -4,6 +4,7 @@ import fastifyView from '@fastify/view';
 import fastifyFormbody from '@fastify/formbody';
 import ejs from 'ejs';
 import { join, dirname } from 'path';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 import * as handlers from '../handlers/index.js';
@@ -14,14 +15,14 @@ const rootDir = join(__dirname, '..', '..', '..', '..'); // project root based o
 
 // Category metadata
 const CATEGORIES = {
-    '01-interaction': { title: '🧱 I. Interaction & Local State', count: 15 },
-    '02-server-data': { title: '📡 II. Server Data & Patch Flow', count: 15 },
-    '03-navigation': { title: '🧭 III. Navigation & History', count: 15 },
-    '04-forms': { title: '📝 IV. Forms & Validation', count: 15 },
-    '05-state-survival': { title: '💾 V. State Survival', count: 10 },
-    '06-layout': { title: '🖼️ VI. Layout & Composition', count: 10 },
-    '07-failure': { title: '⚠️ VII. Failure & Edge Cases', count: 10 },
-    '08-performance': { title: '⚡ VIII. Performance & Scale', count: 10 }
+    '01-interaction': { title: '🧱 I. Interaction & Local State' },
+    '02-server-data': { title: '📡 II. Server Data & Patch Flow' },
+    '03-navigation': { title: '🧭 III. Navigation & History' },
+    '04-forms': { title: '📝 IV. Forms & Validation' },
+    '05-state-survival': { title: '💾 V. State Survival' },
+    '06-layout': { title: '🖼️ VI. Layout & Composition' },
+    '07-failure': { title: '⚠️ VII. Failure & Edge Cases' },
+    '08-performance': { title: '⚡ VIII. Performance & Scale' }
 };
 
 function getCategoryTitle(category) {
@@ -61,6 +62,13 @@ function getCategoryExamples(category) {
         '08-performance': []
     };
     return examples[category] || [];
+}
+
+// Articles metadata
+const ARTICLES = JSON.parse(readFileSync(join(__dirname, 'data', 'articles.json'), 'utf-8'));
+
+function getArticle(slug) {
+    return ARTICLES.find(p => p.slug === slug);
 }
 
 export async function createServer() {
@@ -105,6 +113,39 @@ export async function createServer() {
                 <button type="submit" class="refresh-btn">↻ Fetch from Server</button>
             </form>
         `;
+    });
+
+    // Internal Roadmap
+    fastify.get('/roadmap', async (req, reply) => {
+        try {
+            const mdPath = join(rootDir, 'ROADMAP.md');
+            const md = readFileSync(mdPath, 'utf-8');
+            
+            const sections = [];
+            let currentSection = null;
+            
+            md.split('\n').forEach(line => {
+                const headerMatch = line.match(/^##\s+(.*)/);
+                if (headerMatch) {
+                    if (currentSection) sections.push(currentSection);
+                    currentSection = { title: headerMatch[1], items: [] };
+                } else if (currentSection) {
+                    const itemMatch = line.match(/^-\s+\[([ x])\]\s+(.*)/);
+                    if (itemMatch) {
+                        currentSection.items.push({ 
+                            done: itemMatch[1].toLowerCase() === 'x', 
+                            text: itemMatch[2] 
+                        });
+                    }
+                }
+            });
+            if (currentSection) sections.push(currentSection);
+
+            return reply.view('templates/roadmap.ejs', { sections });
+        } catch (err) {
+            console.error('Roadmap error:', err);
+            return reply.callNotFound();
+        }
     });
 
     // Examples Index
@@ -171,10 +212,43 @@ export async function createServer() {
         }
     });
     
+    // Articles listing
+    fastify.get('/articles', async (req, reply) => {
+        const html = await req.server.view('templates/articles/index.ejs', {
+            title: 'Articles',
+            posts: ARTICLES
+        });
+
+        return reply.type('text/html').send(html);
+    });
+
+    // Article post
+    fastify.get('/articles/:slug', async (req, reply) => {
+        const { slug } = req.params;
+        const post = getArticle(slug);
+        if (!post) return reply.callNotFound();
+
+        try {
+            const html = await req.server.view(`templates/articles/${slug}.ejs`, {
+                ...post,
+                activePost: slug
+            });
+
+
+            return reply.type('text/html').send(html);
+        } catch (err) {
+            console.error('Render error:', err);
+            return reply.callNotFound();
+        }
+    });
+
     // Porting the Page routes for consistent SURF behavior
     fastify.get('/page/:name', async (req, reply) => {
         const { name } = req.params;
-        const validPages = ['home', 'about', 'products', 'contact', 'why-surf'];
+
+
+
+        const validPages = ['home', 'about', 'products', 'contact'];
         
         if (!validPages.includes(name)) return reply.callNotFound();
 

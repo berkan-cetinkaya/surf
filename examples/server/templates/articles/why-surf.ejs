@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        <%= title %> - SURF Articles
+    </title>
+    <meta name="description" content="<%= description %>">
+    <%- include('../partials/head') %>
+        <style>
+            /* Article specific overrides */
+            .app-main {
+                padding: 0;
+            }
+
+            /* Hero */
+            .blog-hero {
+                width: 100%;
+                height: 280px;
+                object-fit: cover;
+                display: block;
+            }
+
+            /* Article container */
+            .blog-container {
+                max-width: 780px;
+                margin: 0 auto;
+                padding: 2.5rem 2rem 4rem;
+            }
+
+            /* Header */
+            .blog-post-header {
+                margin-bottom: 2.5rem;
+                text-align: center;
+            }
+
+            .blog-meta {
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 0.75rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .blog-meta .category-badge {
+                background: rgba(124, 58, 237, 0.25);
+                color: var(--accent-purple-light);
+                padding: 0.2rem 0.6rem;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+
+            .blog-meta .date,
+            .blog-meta .read-time {
+                color: var(--text-muted);
+            }
+
+            .blog-post-header h1 {
+                font-size: 2.4rem;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: 0.5rem;
+                line-height: 1.2;
+            }
+
+            .subtitle {
+                font-size: 1.15rem;
+                color: var(--text-secondary);
+                font-style: italic;
+            }
+
+            /* TOC */
+            .table-of-contents {
+                background: rgba(124, 58, 237, 0.08);
+                border: 1px solid rgba(124, 58, 237, 0.2);
+                border-left: 4px solid var(--accent-purple);
+                padding: 1.25rem 1.5rem;
+                border-radius: 0 12px 12px 0;
+                margin-bottom: 2.5rem;
+            }
+
+            .table-of-contents h3 {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--text-muted);
+                margin-bottom: 0.75rem;
+            }
+
+            .table-of-contents ol {
+                padding-left: 1.25rem;
+                margin: 0;
+            }
+
+            .table-of-contents li {
+                margin-bottom: 0.35rem;
+                font-size: 0.9rem;
+            }
+
+            .table-of-contents a {
+                color: var(--accent-cyan);
+                text-decoration: none;
+            }
+
+            .table-of-contents a:hover {
+                text-decoration: underline;
+            }
+
+            /* Content */
+            .blog-content section {
+                margin-bottom: 3rem;
+            }
+
+            .blog-content h2 {
+                font-size: 1.6rem;
+                margin-bottom: 1.25rem;
+                color: var(--accent-cyan);
+                padding-top: 1.5rem;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .blog-content h3 {
+                font-size: 1.2rem;
+                margin-top: 1.5rem;
+                margin-bottom: 0.75rem;
+                color: var(--text-primary);
+            }
+
+            .blog-content h4 {
+                font-size: 1.05rem;
+                margin-top: 1.25rem;
+                margin-bottom: 0.5rem;
+                color: var(--text-primary);
+            }
+
+            .blog-content p {
+                margin-bottom: 1.25rem;
+                font-size: 1.02rem;
+                color: var(--text-secondary);
+            }
+
+            .blog-content strong {
+                color: var(--text-primary);
+            }
+
+            .blog-content ul,
+            .blog-content ol {
+                margin-bottom: 1.25rem;
+                padding-left: 1.25rem;
+            }
+
+            .blog-content li {
+                margin-bottom: 0.4rem;
+                font-size: 0.98rem;
+                color: var(--text-secondary);
+            }
+
+            .blog-content code {
+                background: rgba(0, 212, 255, 0.1);
+                color: var(--accent-cyan);
+                padding: 0.15rem 0.4rem;
+                border-radius: 4px;
+                font-size: 0.88rem;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            }
+
+            .blog-content em {
+                color: var(--text-secondary);
+            }
+
+            /* Code blocks */
+            .code-block {
+                background: rgba(0, 0, 0, 0.4);
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 1.25rem;
+                margin: 1.25rem 0;
+                overflow-x: auto;
+            }
+
+            .code-block pre {
+                color: #e2e8f0;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                font-size: 0.85rem;
+                margin: 0;
+                white-space: pre-wrap;
+            }
+
+            /* Quote cards */
+            .quote-card {
+                background: rgba(59, 130, 246, 0.08);
+                border-left: 4px solid #3b82f6;
+                padding: 1.25rem 1.5rem;
+                margin: 1.5rem 0;
+                border-radius: 0 10px 10px 0;
+            }
+
+            .quote-card.warning {
+                border-left-color: #f59e0b;
+                background: rgba(245, 158, 11, 0.08);
+            }
+
+            .quote-card.surf {
+                border-left-color: var(--accent-cyan);
+                background: rgba(0, 212, 255, 0.06);
+            }
+
+            .quote-card.final {
+                border-left-width: 6px;
+                padding: 1.5rem 2rem;
+            }
+
+            .quote-card blockquote {
+                font-size: 1.15rem;
+                font-style: italic;
+                margin-bottom: 0.3rem;
+                color: var(--accent-cyan);
+            }
+
+            .quote-card cite {
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--text-muted);
+            }
+
+            /* Highlight box */
+            .highlight-box {
+                background: rgba(59, 130, 246, 0.08);
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                padding: 1.25rem;
+                border-radius: 10px;
+                margin: 1.25rem 0;
+                color: var(--text-secondary);
+            }
+
+            .highlight-box strong {
+                color: var(--accent-cyan);
+            }
+
+            .highlight-box.warning {
+                background: rgba(245, 158, 11, 0.08);
+                border-color: rgba(245, 158, 11, 0.2);
+            }
+
+            .highlight-box.warning strong {
+                color: #fbbf24;
+            }
+
+            /* Stat card */
+            .stat-card {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(153, 27, 27, 0.4));
+                border: 1px solid rgba(220, 38, 38, 0.3);
+                padding: 1.5rem;
+                border-radius: 12px;
+                text-align: center;
+                margin: 1.5rem 0;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+                font-weight: 800;
+                background: linear-gradient(90deg, #fca5a5, #ef4444);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+            }
+
+            /* Mental model grid */
+            .surf-mental-model {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.25rem;
+                margin: 1.5rem 0;
+            }
+
+            .mental-model-card {
+                background: rgba(0, 212, 255, 0.06);
+                border: 1px solid rgba(0, 212, 255, 0.2);
+                padding: 1.25rem;
+                border-radius: 12px;
+                text-align: center;
+            }
+
+            .mental-model-card h4 {
+                font-size: 1.3rem;
+                margin-bottom: 0.4rem;
+                color: var(--accent-cyan);
+            }
+
+            .mental-model-card p {
+                color: var(--text-secondary);
+                margin-bottom: 0;
+            }
+
+            /* Comparison table */
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1.5rem 0;
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.75rem 1rem;
+                text-align: left;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .comparison-table th {
+                background: rgba(0, 0, 0, 0.2);
+                color: var(--accent-purple-light);
+                font-weight: 600;
+            }
+
+            .comparison-table td {
+                color: var(--text-secondary);
+            }
+
+            .comparison-table tr:hover td {
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            /* Timeline */
+            .timeline {
+                position: relative;
+                padding-left: 2rem;
+                margin: 1.5rem 0;
+            }
+
+            .timeline::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 3px;
+                background: linear-gradient(to bottom, var(--border-color), var(--accent-purple), var(--accent-cyan));
+                border-radius: 2px;
+            }
+
+            .timeline-item {
+                position: relative;
+                padding-left: 1.5rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: -2.35rem;
+                top: 0.25rem;
+                width: 12px;
+                height: 12px;
+                background: var(--border-color);
+                border-radius: 50%;
+                border: 3px solid var(--bg-primary);
+            }
+
+            .timeline-item.active::before {
+                background: var(--accent-cyan);
+                box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.3);
+            }
+
+            .timeline-year {
+                font-weight: 700;
+                color: var(--accent-purple-light);
+                font-size: 0.85rem;
+            }
+
+            .timeline-content {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+            }
+
+            /* CTA */
+            .call-to-action {
+                background: rgba(0, 0, 0, 0.3);
+                border: 1px solid var(--border-color);
+                padding: 2.5rem;
+                border-radius: 16px;
+                text-align: center;
+                margin-top: 3rem;
+            }
+
+            .call-to-action h3 {
+                color: var(--text-primary) !important;
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .call-to-action p {
+                color: var(--text-secondary) !important;
+            }
+
+            .cta-btn {
+                background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+                color: white;
+                border: none;
+                padding: 0.85rem 2rem;
+                font-size: 1rem;
+                font-weight: 600;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                margin-top: 1rem;
+            }
+
+            .cta-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+            }
+
+            .github-link {
+                display: inline-block;
+                margin-top: 0.75rem;
+                padding: 0.6rem 1.25rem;
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--text-primary);
+                text-decoration: none;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                transition: all 0.2s;
+            }
+
+            .github-link:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: var(--accent-cyan);
+            }
+
+            .success-message {
+                animation: slideUp 0.5s ease-out;
+            }
+
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .app-layout {
+                    grid-template-columns: 1fr;
+                }
+
+                .app-sidebar {
+                    display: none;
+                }
+
+                .blog-post-header h1 {
+                    font-size: 1.8rem;
+                }
+
+                .surf-mental-model {
+                    grid-template-columns: 1fr;
+                }
+
+                .comparison-table th,
+                .comparison-table td {
+                    padding: 0.4rem;
+                }
+            }
+        </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <%- include('../partials/header', { breadcrumbs: [{ label: 'Articles' , href: '/articles' }, { label: title }]
+            }) %>
+
+            <%- include('../partials/sidebar', { activeCategory: null, activeExample: null }) %>
+
+                <main class="app-main">
+                    <img src="<%= heroImage %>" alt="<%= title %>" class="blog-hero">
+
+                    <div class="blog-container">
+                        <header class="blog-post-header">
+                            <div class="blog-meta">
+                                <span class="category-badge">
+                                    <%= category %>
+                                </span>
+                                <span class="date">•</span>
+                                <span class="date">
+                                    <%= date %>
+                                </span>
+                                <span class="read-time">•</span>
+                                <span class="read-time">
+                                    <%= readTime %>
+                                </span>
+                            </div>
+                            <h1>
+                                <%= title %>
+                            </h1>
+                            <p class="subtitle">From PHP spaghetti to SPA chaos, and back to sanity.</p>
+                        </header>
+
+                        <article class="blog-content">
+                            <nav class="table-of-contents">
+                                <h3>Table of Contents</h3>
+                                <ol>
+                                    <li><a href="#pre-spa">The Pre-SPA Era: When Things Were Simple</a></li>
+                                    <li><a href="#spa-rise">The Rise of SPAs: A New Hope</a></li>
+                                    <li><a href="#spa-problems">SPA Problems: The Dark Side</a></li>
+                                    <li><a href="#ssr-ssg">SSR, SSG & Hydration: The "Fix"</a></li>
+                                    <li><a href="#html-first">HTML-First Revolution: htmx, Alpine.js, Unpoly &
+                                            Hotwire</a>
+                                    </li>
+                                    <li><a href="#surf-difference">What Makes SURF Different?</a></li>
+                                </ol>
+                            </nav>
+
+                            <section id="pre-spa">
+                                <h2>1. The Pre-SPA Era: When Things Were Simple</h2>
+
+                                <p>Let's rewind to 2005. jQuery was just born. PHP was king. Ruby on Rails was the hot
+                                    new
+                                    thing. And every click meant a full page reload.</p>
+
+                                <p>The architecture was dead simple:</p>
+
+                                <div class="code-block">
+                                    <pre>
+User clicks link → Browser requests /page
+                → Server renders full HTML
+                → Browser replaces entire page
+                → CSS/JS re-downloads (maybe cached)
+                → User sees new page</pre>
+                                </div>
+
+                                <p>This model had <strong>beautiful properties</strong>:</p>
+                                <ul>
+                                    <li>🎯 <strong>Single source of truth:</strong> The server knew everything</li>
+                                    <li>🔐 <strong>Security:</strong> Business logic never touched the client</li>
+                                    <li>📊 <strong>SEO:</strong> Perfect by default — it's just HTML</li>
+                                    <li>🚀 <strong>Simplicity:</strong> One mental model, one codebase</li>
+                                </ul>
+
+                                <p>But it also had <strong>painful problems</strong>:</p>
+                                <ul>
+                                    <li>😵 <strong>Full page flicker:</strong> Every action = white screen flash</li>
+                                    <li>🐢 <strong>Slow perceived performance:</strong> Even tiny updates required full
+                                        reload</li>
+                                    <li>📉 <strong>Poor interactivity:</strong> No rich animations, no real-time updates
+                                    </li>
+                                    <li>🔄 <strong>State loss:</strong> Scroll position, form data — all gone on reload
+                                    </li>
+                                </ul>
+
+                                <div class="quote-card">
+                                    <blockquote>"Users wanted Gmail-like experiences. We were giving them Craigslist."
+                                    </blockquote>
+                                </div>
+                            </section>
+
+                            <section id="spa-rise">
+                                <h2>2. The Rise of SPAs: A New Hope</h2>
+
+                                <p>Around 2010-2013, a revolution happened. Backbone.js, Angular.js, and later React
+                                    changed
+                                    everything. The idea was radical:</p>
+
+                                <div class="highlight-box">
+                                    <strong>The SPA Promise:</strong> "What if the browser itself was the application,
+                                    and
+                                    the server was just an API?"
+                                </div>
+
+                                <p>Suddenly, we could build experiences that felt like native apps:</p>
+                                <ul>
+                                    <li>✨ Instant page transitions (no reload!)</li>
+                                    <li>🎬 Smooth animations between states</li>
+                                    <li>💾 Persistent client-side state</li>
+                                    <li>📱 Mobile-like experience on desktop</li>
+                                </ul>
+
+                                <p>The industry went <em>all in</em>. React became the new jQuery. Every job posting
+                                    demanded "React experience". Bootcamps taught React before teaching HTML properly.
+                                </p>
+
+                                <p><strong>The architecture shifted dramatically:</strong></p>
+
+                                <div class="code-block">
+                                    <pre>
+Initial Load:
+  → Browser requests /
+  → Server sends empty HTML shell + massive JS bundle
+  → Browser downloads 2-5MB of JavaScript
+  → JS boots up, mounts React/Vue/Angular
+  → App makes API calls to fetch data
+  → Finally, user sees content (3-5 seconds later)
+
+Subsequent Navigation:
+  → User clicks link
+  → JavaScript intercepts, fetches JSON from API
+  → Client-side router updates URL
+  → React re-renders components
+  → User sees new "page" (instant)</pre>
+                                </div>
+
+                                <p>It worked. Kind of. For well-funded teams with excellent engineers. For everyone
+                                    else? It
+                                    was about to become a nightmare.</p>
+                            </section>
+
+                            <section id="spa-problems">
+                                <h2>3. SPA Problems: The Dark Side</h2>
+
+                                <p>By 2018, the cracks were showing. The SPA dream had become a maintenance nightmare
+                                    for
+                                    most teams.</p>
+
+                                <h3>🐘 Bundle Size Explosion</h3>
+                                <p>What started as "just React" became React + Redux + React Router + Redux Saga +
+                                    Reselect
+                                    + Formik + Yup + Axios + date-fns + lodash + ... The average JS bundle grew from
+                                    50KB to
+                                    500KB to 2MB.</p>
+
+                                <div class="stat-card">
+                                    <div class="stat-number">2.4 MB</div>
+                                    <div class="stat-label">Average JavaScript bundle size for modern SPAs (2023)</div>
+                                </div>
+
+                                <h3>🔄 State Synchronization Hell</h3>
+                                <p>Now you have <em>two</em> sources of truth: the server database and the client Redux
+                                    store. Keeping them in sync is a full-time job. Optimistic updates, cache
+                                    invalidation,
+                                    stale data bugs... This is hard, PhD-level computer science, and we're expecting
+                                    junior
+                                    devs to handle it.</p>
+
+                                <div class="code-block">
+                                    <pre>
+// The horror of "simple" data fetching in a SPA
+const UserProfile = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isStale, setIsStale] = useState(false);
+  
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    
+    fetchUser(userId)
+      .then(data => {
+        if (!cancelled) {
+          setUser(data);
+          setLoading(false);
+          // But wait, is this data fresh?
+          // What if another tab updated it?
+          // Should we poll? WebSocket? 
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err);
+          setLoading(false);
+        }
+      });
+    
+    return () => { cancelled = true; };
+  }, [userId]);
+  
+  // ... 50 more lines of loading/error handling
+};</pre>
+                                </div>
+
+                                <h3>🕷️ SEO & Initial Load Crisis</h3>
+                                <p>Google's crawler (circa 2018) couldn't reliably execute JavaScript. Your beautiful
+                                    SPA
+                                    was invisible to search engines. E-commerce sites lost millions in organic traffic.
+                                </p>
+
+                                <h3>📱 Mobile Performance Disaster</h3>
+                                <p>That 2MB bundle? Try parsing and executing it on a $100 Android phone over 3G.
+                                    Time-to-Interactive became 10-15 seconds. Users bounced. Sales dropped.</p>
+
+                                <h3>🧠 Cognitive Overload</h3>
+                                <p>To build a "simple" CRUD app, you now needed to understand:</p>
+                                <ul>
+                                    <li>React (JSX, hooks, lifecycle, rendering optimization)</li>
+                                    <li>State management (Redux, MobX, Zustand, Recoil...)</li>
+                                    <li>Routing (React Router, history API)</li>
+                                    <li>Data fetching (React Query, SWR, RTK Query)</li>
+                                    <li>Forms (Formik, React Hook Form)</li>
+                                    <li>Styling (CSS-in-JS, Styled Components, Emotion)</li>
+                                    <li>Build tools (Webpack, Babel, ESLint, Prettier)</li>
+                                    <li>Testing (Jest, React Testing Library, Cypress)</li>
+                                </ul>
+
+                                <div class="quote-card warning">
+                                    <blockquote>"We went from 'view source' to 'good luck understanding this 50-file
+                                        component tree'."</blockquote>
+                                </div>
+                            </section>
+
+                            <section id="ssr-ssg">
+                                <h2>4. SSR, SSG & Hydration: The "Fix"</h2>
+
+                                <p>The industry's answer to SPA problems? "Let's do <em>both</em> at the same time!"
+                                    Enter
+                                    Next.js, Nuxt, Remix, and the era of <strong>hybrid rendering</strong>.</p>
+
+                                <h3>The Three Musketeers</h3>
+                                <ul>
+                                    <li><strong>SSR (Server-Side Rendering):</strong> Render React on the server, send
+                                        HTML,
+                                        then "hydrate" it with JavaScript</li>
+                                    <li><strong>SSG (Static Site Generation):</strong> Pre-render pages at build time,
+                                        serve
+                                        as static files</li>
+                                    <li><strong>ISR (Incremental Static Regeneration):</strong> SSG but with automatic
+                                        rebuilds</li>
+                                </ul>
+
+                                <p>This solved the SEO and initial load problems! Users saw content fast, search engines
+                                    could index pages. Victory?</p>
+
+                                <h3>💀 The Hydration Horror</h3>
+                                <p>Not so fast. <strong>Hydration</strong> became the new nightmare.</p>
+
+                                <div class="highlight-box warning">
+                                    <strong>What is Hydration?</strong><br>
+                                    The process of "attaching" JavaScript event handlers to server-rendered HTML. The
+                                    browser receives HTML, displays it, then React "wakes up" and makes it interactive.
+                                </div>
+
+                                <p><strong>Hydration Mismatches:</strong> If the server HTML doesn't perfectly match
+                                    what
+                                    React expects on the client, you get cryptic errors. A simple date formatting
+                                    difference, a browser extension injecting content, or conditional rendering based on
+                                    <code>window</code> — crash.
+                                </p>
+
+                                <div class="code-block">
+                                    <pre>
+Error: Hydration failed because the initial UI 
+does not match what was rendered on the server.
+
+Warning: Text content did not match. 
+Server: "February 9, 2026" 
+Client: "Feb 9, 2026"</pre>
+                                </div>
+
+                                <p><strong>Double Rendering Tax:</strong> You're now rendering everything twice — once
+                                    on
+                                    the server, once on the client during hydration. The CPU cost is real.</p>
+
+                                <p><strong>Time-to-Interactive Gap:</strong> Users see content but can't interact. They
+                                    click buttons that do nothing because JavaScript hasn't hydrated yet. This "uncanny
+                                    valley" is worse than a loading spinner.</p>
+
+                                <h3>The Complexity Exploded</h3>
+                                <p>Now your mental model includes:</p>
+                                <ul>
+                                    <li>Which code runs on server vs client vs both?</li>
+                                    <li>When can you access <code>window</code> or <code>document</code>?</li>
+                                    <li>How do you share state between server and client?</li>
+                                    <li>Edge functions, streaming SSR, selective hydration...</li>
+                                </ul>
+
+                                <div class="quote-card">
+                                    <blockquote>"We invented a complex solution to solve the problems created by our
+                                        previous complex solution."</blockquote>
+                                </div>
+                            </section>
+
+                            <section id="html-first">
+                                <h2>5. HTML-First Revolution: htmx, Alpine.js, Unpoly & Hotwire</h2>
+
+                                <p>Around 2020, a counter-movement emerged. Developers started asking: <em>"What if we
+                                        just... sent HTML from the server?"</em></p>
+
+                                <h3>🚀 htmx</h3>
+                                <p>Carson Gross created htmx with a radical idea: extend HTML with attributes that
+                                    enable
+                                    AJAX, CSS Transitions, WebSockets, and Server-Sent Events directly in your markup.
+                                </p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- htmx: Load content into a div --&gt;
+&lt;button hx-get="/api/users" hx-target="#user-list"&gt;
+  Load Users
+&lt;/button&gt;
+
+&lt;div id="user-list"&gt;&lt;/div&gt;</pre>
+                                </div>
+
+                                <p><strong>Brilliant simplicity.</strong> The server returns HTML fragments, htmx swaps
+                                    them
+                                    into the DOM. No JavaScript to write. No state to manage.</p>
+
+                                <h3>🌿 Unpoly</h3>
+                                <p>Similar philosophy from the Ruby world. Progressive enhancement through unobtrusive
+                                    JavaScript. Layers, caching, and smart partial updates.</p>
+
+                                <h3>🔥 Hotwire (Turbo + Stimulus)</h3>
+                                <p>Basecamp (37Signals) built Hotwire for Ruby on Rails. Turbo handles page updates and
+                                    form
+                                    submissions. Stimulus adds sprinkles of JavaScript for interactivity.</p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- Turbo Frame: Partial page update --&gt;
+&lt;turbo-frame id="messages"&gt;
+  &lt;a href="/messages/123"&gt;View Message&lt;/a&gt;
+&lt;/turbo-frame&gt;
+
+&lt;!-- Stimulus: Minimal JS for interactions --&gt;
+&lt;div data-controller="toggle"&gt;
+  &lt;button data-action="toggle#toggle"&gt;Toggle&lt;/button&gt;
+  &lt;div data-toggle-target="content"&gt;Hidden content&lt;/div&gt;
+&lt;/div&gt;</pre>
+                                </div>
+
+                                <h4>⚠️ Hotwire's Hidden Complexity</h4>
+                                <p>While Hotwire promises "HTML over the wire", it comes with significant caveats:</p>
+
+                                <ul>
+                                    <li><strong>Stimulus is verbose:</strong> For a simple toggle, you need a separate
+                                        JavaScript controller file, proper naming conventions, and target declarations
+                                    </li>
+                                    <li><strong>Custom elements required:</strong> <code>&lt;turbo-frame&gt;</code> and
+                                        <code>&lt;turbo-stream&gt;</code> are non-standard elements that require the
+                                        full
+                                        Turbo library
+                                    </li>
+                                    <li><strong>Rails-centric:</strong> While technically framework-agnostic, Hotwire's
+                                        conventions and tooling assume Rails. Using it with Node.js or Go requires
+                                        significant adaptation</li>
+                                    <li><strong>Primitive local state:</strong> Stimulus controllers are JavaScript
+                                        classes
+                                        — you're back to writing imperative code for any local behavior</li>
+                                </ul>
+
+                                <div class="code-block">
+                                    <pre>
+// Stimulus controller for a SIMPLE toggle
+// File: controllers/toggle_controller.js
+
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["content"]
+  
+  toggle() {
+    this.contentTarget.classList.toggle("hidden")
+  }
+}
+
+// Compare to SURF: 
+// &lt;button d-signal="click: open = !open"&gt;Toggle&lt;/button&gt;
+// &lt;div d-show="open"&gt;Content&lt;/div&gt;
+// Zero JavaScript files.</pre>
+                                </div>
+
+                                <p>Hotwire tries to handle client state with Stimulus, but the developer experience
+                                    feels
+                                    primitive compared to modern declarative approaches. You're essentially writing
+                                    jQuery-era JavaScript with better organization.</p>
+
+                                <h3>🏔️ Alpine.js: Client-Side Simplicity</h3>
+                                <p>Alpine.js took a different approach. Instead of focusing on server communication, it
+                                    aimed to be "Tailwind for JavaScript" — a utility-first, declarative way to add
+                                    interactivity.</p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- Alpine.js: Declarative local state --&gt;
+&lt;div x-data="{ open: false, count: 0 }"&gt;
+  &lt;button @click="open = !open"&gt;Toggle&lt;/button&gt;
+  &lt;div x-show="open"&gt;Dropdown content&lt;/div&gt;
+  
+  &lt;button @click="count++"&gt;Count: &lt;span x-text="count"&gt;&lt;/span&gt;&lt;/button&gt;
+&lt;/div&gt;</pre>
+                                </div>
+
+                                <p><strong>Alpine got client-side reactivity right.</strong> It's lightweight (~17KB),
+                                    declarative, and requires no build step. The <code>x-data</code>,
+                                    <code>x-show</code>,
+                                    <code>x-text</code> pattern is elegant and intuitive.
+                                </p>
+
+                                <h4>Alpine's Missing Piece</h4>
+                                <p>But Alpine is <em>purely client-side</em>. It has no opinion about server
+                                    communication:
+                                </p>
+
+                                <ul>
+                                    <li>❌ <strong>No server integration:</strong> You need fetch/axios for any server
+                                        interaction</li>
+                                    <li>❌ <strong>No partial updates:</strong> Can't easily swap HTML from server
+                                        responses
+                                    </li>
+                                    <li>❌ <strong>State doesn't survive page changes:</strong> Navigate away, lose
+                                        everything</li>
+                                    <li>❌ <strong>Often paired with htmx:</strong> But they're two separate mental
+                                        models to
+                                        juggle</li>
+                                </ul>
+
+                                <div class="highlight-box warning">
+                                    <strong>The htmx + Alpine Pattern:</strong> Many developers combine htmx (for server
+                                    updates) with Alpine (for local state). But this means learning two libraries,
+                                    managing
+                                    their interactions, and hoping they don't conflict when the DOM mutates.
+                                </div>
+
+                                <h3>What They Got Right</h3>
+                                <ul>
+                                    <li>✅ Server is source of truth (htmx, Unpoly, Hotwire)</li>
+                                    <li>✅ Declarative local state (Alpine)</li>
+                                    <li>✅ No client-side state management</li>
+                                    <li>✅ Minimal JavaScript footprint (~15KB each)</li>
+                                    <li>✅ Progressive enhancement friendly</li>
+                                    <li>✅ SEO perfect by default</li>
+                                </ul>
+
+                                <h3>What's Still Missing?</h3>
+                                <ul>
+                                    <li>❌ <strong>Unified model:</strong> htmx + Alpine = two libraries, two mental
+                                        models
+                                    </li>
+                                    <li>❌ <strong>State survival:</strong> When htmx swaps HTML, Alpine state is
+                                        destroyed
+                                    </li>
+                                    <li>❌ <strong>Hotwire's verbosity:</strong> Stimulus requires separate JS files for
+                                        simple interactions</li>
+                                    <li>❌ <strong>Form preservation:</strong> User's partially filled form — gone after
+                                        a
+                                        partial swap</li>
+                                </ul>
+
+                                <div class="highlight-box">
+                                    <strong>The core problem:</strong> These tools are fragments of a complete solution.
+                                    htmx handles server-to-client. Alpine handles client-only. Hotwire tries to do both
+                                    but
+                                    with 2010-era JavaScript ergonomics. <em>None of them elegantly handle the case
+                                        where
+                                        server updates should preserve client state.</em>
+                                </div>
+                            </section>
+
+                            <section id="surf-difference">
+                                <h2>6. What Makes SURF Different?</h2>
+
+                                <p>SURF takes the best of both worlds: <strong>server-driven HTML updates + client-side
+                                        local state</strong>.</p>
+
+                                <div class="surf-mental-model">
+                                    <div class="mental-model-card">
+                                        <h4>🌊 Surface</h4>
+                                        <p>A region that <strong>changes</strong> based on server responses. Like
+                                            htmx/Turbo
+                                            targets.</p>
+                                    </div>
+                                    <div class="mental-model-card">
+                                        <h4>🧫 Cell</h4>
+                                        <p>A local state container that <strong>survives</strong> Surface updates. The
+                                            missing piece.</p>
+                                    </div>
+                                </div>
+
+                                <div class="quote-card surf">
+                                    <blockquote>"Surface changes, Cell lives."</blockquote>
+                                    <cite>— The SURF Mental Model</cite>
+                                </div>
+
+                                <h3>The Echo Rule</h3>
+                                <p>When a Surface is patched with new HTML from the server, SURF automatically preserves
+                                    the
+                                    state of any Cells inside. This is the <strong>Echo</strong> — state echoes through
+                                    updates.</p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- A Cell with local state --&gt;
+&lt;div d-cell="{ count: 0, open: false }"&gt;
+  &lt;button d-signal="click: count = count + 1"&gt;
+    Clicked: &lt;span d-text="count"&gt;0&lt;/span&gt; times
+  &lt;/button&gt;
+  
+  &lt;div d-show="open"&gt;
+    Dropdown content (survives server updates!)
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- If the parent Surface is refreshed with new server HTML,
+     the count stays at 5, 10, or wherever the user left it --&gt;</pre>
+                                </div>
+
+                                <h3>Signals: Declarative Local Behavior</h3>
+                                <p>No JavaScript files. No event handlers to manage. Just declare what happens:</p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- Toggle --&gt;
+&lt;button d-signal="click: open = !open"&gt;Toggle&lt;/button&gt;
+
+&lt;!-- Counter with limits --&gt;
+&lt;button d-signal="click: count = Math.max(count - 1, 0)"&gt;-&lt;/button&gt;
+&lt;button d-signal="click: count = Math.min(count + 1, 10)"&gt;+&lt;/button&gt;
+
+&lt;!-- Form reset after submission --&gt;
+&lt;form d-pulse="commit" d-signal="submit: reset"&gt;
+  &lt;input name="message"&gt;
+  &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</pre>
+                                </div>
+
+                                <h3>Pulse: Server Interaction Made Simple</h3>
+                                <p>Navigate, submit forms, refresh content — all with HTML attributes:</p>
+
+                                <div class="code-block">
+                                    <pre>
+&lt;!-- Navigation without reload --&gt;
+&lt;a href="/page/about" d-pulse="navigate" d-target="#main"&gt;
+  About
+&lt;/a&gt;
+
+&lt;!-- Form submission with patch response --&gt;
+&lt;form action="/api/save" d-pulse="commit" d-target="#result"&gt;
+  ...
+&lt;/form&gt;
+
+&lt;!-- Re-renders current page, updates #news-feed --&gt;
+&lt;button d-pulse="refresh" d-target="#news-feed"&gt;
+  🔄 Update News
+&lt;/button&gt;</pre>
+                                </div>
+
+                                <h3>Comparison Table</h3>
+                                <table class="comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Feature</th>
+                                            <th>React SPA</th>
+                                            <th>htmx</th>
+                                            <th>SURF</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Source of Truth</td>
+                                            <td>Client</td>
+                                            <td>Server</td>
+                                            <td>Server</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Local State</td>
+                                            <td>✅ Full</td>
+                                            <td>❌ None</td>
+                                            <td>✅ Cells</td>
+                                        </tr>
+                                        <tr>
+                                            <td>State Survival</td>
+                                            <td>✅ Always</td>
+                                            <td>❌ Lost on swap</td>
+                                            <td>✅ Echo Rule</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bundle Size</td>
+                                            <td>500KB - 2MB</td>
+                                            <td>~14KB</td>
+                                            <td>~12KB</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Build Step</td>
+                                            <td>Required</td>
+                                            <td>Optional</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                        <tr>
+                                            <td>SEO</td>
+                                            <td>Requires SSR</td>
+                                            <td>✅ Native</td>
+                                            <td>✅ Native</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Learning Curve</td>
+                                            <td>Steep</td>
+                                            <td>Gentle</td>
+                                            <td>Gentle</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h3>When to Use SURF</h3>
+                                <ul>
+                                    <li>✅ Traditional web apps with forms, navigation, lists</li>
+                                    <li>✅ Dashboards with interactive elements</li>
+                                    <li>✅ E-commerce with cart state + server catalog</li>
+                                    <li>✅ CMS/Admin panels</li>
+                                    <li>✅ Progressive enhancement of existing server apps</li>
+                                </ul>
+
+                                <h3>When NOT to Use SURF</h3>
+                                <ul>
+                                    <li>❌ Figma/design tools (need full client control)</li>
+                                    <li>❌ Real-time multiplayer games</li>
+                                    <li>❌ Offline-first apps</li>
+                                    <li>❌ Apps where server latency is unacceptable</li>
+                                </ul>
+                            </section>
+
+                            <section class="conclusion">
+                                <h2>Conclusion: The Pendulum Swings Back</h2>
+
+                                <p>Web development has completed a full cycle:</p>
+
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-year">2005</div>
+                                        <div class="timeline-content">Server-rendered HTML (simple but flickery)</div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-year">2013</div>
+                                        <div class="timeline-content">SPAs (smooth but complex)</div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-year">2018</div>
+                                        <div class="timeline-content">SSR + Hydration (best of both? Or worst?)</div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-year">2020</div>
+                                        <div class="timeline-content">HTML-over-the-wire (htmx, Hotwire)</div>
+                                    </div>
+                                    <div class="timeline-item active">
+                                        <div class="timeline-year">2026</div>
+                                        <div class="timeline-content">SURF: Server HTML + Local Cells</div>
+                                    </div>
+                                </div>
+
+                                <p>SURF isn't revolutionary — it's <em>evolutionary</em>. It takes the lessons of the
+                                    past
+                                    decade and synthesizes them into a coherent, simple model:</p>
+
+                                <ul>
+                                    <li><strong>Server handles data and business logic</strong> (like the old days)</li>
+                                    <li><strong>Client handles local interactions</strong> (like SPAs wanted)</li>
+                                    <li><strong>HTML is the transport layer</strong> (like htmx)</li>
+                                    <li><strong>State echoes through updates</strong> (what was missing)</li>
+                                </ul>
+
+                                <div class="quote-card surf final">
+                                    <blockquote>"We don't need to choose between server simplicity and client
+                                        interactivity.
+                                        We can have both."</blockquote>
+                                </div>
+                            </section>
+
+                            <section class="call-to-action" d-cell="{ joined: false }">
+                                <div d-show="!joined">
+                                    <h3>Ready to ride the wave?</h3>
+                                    <p>Start building with SURF today and experience the simplicity of server-driven
+                                        development with the power of local state.</p>
+                                    <button class="cta-btn" d-signal="click: joined = true">Join the Wave 🌊</button>
+                                </div>
+                                <div d-show="joined" style="display: none;" class="success-message">
+                                    <h3>Welcome aboard! 🏄‍♂️</h3>
+                                    <p>You're now part of the SURF community. Let's build something amazing together.
+                                    </p>
+                                    <a href="https://github.com/berkan-cetinkaya/surf" target="_blank"
+                                        class="github-link">
+                                        ⭐ Star on GitHub
+                                    </a>
+                                </div>
+                            </section>
+                        </article>
+                    </div>
+                </main>
+    </div>
+
+    <script src="/dist/surf.min.js"></script>
+</body>
+
+</html>

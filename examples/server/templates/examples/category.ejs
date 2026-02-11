@@ -1,38 +1,57 @@
-<h1 style="font-size: 2rem; margin-bottom: 0.5rem; color: #00d4ff;">
-    <%= title %>
-</h1>
-<p style="color: #888; margin-bottom: 2rem;">
-    <%= examples.length %> example<%= examples.length !==1 ? 's' : '' %> in this category
-</p>
+<!DOCTYPE html>
+<html lang="en">
 
-<% if (examples.length===0) { %>
-    <div
-        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2rem; text-align: center;">
-        <p style="color: #666; font-size: 1.1rem;">🚧 Examples coming soon...</p>
-        <p style="color: #555; font-size: 0.9rem; margin-top: 0.5rem;">This category is under development.</p>
+<head>
+    <title>
+        <%= title %> - SURF Examples
+    </title>
+    <%- include('../partials/head') %>
+</head>
+
+<body>
+    <div class="app-layout">
+        <%- include('../partials/header', { breadcrumbs: [{ label: 'Examples' , href: '/examples' }, { label: title }]
+            }) %>
+
+            <%- include('../partials/sidebar', { activeCategory: activeCategory, activeExample: null }) %>
+
+                <main class="app-main">
+                    <h2 style="font-size: 1.4rem; margin-bottom: 0.3rem; color: var(--accent-cyan);">
+                        <%= title %>
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <%= examples.length %> example<%= examples.length !==1 ? 's' : '' %> in this category
+                    </p>
+
+                    <% if (examples.length===0) { %>
+                        <div class="empty-state">
+                            <p>🚧 Examples coming soon...</p>
+                            <p>This category is under development.</p>
+                        </div>
+                        <% } else { %>
+                            <div class="example-list">
+                                <% examples.forEach(example=> { %>
+                                    <a href="/examples/<%= activeCategory %>/<%= example.id %>"
+                                        class="example-item-link">
+                                        <div class="example-item">
+                                            <div class="example-item-number">
+                                                <%= example.id.split('-')[0] %>
+                                            </div>
+                                            <div>
+                                                <div class="example-item-title">
+                                                    <%= example.title %>
+                                                </div>
+                                                <code class="example-item-id"><%= example.id %></code>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <% }) %>
+                            </div>
+                            <% } %>
+                </main>
     </div>
-    <% } else { %>
-        <div style="display: grid; gap: 1rem;">
-            <% examples.forEach(example=> { %>
-                <a href="/examples/<%= activeCategory %>/<%= example.id %>" style="text-decoration: none;">
-                    <div
-                        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: all 0.2s;">
-                        <div
-                            style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #00d4ff); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                            <%= example.id.split('-')[0] %>
-                        </div>
-                        <div>
-                            <h3 style="color: #eee; font-size: 1rem; margin-bottom: 0.25rem;">
-                                <%= example.title %>
-                            </h3>
-                            <code style="color: #666; font-size: 0.8rem;"><%= example.id %></code>
-                        </div>
-                    </div>
-                </a>
-                <% }) %>
-        </div>
-        <% } %>
 
-            <p style="margin-top: 2rem;">
-                <a href="/examples" style="color: #00d4ff; text-decoration: none;">← Back to all categories</a>
-            </p>
+    <script src="/dist/surf.min.js"></script>
+</body>
+
+</html>

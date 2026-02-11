@@ -1,66 +1,83 @@
 <aside class="app-sidebar">
     <div class="sidebar-section">
+        <h3>Showcase</h3>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="/examples/kanban" d-pulse="navigate"
+                    class="<%= locals.activeCategory === 'kanban' ? 'active' : '' %>">
+                    <span class="category-icon">📋</span>
+                    Kanban Board
+                    <span class="count" style="background: var(--accent-purple); color: white;">NEW</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar-section">
         <h3>Categories</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/examples/01-interaction"
+                <a href="/examples/01-interaction" d-pulse="navigate"
                     class="<%= locals.activeCategory === '01-interaction' ? 'active' : '' %>">
                     <span class="category-icon">🧱</span>
                     I. Interaction
-                    <span class="example-count">15</span>
+                    <span class="example-count">3</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/02-server-data"
+                <a href="/examples/02-server-data" d-pulse="navigate"
                     class="<%= locals.activeCategory === '02-server-data' ? 'active' : '' %>">
                     <span class="category-icon">📡</span>
                     II. Server Data
-                    <span class="example-count">15</span>
+                    <span class="example-count">1</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/03-navigation"
+                <a href="/examples/03-navigation" d-pulse="navigate"
                     class="<%= locals.activeCategory === '03-navigation' ? 'active' : '' %>">
                     <span class="category-icon">🧭</span>
                     III. Navigation
-                    <span class="example-count">15</span>
+                    <span class="example-count">2</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/04-forms" class="<%= locals.activeCategory === '04-forms' ? 'active' : '' %>">
+                <a href="/examples/04-forms" d-pulse="navigate"
+                    class="<%= locals.activeCategory === '04-forms' ? 'active' : '' %>">
                     <span class="category-icon">📝</span>
                     IV. Forms
-                    <span class="example-count">15</span>
+                    <span class="example-count">1</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/05-state-survival"
+                <a href="/examples/05-state-survival" d-pulse="navigate"
                     class="<%= locals.activeCategory === '05-state-survival' ? 'active' : '' %>">
                     <span class="category-icon">💾</span>
                     V. State Survival
-                    <span class="example-count">10</span>
+                    <span class="example-count">1</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/06-layout" class="<%= locals.activeCategory === '06-layout' ? 'active' : '' %>">
+                <a href="/examples/06-layout" d-pulse="navigate"
+                    class="<%= locals.activeCategory === '06-layout' ? 'active' : '' %>">
                     <span class="category-icon">🖼️</span>
                     VI. Layout
-                    <span class="example-count">10</span>
+                    <span class="example-count">1</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/07-failure" class="<%= locals.activeCategory === '07-failure' ? 'active' : '' %>">
+                <a href="/examples/07-failure" d-pulse="navigate"
+                    class="<%= locals.activeCategory === '07-failure' ? 'active' : '' %>">
                     <span class="category-icon">⚠️</span>
                     VII. Failure
-                    <span class="example-count">10</span>
+                    <span class="example-count">0</span>
                 </a>
             </li>
             <li>
-                <a href="/examples/08-performance"
+                <a href="/examples/08-performance" d-pulse="navigate"
                     class="<%= locals.activeCategory === '08-performance' ? 'active' : '' %>">
                     <span class="category-icon">⚡</span>
                     VIII. Performance
-                    <span class="example-count">10</span>
+                    <span class="example-count">0</span>
                 </a>
             </li>
         </ul>
@@ -70,20 +87,25 @@
         <h3>Articles</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/page/why-surf" d-pulse="navigate" d-target="#main">
-                    <span class="category-icon">📖</span>
+                <a href="/articles/why-surf" d-pulse="navigate"
+                    class="<%= locals.activePost === 'why-surf' ? 'active' : '' %>">
+                    <span class="category-icon">🌊</span>
                     Why SURF?
                 </a>
             </li>
         </ul>
     </div>
 
-    <% if (locals.activeCategory) { %>
-        <div class="sidebar-section">
-            <h3>Examples</h3>
-            <ul class="sidebar-nav" id="example-list">
-                <!-- Dynamically populated based on category -->
-            </ul>
-        </div>
-        <% } %>
+    <div class="sidebar-section">
+        <h3>Project</h3>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="/roadmap" d-pulse="navigate"
+                    class="<%= locals.activeCategory === 'roadmap' ? 'active' : '' %>">
+                    <span class="category-icon">🗺️</span>
+                    Roadmap
+                </a>
+            </li>
+        </ul>
+    </div>
 </aside>

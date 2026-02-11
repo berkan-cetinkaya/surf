@@ -1,0 +1,12 @@
+[
+    {
+        "slug": "why-surf",
+        "title": "Why SURF? A Journey Through Web Development History",
+        "description": "From PHP spaghetti to SPA chaos, and back to sanity. A deep dive into why server-driven UI with local state is the future.",
+        "category": "Deep Dive",
+        "date": "February 9, 2026",
+        "readTime": "15 min read",
+        "icon": "🌊",
+        "heroImage": "/brand/why_surf_hero.png"
+    }
+]

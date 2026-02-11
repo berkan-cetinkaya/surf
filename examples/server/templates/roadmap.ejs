@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Surf Roadmap</title>
+    <%- include('partials/head') %>
+</head>
+
+<body>
+    <div class="app-layout">
+        <%- include('partials/header', { breadcrumbs: [{ label: 'Roadmap' }] }) %>
+            <%- include('partials/sidebar', { activeCategory: 'roadmap' , activeExample: null }) %>
+
+                <main class="app-main">
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Project Roadmap</h2>
+                        <p style="color: var(--text-secondary);">Core framework development plan and status.</p>
+                    </div>
+
+                    <div class="roadmap-grid">
+                        <% sections.forEach(section=> { %>
+                            <div class="roadmap-column">
+                                <h3 class="column-header">
+                                    <%= section.title %>
+                                        <span class="count">
+                                            <%= section.items.length %>
+                                        </span>
+                                </h3>
+                                <ul class="task-list">
+                                    <% section.items.forEach(item=> { %>
+                                        <li class="task-item <%= item.done ? 'done' : '' %>">
+                                            <span class="status-icon">
+                                                <%= item.done ? '✓' : '•' %>
+                                            </span>
+                                            <span class="task-text">
+                                                <%= item.text %>
+                                            </span>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                            </div>
+                            <% }) %>
+                    </div>
+
+                    <div style="margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.8rem;">
+                        Managed via <code>ROADMAP.md</code> in repository root.
+                    </div>
+                </main>
+    </div>
+
+    <style>
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .roadmap-column {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            height: 100%;
+        }
+
+        .column-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-header .count {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 8px;
+            color: var(--text-muted);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-color);
+        }
+
+        .task-item.done {
+            opacity: 0.5;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+        }
+
+        .status-icon {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        .task-item.done .status-icon {
+            color: var(--accent-purple);
+        }
+
+        .task-text {
+            line-height: 1.4;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <script src="/dist/surf.min.js"></script>
+</body>
+
+</html>

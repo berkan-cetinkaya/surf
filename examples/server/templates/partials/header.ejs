@@ -1,17 +1,21 @@
 <header class="app-header">
-    <h1>SURF</h1>
-    <% if (locals.breadcrumb) { %>
-        <nav class="breadcrumb">
-            <a href="/examples">Examples</a>
-            <% breadcrumb.forEach((item, i)=> { %>
-                / <% if (item.href) { %><a href="<%= item.href %>">
-                        <%= item.label %>
-                    </a>
-                    <% } else { %><span>
-                            <%= item.label %>
-                        </span>
-                        <% } %>
-                            <% }) %>
-        </nav>
-        <% } %>
+    <h1><a href="/" d-pulse="navigate"><img src="/brand/surf-logo.png" alt="SURF" class="app-logo" height="40"
+                width="40" style="height: 40px; width: 40px;"><span class="app-title">Surf</span> <span
+                class="beta-badge">Beta</span> <span class="version-tag">v0.1.2</span></a></h1>
+    <nav class="breadcrumb">
+        <% if (locals.breadcrumbs) { %>
+            <% breadcrumbs.forEach((crumb, index)=> { %>
+                <% if (index> 0) { %> / <% } %>
+                        <% if (crumb.href) { %>
+                            <a href="<%= crumb.href %>" d-pulse="navigate">
+                                <%= crumb.label %>
+                            </a>
+                            <% } else { %>
+                                <span>
+                                    <%= crumb.label %>
+                                </span>
+                                <% } %>
+                                    <% }); %>
+                                        <% } %>
+    </nav>
 </header>
