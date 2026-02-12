@@ -23,7 +23,6 @@ describe('Pulse Module', () => {
         it('should send GET request and update target', async () => {
             const surface = document.createElement('div');
             surface.id = 'main';
-            surface.setAttribute('d-surface', '');
             container.appendChild(surface);
 
             // Mock successful response
@@ -47,7 +46,6 @@ describe('Pulse Module', () => {
         it('should emit lifecycle events', async () => {
              const surface = document.createElement('div');
              surface.id = 'main';
-             surface.setAttribute('d-surface', '');
              container.appendChild(surface);
 
              global.fetch.mockResolvedValue({
@@ -102,7 +100,6 @@ describe('Pulse Module', () => {
             // Target specific surface
             const resultDiv = document.createElement('div');
             resultDiv.id = 'result';
-            resultDiv.setAttribute('d-surface', '');
             container.appendChild(resultDiv);
 
             await Pulse.commit(form, '#result');

@@ -21,28 +21,16 @@ describe('Surface Module', () => {
   describe('Selection', () => {
     beforeEach(() => {
       container.innerHTML = `
-        <div id="main" d-surface>Main Content</div>
-        <div id="sidebar" d-surface>Sidebar</div>
-        <div id="footer">Footer (Not Surface)</div>
+        <div id="main">Main Content</div>
+        <div id="sidebar">Sidebar</div>
+        <div id="footer">Footer</div>
       `;
     });
 
-    it('should find all surfaces', () => {
-      const surfaces = Surface.findAll();
-      // Note: findAll queries globally (document), so it should find ours + maybe others if leaked
-      // But we clean up document.body.
-      // Filter to our container to be safe or just check count if environment is clean
-      const ourSurfaces = Array.from(surfaces).filter(el => container.contains(el));
-      expect(ourSurfaces.length).toBe(2);
-    });
-
-    it('should find surface by ID', () => {
+    it('should find element by ID', () => {
       const main = Surface.getById('main');
       expect(main).toBeTruthy();
       expect(main.textContent).toBe('Main Content');
-
-      const footer = Surface.getById('footer');
-      expect(footer).toBeNull(); // Not a surface (missing attribute)
     });
     
     it('should handle # in ID', () => {
@@ -50,13 +38,15 @@ describe('Surface Module', () => {
       expect(main).toBeTruthy();
     });
 
-    it('should find surface by selector', () => {
+    it('should find element by selector', () => {
       const sidebar = Surface.getBySelector('#sidebar');
       expect(sidebar).toBeTruthy();
       expect(sidebar.textContent).toBe('Sidebar');
-      
-      const missing = Surface.getBySelector('#footer');
-      expect(missing).toBeNull(); // Not a surface
+    });
+
+    it('should return null for non-existent selector', () => {
+      const missing = Surface.getBySelector('#nonexistent');
+      expect(missing).toBeNull();
     });
   });
 
@@ -66,7 +56,6 @@ describe('Surface Module', () => {
     beforeEach(() => {
       surface = document.createElement('div');
       surface.id = 'content';
-      surface.setAttribute('d-surface', '');
       surface.innerHTML = '<p>Initial</p>';
       container.appendChild(surface);
     });
@@ -97,17 +86,7 @@ describe('Surface Module', () => {
     });
   });
 
-  describe('Initialization', () => {
-    it('should mark surfaces as ready', () => {
-      const el = document.createElement('div');
-      el.setAttribute('d-surface', '');
-      container.appendChild(el);
-      
-      Surface.init();
-      
-      expect(el.getAttribute('data-surf-ready')).toBe('true');
-    });
-  });
+
   describe('Smart Head Replacement', () => {
     describe('getSignature', () => {
       it('identifies TITLE tags', () => {

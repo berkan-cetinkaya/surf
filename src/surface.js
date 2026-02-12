@@ -1,49 +1,27 @@
 /**
  * Surface Module
  * 
- * A Surface is a DOM region that can be replaced by server responses.
- * Defined with: d-surface
+ * Handles DOM region replacement — replace, append, prepend.
+ * Used by Pulse to apply server responses to target elements.
  */
 
-const SURFACE_ATTR = 'd-surface';
-
 /**
- * Find all surface elements in the document
- * @returns {NodeListOf<Element>}
- */
-export function findAll() {
-  return document.querySelectorAll(`[${SURFACE_ATTR}]`);
-}
-
-/**
- * Get a surface element by its ID
- * @param {string} id - The surface ID (without #)
+ * Get an element by its ID
+ * @param {string} id - The element ID (without #)
  * @returns {Element|null}
  */
 export function getById(id) {
   const cleanId = id.startsWith('#') ? id.slice(1) : id;
-  const element = document.getElementById(cleanId);
-  
-  if (element && element.hasAttribute(SURFACE_ATTR)) {
-    return element;
-  }
-  
-  return null;
+  return document.getElementById(cleanId);
 }
 
 /**
- * Get a surface element by selector
+ * Get an element by CSS selector
  * @param {string} selector - CSS selector
  * @returns {Element|null}
  */
 export function getBySelector(selector) {
-  const element = document.querySelector(selector);
-  
-  if (element && element.hasAttribute(SURFACE_ATTR)) {
-    return element;
-  }
-  
-  return null;
+  return document.querySelector(selector);
 }
 
 /**
@@ -127,7 +105,7 @@ export function replace(selectorOrElement, html) {
   // Handle both selector strings and element references
   let surface;
   if (typeof selectorOrElement === 'string') {
-    surface = getBySelector(selectorOrElement) || document.querySelector(selectorOrElement);
+    surface = document.querySelector(selectorOrElement);
   } else {
     surface = selectorOrElement;
   }
@@ -198,7 +176,7 @@ export function prepend(selectorOrElement, html) {
 function inject(selectorOrElement, html, position) {
   let surface;
   if (typeof selectorOrElement === 'string') {
-    surface = getBySelector(selectorOrElement) || document.querySelector(selectorOrElement);
+    surface = document.querySelector(selectorOrElement);
   } else {
     surface = selectorOrElement;
   }
@@ -226,22 +204,10 @@ function inject(selectorOrElement, html, position) {
   return surface;
 }
 
-/**
- * Initialize surfaces - mark them as ready
- */
-export function init() {
-  const surfaces = findAll();
-  surfaces.forEach(surface => {
-    surface.setAttribute('data-surf-ready', 'true');
-  });
-}
-
 export default {
-  findAll,
   getById,
   getBySelector,
   replace,
   append,
-  prepend,
-  init
+  prepend
 };

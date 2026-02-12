@@ -92,9 +92,9 @@ const Surf = {
   applyPatch(patchHtml) {
     const patches = Patch.parse(patchHtml);
     patches.forEach(({ target, content }) => {
-      const surface = Surface.getBySelector(target) || document.querySelector(target);
+      const surface = document.querySelector(target);
       if (surface) {
-        Echo.withPreservation(surface, content, () => {
+        Echo.withPreservation(surface, () => {
           Surface.replace(target, content);
           // Re-initialize signals and cells on the updated surface
           Cell.initAll(surface);
@@ -124,11 +124,6 @@ const Surf = {
     }
     return this;
   },
-
-
-  
-
-  
   // Expose modules for advanced usage
   _modules: {
     Surface,
@@ -144,9 +139,6 @@ const Surf = {
  * Initialize SURF when the DOM is ready
  */
 function init() {
-  // Initialize surfaces
-  Surface.init();
-  
   // Initialize cells
   Cell.initAll();
   

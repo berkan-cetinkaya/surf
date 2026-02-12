@@ -75,7 +75,7 @@ export function off(event, callback) {
  */
 function applyPatches(patches) {
   patches.forEach(({ target, content }) => {
-    const surface = Surface.getBySelector(target) || document.querySelector(target);
+    const surface = document.querySelector(target);
     
     if (!surface) {
       console.warn(`[Surf] Target not found for patch: ${target}`);
@@ -120,7 +120,7 @@ async function sendPulse(url, options, targetSelector) {
     } else {
       // Treat as single surface replacement
       if (targetSelector) {
-        const surface = Surface.getBySelector(targetSelector) || document.querySelector(targetSelector);
+        const surface = document.querySelector(targetSelector);
         if (surface) {
           // Check for swap mode (inner, append, prepend) from options or element
           const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
@@ -212,7 +212,7 @@ export async function commit(form, targetSelector) {
 export async function refresh(targetSelector) {
   const url = window.location.href;
   const target = targetSelector || 'html';
-  const surface = Surface.getBySelector(target) || document.querySelector(target);
+  const surface = document.querySelector(target);
   const swap = surface?.getAttribute('d-swap'); // Refresh usually respects surface preference
   await sendPulse(url, { method: 'GET', swap }, target);
 }
