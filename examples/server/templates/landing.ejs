@@ -712,7 +712,7 @@
             color: var(--purple);
         }
 
-        /* Terminal-style Code Blocks */
+        /* Terminal & Tab-style Code Blocks */
         .code-block {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
@@ -723,33 +723,66 @@
         }
 
         .code-block-header {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.75rem 1rem;
+            background: #1a1c1e;
+            /* Darker, tab-bar style */
+            padding: 0;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
             border-bottom: 1px solid var(--border);
+            height: 40px;
+        }
+
+        .code-tabs {
+            display: flex;
+            height: 100%;
+            padding-left: 12px;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .code-tab {
+            background: #2d3035;
+            color: var(--fg);
+            padding: 0 16px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
             font-size: 0.75rem;
-            color: var(--muted);
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            position: relative;
         }
 
-        .code-block-header .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+        .code-tab.active {
+            background: #25282c;
+            border-color: rgba(0, 180, 216, 0.3);
+            z-index: 1;
         }
 
-        .code-block-header .dot.red {
-            background: #ff5f57;
+        .tab-logo {
+            width: 14px;
+            height: 14px;
+            opacity: 0.9;
         }
 
-        .code-block-header .dot.yellow {
-            background: #ffbd2e;
+        .tab-close {
+            font-size: 14px;
+            opacity: 0.5;
+            margin-left: 4px;
+            cursor: pointer;
         }
 
-        .code-block-header .dot.green {
-            background: #28c840;
+        .code-block-header .copy-btn {
+            margin-left: auto;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .code-block-header .copy-btn:hover {
+            opacity: 1;
         }
 
         .code-block-header .file-name {
@@ -840,10 +873,13 @@
 
                 <div class="code-block" d-cell="{ copied: false }">
                     <div class="code-block-header">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <span class="file-name">head</span>
+                        <div class="code-tabs">
+                            <div class="code-tab active">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                head
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
                         <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
                             d-signal="click: Clipboard.copy(event)">
                             <span d-show="!copied">Copy</span>
@@ -863,10 +899,13 @@
 
                     <div class="code-block" d-cell="{ copied: false }">
                         <div class="code-block-header">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                            <span class="file-name">index.html</span>
+                            <div class="code-tabs">
+                                <div class="code-tab active">
+                                    <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                    index.html
+                                    <span class="tab-close">×</span>
+                                </div>
+                            </div>
                             <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
                                 d-signal="click: Clipboard.copy(event)">
                                 <span d-show="!copied">Copy</span>
@@ -904,10 +943,14 @@
                     style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
                     <div class="code-block-header"
                         style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(167, 139, 250, 0.2);">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <span class="file-name" style="color: var(--purple)">Cell.html</span>
+                        <div class="code-tabs">
+                            <div class="code-tab active"
+                                style="color: var(--purple); border-color: rgba(167, 139, 250, 0.2);">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                Cell.html
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
                     </div>
                     <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">d-cell</span>=<span class="string">"count: 0"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span class="string">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span>
@@ -939,10 +982,14 @@
                     style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
                     <div class="code-block-header"
                         style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(0, 180, 216, 0.2);">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <span class="file-name" style="color: var(--cyan)">Surface.html</span>
+                        <div class="code-tabs">
+                            <div class="code-tab active"
+                                style="color: var(--cyan); border-color: rgba(0, 180, 216, 0.2);">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                Surface.html
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
                     </div>
                     <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"server-time"</span><span class="tag">&gt;</span>
   <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
