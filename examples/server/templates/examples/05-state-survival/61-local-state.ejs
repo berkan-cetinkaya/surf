@@ -271,7 +271,7 @@
             </div>
 
             <!-- Server-updated availability (auto-refreshes every 3 seconds) -->
-            <div id="availability-surface" d-surface d-auto-refresh="3000" d-auto-refresh-url="/api/seats">
+            <div id="availability-surface" d-auto-refresh="3000" d-auto-refresh-url="/api/seats">
                 <div class="availability">
                     <div>
                         <div class="availability-label">Available Seats</div>
@@ -287,7 +287,7 @@
         </div>
 
         <!-- User Selection Card (Cell state) -->
-        <div class="card selector-card" d-cell="{count: 1}" d-cell-id="booking">
+        <div class="card selector-card" d-cell="{count: 1}" d-id="booking">
             <div class="selector-label">How many seats?</div>
 
             <div class="seat-counter">
@@ -303,45 +303,17 @@
             <button class="book-btn" d-pulse="action" d-action="/api/book-seats">
                 🎟️ Book Now
             </button>
-        </div>
 
-        <!-- State Visualization (read-only, shares same cell) -->
-        <div class="state-display">
-            <div class="label">Current State:</div>
-            <div><span class="local">📱 Local (Cell):</span> <span id="debug-count">count: 1</span></div>
-            <div><span class="server">🌐 Server:</span> <span id="debug-available">available: --</span></div>
+            <!-- State Visualization (inside Cell — powered by d-text, zero JS) -->
+            <div class="state-display">
+                <div class="label">Current State:</div>
+                <div><span class="local">📱 Local (Cell):</span> count: <span d-text="count">1</span></div>
+                <div><span class="server">🌐 Server:</span> available: <span id="debug-available">--</span></div>
+            </div>
         </div>
     </div>
 
     <script src="/dist/surf.min.js"></script>
-    <script>
-        // Minimal JS: just update debug display when state changes
-        Surf.on('after:patch', () => {
-            const countEl = document.getElementById('seat-count');
-            if (countEl) {
-                document.getElementById('debug-available').textContent = 'available: ' + countEl.textContent;
-            }
-
-            const cell = document.querySelector('[d-cell-id="booking"]');
-            if (cell) {
-                const state = Surf.getState(cell) || { count: 1 };
-                document.getElementById('debug-count').textContent = 'count: ' + state.count;
-            }
-        });
-
-        // Also update on counter clicks
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.seat-counter button')) {
-                setTimeout(() => {
-                    const cell = document.querySelector('[d-cell-id="booking"]');
-                    if (cell) {
-                        const state = Surf.getState(cell) || { count: 1 };
-                        document.getElementById('debug-count').textContent = 'count: ' + state.count;
-                    }
-                }, 10);
-            }
-        });
-    </script>
 </body>
 
 </html>

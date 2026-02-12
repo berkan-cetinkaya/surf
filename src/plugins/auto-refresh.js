@@ -1,8 +1,8 @@
 /**
  * Auto Refresh Plugin
  * 
- * Adds polling capabilities to Surfaces.
- * Usage: <div d-surface d-auto-refresh="3000" d-auto-refresh-url="/api/data">
+ * Adds polling capabilities to elements.
+ * Usage: <div id="data" d-auto-refresh="3000" d-auto-refresh-url="/api/data">
  */
 
 import * as Surface from '../surface.js';
@@ -31,14 +31,14 @@ async function refreshSurface(surface, url) {
       patches.forEach(({ target, content }) => {
         const el = document.querySelector(target);
         if (el) {
-          Echo.withPreservation(el, content, () => {
+          Echo.withPreservation(el, () => {
             Surface.replace(el, content);
           });
         }
       });
     } else {
       // Apply directly to this surface
-      Echo.withPreservation(surface, html, () => {
+      Echo.withPreservation(surface, () => {
         Surface.replace(surface, html);
       });
     }

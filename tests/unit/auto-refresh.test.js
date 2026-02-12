@@ -23,7 +23,6 @@ describe('Auto-Refresh Plugin', () => {
     it('should set up polling for d-auto-refresh elements', () => {
         const url = '/api/poll';
         const el = document.createElement('div');
-        el.setAttribute('d-surface', '');
         el.setAttribute('d-auto-refresh', '1000');
         el.setAttribute('d-auto-refresh-url', url);
         container.appendChild(el);

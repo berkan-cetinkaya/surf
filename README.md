@@ -35,10 +35,10 @@ npm install surf-core
 
 ### Surface
 
-A Surface is a DOM region that can be replaced by server responses.
+Surface handles DOM replacement — any element targeted by `d-target` becomes a surface.
 
 ```html
-<main id="main" d-surface>
+<main id="main">
   <!-- Content that can be replaced -->
 </main>
 ```
@@ -48,7 +48,7 @@ A Surface is a DOM region that can be replaced by server responses.
 A Cell is a local, client-side state container. Cells survive Surface updates.
 
 ```html
-<div d-cell="{ count: 0 }">
+<div d-cell="{ count: 0 }" d-id="counter">
   <span d-text="count"></span>
   <button d-signal="click: count = count + 1">+</button>
 </div>
@@ -130,7 +130,7 @@ A Pulse triggers server interaction.
 Surfaces can automatically poll the server for updates.
 
 ```html
-<div d-surface d-auto-refresh="5000" d-auto-refresh-url="/api/news">
+<div d-auto-refresh="5000" d-auto-refresh-url="/api/news">
   <!-- Content updates every 5 seconds -->
 </div>
 ```
@@ -173,11 +173,11 @@ Surf.setState('#my-cell', { count: 5 });
 
 > "Surface changes, Cell lives."
 
-When a Surface is patched, Cell states are preserved. If a Cell with the same `id` or `d-cell-id` exists in the new content, its state is restored automatically.
+When a Surface is patched, Cell states are preserved. If a Cell with the same `d-id` exists in the new content, its state is restored automatically.
 
 ```html
 <!-- Before patch: count = 5 -->
-<div id="counter" d-cell="{ count: 0 }">
+<div d-cell="{ count: 0 }" d-id="counter">
   <span d-text="count">5</span>
 </div>
 

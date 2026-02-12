@@ -42,7 +42,6 @@ export function after(surface, snapshot) {
 /**
  * Perform a complete surface replacement with Echo preservation
  * @param {Element} surface - The surface element
- * @param {string} newContent - The new HTML content
  * @param {function} replaceFn - Function that performs the actual replacement
  */
 export function withPreservation(surface, replaceFn) {
