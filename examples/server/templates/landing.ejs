@@ -838,7 +838,7 @@
                 <span class="demo-badge server">Server</span>
             </div>
             <div class="demo-body">
-                <div class="server-demo-content" id="server-time" d-surface>
+                <div class="server-demo-content" id="server-time">
                     <div class="time-display">
                         <%= new Date().toLocaleTimeString('tr-TR') %>
                     </div>
@@ -850,8 +850,7 @@
             </div>
             <div class="demo-footer">
                 <div class="demo-code"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span
-                        class="val">"server-time"</span> <span class="attr">d-surface</span><span
-                        class="tag">&gt;</span>
+                        class="val">"server-time"</span><span class="tag">&gt;</span>
                     <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
                     <span class="tag">&lt;form</span> <span class="attr">action</span>=<span
                         class="val">"/api/time"</span>
@@ -884,10 +883,6 @@
                     Server-Driven</h4>
                 <div class="api-list" style="margin-bottom: 2rem;">
                     <div class="api-item">
-                        <code>d-surface</code>
-                        <span>Declares a re-renderable boundary</span>
-                    </div>
-                    <div class="api-item">
                         <code>d-swap</code>
                         <span>Controls update strategy (inner, append, prepend)</span>
                     </div>
@@ -912,6 +907,10 @@
                     <div class="api-item">
                         <code>d-cell</code>
                         <span>Creates local reactive state (can take initial value)</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-id</code>
+                        <span>Explicit identity for state preservation</span>
                     </div>
                     <div class="api-item">
                         <code>d-signal</code>
@@ -1017,7 +1016,7 @@
                 <h3>Server-Driven</h3>
                 <p>
                     HTML is your data. Server renders, client displays.
-                    Partial updates via <code>d-surface</code> no JSON,
+                    Partial updates via <code>d-target</code> — no JSON,
                     no state management, no build step.
                 </p>
             </div>

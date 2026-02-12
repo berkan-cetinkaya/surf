@@ -8,6 +8,7 @@
 - [ ] Separate plugin system from core
 - [ ] Separate examples from core
 - [ ] Publish v1.0.0 to npm
+- [ ] Visual Debugger / DevTools plugin — overlay showing Cell state, Surface boundaries, Signal bindings in real-time
 
 ## To Do
 - [ ] Add detailed descriptions to all interaction examples
