@@ -8,6 +8,7 @@
  * <input d-input="/search" d-debounce="300" d-target="#results" name="q">
  */
 export default {
+    name: 'SurfDebounce',
     install(Surf) {
         const timers = new WeakMap();
 

@@ -114,6 +114,11 @@ const Surf = {
   },
 
   /**
+   * List of installed plugins
+   */
+  plugins: [],
+
+  /**
    * Install a plugin
    * @param {Object} plugin - Plugin object with install method
    * @param {Object} options - Plugin options
@@ -121,6 +126,11 @@ const Surf = {
   use(plugin, options = {}) {
     if (plugin && typeof plugin.install === 'function') {
       plugin.install(this, options);
+      this.plugins.push({
+        name: plugin.name || 'Anonymous',
+        plugin,
+        options
+      });
     }
     return this;
   },

@@ -10,7 +10,7 @@
 const FEEDBACK_DURATION = 2000;
 
 const Clipboard = {
-  name: 'Clipboard',
+  name: 'SurfClipboard',
   
   install(Surf, options = {}) {
     let duration = options.timeout;

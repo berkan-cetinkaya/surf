@@ -8,7 +8,7 @@
  * </div>
  */
 const DragAndDrop = {
-  name: 'drag-and-drop',
+  name: 'SurfDragAndDrop',
 
   install(Surf, options = {}) {
     let draggedItem = null;

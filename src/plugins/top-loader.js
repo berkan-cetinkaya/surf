@@ -10,6 +10,7 @@
  */
 
 const TopLoader = {
+    name: 'SurfTopLoader',
     // Config
     config: {
         showDelay: 120,      // ms to wait before showing (anti-flicker)
