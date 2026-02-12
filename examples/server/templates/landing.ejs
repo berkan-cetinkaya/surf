@@ -341,26 +341,6 @@
             border-top: 1px solid var(--border);
         }
 
-        .demo-code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--dim);
-            white-space: pre;
-            overflow-x: auto;
-        }
-
-        .demo-code .tag {
-            color: #f472b6;
-        }
-
-        .demo-code .attr {
-            color: #60a5fa;
-        }
-
-        .demo-code .val {
-            color: var(--cyan);
-        }
-
         /* Counter Demo */
         .counter-value {
             font-size: 4rem;
@@ -609,46 +589,32 @@
             color: var(--cyan);
         }
 
-        .modal-code-wrapper {
-            position: relative;
-            margin: 1rem 0;
-            background: var(--surface-2);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
+        .highlight-box .tag {
+            color: #f472b6;
         }
 
-        .modal-code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--fg);
-            word-break: break-all;
-            text-align: left;
-            flex: 1;
-            margin-right: 1rem;
+        .highlight-box .attr {
+            color: #60a5fa;
+        }
+
+        .highlight-box .val {
+            color: var(--cyan);
         }
 
         .copy-btn {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
             color: var(--muted);
+            padding: 0.3rem 0.6rem;
             border-radius: 6px;
-            padding: 0.4rem 0.6rem;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
 
         .copy-btn:hover {
-            border-color: var(--fg);
+            border-color: var(--cyan);
             color: var(--fg);
-            background: rgba(255, 255, 255, 0.05);
         }
 
         .copy-btn.copied {
@@ -716,6 +682,111 @@
         .modal-close:hover {
             background: var(--border);
         }
+
+        /* Highlight Boxes */
+        .highlight-box {
+            background: rgba(0, 180, 216, 0.08);
+            /* Derived from --cyan */
+            border-left: 3px solid var(--cyan);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--muted);
+            overflow-x: auto;
+        }
+
+        .highlight-box.purple {
+            background: rgba(167, 139, 250, 0.08);
+            /* Derived from --purple */
+            border-left-color: var(--purple);
+        }
+
+        .highlight-box strong {
+            color: var(--cyan);
+        }
+
+        .highlight-box.purple strong {
+            color: var(--purple);
+        }
+
+        /* Terminal-style Code Blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block-header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-family: monospace;
+        }
+
+        .code-block-header .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-block-header .dot.red {
+            background: #ff5f57;
+        }
+
+        .code-block-header .dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .code-block-header .dot.green {
+            background: #28c840;
+        }
+
+        .code-block-header .file-name {
+            margin-left: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .code-block-header .copy-btn {
+            margin-left: auto;
+        }
+
+        .code-block pre {
+            padding: 1.25rem;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #d1d5db;
+        }
+
+        .code-block .tag {
+            color: #f472b6;
+        }
+
+        .code-block .attr {
+            color: #60a5fa;
+        }
+
+        .code-block .string {
+            color: var(--cyan);
+        }
+
+        .code-block .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -727,7 +798,7 @@
             <span
                 style="font-size: 0.6rem; background: var(--purple); color: #282a36; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; vertical-align: middle; line-height: 1;">Beta</span>
             <span
-                style="font-size: 0.65rem; color: var(--muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.1.2</span>
+                style="font-size: 0.65rem; color: var(--muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.2.0</span>
         </a>
         <ul class="nav-links">
             <li><a href="/roadmap" d-pulse="navigate">Roadmap</a></li>
@@ -744,7 +815,7 @@
     <section class="hero" d-cell="{ modal: false }">
         <span class="badge">
             <span class="badge-dot"></span>
-            v0.1.0 — HTML-first framework
+            v0.2.0 — HTML-first framework
         </span>
 
         <h1><span class="highlight">Surface</span> changes,<br><span class="highlight">Cell</span> lives.</h1>
@@ -767,14 +838,19 @@
                 <h3>Install in seconds</h3>
                 <p>Add this script tag to your <code>&lt;head&gt;</code>:</p>
 
-                <div class="modal-code-wrapper" d-cell="{ copied: false }">
-                    <code
-                        class="modal-code">&lt;script src="https://unpkg.com/surf-core" defer&gt;&lt;/script&gt;</code>
-                    <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
-                        d-signal="click: Clipboard.copy(event)">
-                        <span d-show="!copied">Copy</span>
-                        <span d-show="copied" style="display: none;">Copied!</span>
-                    </button>
+                <div class="code-block" d-cell="{ copied: false }">
+                    <div class="code-block-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="file-name">head</span>
+                        <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
+                            d-signal="click: Clipboard.copy(event)">
+                            <span d-show="!copied">Copy</span>
+                            <span d-show="copied" style="display: none;">Copied!</span>
+                        </button>
+                    </div>
+                    <pre><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
                 </div>
 
                 <p class="modal-note">No build step required. Just HTML.</p>
@@ -784,18 +860,24 @@
                     <p class="modal-note" style="margin-bottom: 1rem;">Create an <code>index.html</code> file and paste
                         this:</p>
 
-                    <div class="modal-code-wrapper" d-cell="{ copied: false }">
-                        <code class="modal-code" style="white-space: pre-wrap;">&lt;!DOCTYPE html&gt;
+                    <div class="code-block" d-cell="{ copied: false }">
+                        <div class="code-block-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                            <span class="file-name">index.html</span>
+                            <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
+                                d-signal="click: Clipboard.copy(event)">
+                                <span d-show="!copied">Copy</span>
+                                <span d-show="copied" style="display: none;">Copied!</span>
+                            </button>
+                        </div>
+                        <pre style="text-align: left;">&lt;!DOCTYPE html&gt;
 &lt;script src="https://unpkg.com/surf-core" defer&gt;&lt;/script&gt;
 
 &lt;button d-cell="{ count: 0 }" d-signal="click: count++"&gt;
   Clicked &lt;span d-text="count"&gt;0&lt;/span&gt; times
-&lt;/button&gt;</code>
-                        <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
-                            d-signal="click: Clipboard.copy(event)">
-                            <span d-show="!copied">Copy</span>
-                            <span d-show="copied" style="display: none;">Copied!</span>
-                        </button>
+&lt;/button&gt;</pre>
                     </div>
                 </div>
 
@@ -819,14 +901,20 @@
                     <button class="counter-btn" d-signal="click: count = count + 1">+</button>
                 </div>
             </div>
-            <div class="demo-footer">
-                <div class="demo-code"><span class="tag">&lt;div</span> <span class="attr">d-cell</span>=<span
-                        class="val">"count: 0"</span><span class="tag">&gt;</span>
-                    <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span
-                        class="val">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span>
-                    <span class="tag">&lt;button</span> <span class="attr">d-signal</span>=<span class="val">"click:
-                        count = count + 1"</span><span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
-                    <span class="tag">&lt;/div&gt;</span>
+            <div class="demo-footer" style="padding: 0;">
+                <div class="code-block"
+                    style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
+                    <div class="code-block-header"
+                        style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(167, 139, 250, 0.2);">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="file-name" style="color: var(--purple)">Cell.html</span>
+                    </div>
+                    <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">d-cell</span>=<span class="string">"count: 0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span class="string">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">d-signal</span>=<span class="string">"click: count++"</span><span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
                 </div>
             </div>
         </div>
@@ -848,18 +936,20 @@
                     </form>
                 </div>
             </div>
-            <div class="demo-footer">
-                <div class="demo-code"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span
-                        class="val">"server-time"</span><span class="tag">&gt;</span>
-                    <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
-                    <span class="tag">&lt;form</span> <span class="attr">action</span>=<span
-                        class="val">"/api/time"</span>
-                    <span class="attr">d-pulse</span>=<span class="val">"commit"</span> <span
-                        class="attr">d-target</span>=<span class="val">"#server-time"</span><span
-                        class="tag">&gt;</span>
-                    <span class="tag">&lt;button&gt;</span>Refresh<span class="tag">&lt;/button&gt;</span>
-                    <span class="tag">&lt;/form&gt;</span>
-                    <span class="tag">&lt;/div&gt;</span>
+            <div class="demo-footer" style="padding: 0;">
+                <div class="code-block"
+                    style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
+                    <div class="code-block-header"
+                        style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(0, 180, 216, 0.2);">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="file-name" style="color: var(--cyan)">Surface.html</span>
+                    </div>
+                    <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"server-time"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
+  <span class="tag">&lt;form</span> <span class="attr">d-pulse</span>=<span class="string">"commit"</span> <span class="attr">d-target</span>=<span class="string">"#server-time"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/form&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
                 </div>
             </div>
         </div>
