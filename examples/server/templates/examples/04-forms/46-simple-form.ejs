@@ -175,14 +175,14 @@
         </div>
     </div>
 
-    <script src="/dist/surf.min.js"></script>
-    <script>
-        // Mock server response for demo purposes
-        Surf.on('before:pulse', (e) => {
-            console.log('[Demo] Form would be submitted to server');
-            console.log('[Demo] Server validates and returns HTML patch');
-        });
-    </script>
+    <%- include('../../partials/core-scripts') %>
+        <script>
+            // Mock server response for demo purposes
+            Surf.on('before:pulse', (e) => {
+                console.log('[Demo] Form would be submitted to server');
+                console.log('[Demo] Server validates and returns HTML patch');
+            });
+        </script>
 </body>
 
 </html>

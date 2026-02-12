@@ -231,14 +231,14 @@
         </div>
     </div>
 
-    <script src="/dist/surf.min.js"></script>
-    <script>
-        // Minimal JS: just update status on patch
-        Surf.on('after:patch', () => {
-            document.getElementById('status').textContent =
-                'Updated at ' + new Date().toLocaleTimeString();
-        });
-    </script>
+    <%- include('../../partials/core-scripts') %>
+        <script>
+            // Minimal JS: just update status on patch
+            Surf.on('after:patch', () => {
+                document.getElementById('status').textContent =
+                    'Updated at ' + new Date().toLocaleTimeString();
+            });
+        </script>
 </body>
 
 </html>
