@@ -7,6 +7,7 @@
     <title>
         <%= locals.title || 'SURF Examples' %>
     </title>
+    <link rel="icon" type="image/png" href="/brand/favicon.png">
     <style>
         * {
             box-sizing: border-box;
@@ -158,7 +159,7 @@
         }
 
         /* Example-specific styles can be added via <%- locals.extraStyles || '' %> */
-        <%=locals.extraStyles || '' %>
+        <%- locals.extraStyles || '' %>
     </style>
 </head>
 
