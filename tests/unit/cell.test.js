@@ -91,11 +91,11 @@ describe('Cell Module', () => {
   });
 
   describe('Echo Preservation', () => {
-    it('should preserve state by ID', () => {
+    it('should preserve state by d-id', () => {
         // 1. Init first element
         const el1 = document.createElement('div');
         el1.setAttribute('d-cell', 'count: 1');
-        el1.setAttribute('d-cell-id', 'test-cell');
+        el1.setAttribute('d-id', 'test-cell');
         container.appendChild(el1);
         
         Cell.init(el1);
@@ -108,12 +108,27 @@ describe('Cell Module', () => {
         
         const el2 = document.createElement('div');
         el2.setAttribute('d-cell', 'count: 1'); // Original seed
-        el2.setAttribute('d-cell-id', 'test-cell'); // Same ID
+        el2.setAttribute('d-id', 'test-cell'); // Same ID
         container.appendChild(el2);
         
         // 4. Init new element -> Should have Preserved State (99) not Seed (1)
         const state = Cell.init(el2);
         expect(state.count).toBe(99);
+    });
+
+    it('should warn when d-cell has no d-id', () => {
+        const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const el = document.createElement('div');
+        el.setAttribute('d-cell', 'count: 0');
+        container.appendChild(el);
+        
+        Cell.initAll(container);
+        
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringContaining('missing a "d-id"'),
+          el
+        );
+        spy.mockRestore();
     });
   });
 });

@@ -2,7 +2,7 @@
     <% tasks.forEach(task=> { %>
         <tr class="backlog-row" d-draggable="true"
             d-drag-data='{"taskId": "<%= task.id %>", "fromCol": "backlog", "fromSprintId": "<%= typeof sprintId !== "undefined" ? sprintId : "" %>"}'
-            d-cell="{ expanded: false }" d-cell-id="task-<%= task.id %>">
+            d-cell="{ expanded: false }" d-id="task-<%= task.id %>">
 
             <td class="col-priority">
                 <% if (task.urgent) { %>

@@ -5,7 +5,7 @@
   </div>
 
   <% if (hasBreaking) { %>
-    <article class="news-item breaking" d-cell="{read: false}" d-cell-id="news-breaking">
+    <article class="news-item breaking" d-cell="{read: false}" d-id="news-breaking">
       <div class="news-header">
         <span class="category breaking">BREAKING</span>
         <span class="time">just now</span>
@@ -18,7 +18,7 @@
     <% } %>
 
       <% items.forEach(function(item) { %>
-        <article class="news-item" d-cell="{read: false}" d-cell-id="news-<%= item.id %>">
+        <article class="news-item" d-cell="{read: false}" d-id="news-<%= item.id %>">
           <div class="news-header">
             <span class="category">
               <%= item.category %>

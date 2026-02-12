@@ -8,7 +8,7 @@
  */
 
 const CELL_ATTR = 'd-cell';
-const CELL_ID_ATTR = 'd-cell-id';
+const ID_ATTR = 'd-id';
 
 // WeakMap to store cell states without polluting DOM
 const cellStates = new WeakMap();
@@ -46,7 +46,7 @@ function parseSeed(seedExpr) {
  * @returns {string|null}
  */
 export function getCellId(element) {
-  return element.getAttribute(CELL_ID_ATTR) || element.id || null;
+  return element.getAttribute(ID_ATTR) || element.id || null;
 }
 
 /**
@@ -172,7 +172,16 @@ export function restore(snap) {
  */
 export function initAll(container = document) {
   const cells = findAll(container);
-  cells.forEach(cell => init(cell));
+  cells.forEach(cell => {
+    if (!cell.getAttribute(ID_ATTR) && !cell.id) {
+      console.warn(
+        '[Surf] Cell is missing a "d-id" attribute. ' +
+        'Add d-id="unique-name" for reliable state preservation.',
+        cell
+      );
+    }
+    init(cell);
+  });
 }
 
 /**
