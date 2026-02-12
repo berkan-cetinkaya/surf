@@ -40,7 +40,7 @@ export function getSignature(node) {
   if (node.tagName === 'LINK' && node.href) return `LINK:${node.getAttribute('href')}`;
   if (node.tagName === 'META' && node.getAttribute('name')) return `META:${node.getAttribute('name')}`;
   if (node.tagName === 'SCRIPT' && node.src) return `SCRIPT:${node.getAttribute('src')}`;
-  if (node.tagName === 'STYLE') return `STYLE:${node.textContent.trim().substring(0, 50)}`; 
+  if (node.tagName === 'STYLE') return `STYLE:${node.textContent.trim()}`; 
   return node.outerHTML; 
 }
 
@@ -96,6 +96,50 @@ export function smartReplaceHead(newHead) {
 }
 
 /**
+ * Activate scripts in a container by recreating them
+ * @param {Element} container 
+ */
+function activateScripts(container) {
+  const scripts = container.querySelectorAll('script');
+  
+  scripts.forEach(oldScript => {
+    const newScript = document.createElement('script');
+    
+    // Force sequential execution for scripts with src
+    if (oldScript.src) {
+        newScript.async = false;
+    }
+
+    Array.from(oldScript.attributes).forEach(attr => {
+      newScript.setAttribute(attr.name, attr.value);
+    });
+    
+    // Copy content
+    newScript.textContent = oldScript.textContent;
+    
+    // Replace old script with new one
+    oldScript.parentNode.replaceChild(newScript, oldScript);
+  });
+}
+
+/**
+ * Replace the entire document content (head and body)
+ * @param {string} html 
+ * @returns {Element}
+ */
+export function replaceDocument(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  
+  smartReplaceHead(document.adoptNode(doc.head));
+  
+  const newBody = document.adoptNode(doc.body);
+  activateScripts(newBody);
+  document.body.replaceWith(newBody);
+  
+  return document.documentElement;
+}
+
+/**
  * Replace surface content with new HTML
  * @param {string|Element} selectorOrElement - Target surface selector or element
  * @param {string} html - New HTML content
@@ -115,20 +159,9 @@ export function replace(selectorOrElement, html) {
     return null;
   }
 
-  // Special handling for full document replacement
+  // Full document replacement
   if (surface === document.documentElement) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    
-    // Replace head and body content
-    const newHead = document.adoptNode(doc.head);
-    const newBody = document.adoptNode(doc.body);
-    
-    smartReplaceHead(newHead);
-    
-    document.body.replaceWith(newBody);
-    
-    return surface;
+    return replaceDocument(html);
   }
   
   // Create a template to parse the HTML

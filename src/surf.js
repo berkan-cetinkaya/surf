@@ -18,13 +18,16 @@ import * as Echo from './echo.js';
 
 /**
  * Global Surf object - the public API
+ * Using a singleton pattern to handle state across full-page navigations
  */
-const Surf = {
-  /**
-   * Framework version
-   */
+let Surf = (typeof window !== 'undefined' && window.Surf) ? window.Surf : {
   version: '0.2.0',
-  
+  plugins: [],
+  _pulseBound: false
+};
+
+// Update/Attach core methods to the instance (allows hot-updates of framework code)
+Object.assign(Surf, {
   /**
    * Navigate to a URL
    * @param {string} url - The URL to navigate to
@@ -96,7 +99,6 @@ const Surf = {
       if (surface) {
         Echo.withPreservation(surface, () => {
           Surface.replace(target, content);
-          // Re-initialize signals and cells on the updated surface
           Cell.initAll(surface);
           Signal.initAll(surface);
         });
@@ -114,51 +116,51 @@ const Surf = {
   },
 
   /**
-   * List of installed plugins
-   */
-  plugins: [],
-
-  /**
    * Install a plugin
    * @param {Object} plugin - Plugin object with install method
    * @param {Object} options - Plugin options
    */
   use(plugin, options = {}) {
     if (plugin && typeof plugin.install === 'function') {
+      const name = plugin.name || 'Anonymous';
+      // Prevent duplicate installation
+      if (this.plugins.some(p => p.name === name)) {
+        return this;
+      }
+
       plugin.install(this, options);
-      this.plugins.push({
-        name: plugin.name || 'Anonymous',
-        plugin,
-        options
-      });
+      this.plugins.push({ name, plugin, options });
     }
     return this;
   },
-  // Expose modules for advanced usage
+
+
+  /**
+   * Core modules (exposed for plugins)
+   */
+  Surface, Cell, Signal, Pulse, Patch, Echo,
+
+  /**
+   * @deprecated Use Surf.Pulse, Surf.Surface, etc. directly
+   */
   _modules: {
-    Surface,
-    Cell,
-    Signal,
-    Pulse,
-    Patch,
-    Echo
+    Surface, Cell, Signal, Pulse, Patch, Echo
   }
-};
+});
 
 /**
  * Initialize SURF when the DOM is ready
  */
 function init() {
-  // Initialize cells
+  // Global listeners only added once
+  if (!Surf._pulseBound) {
+    Pulse.init();
+    Surf._pulseBound = true;
+  }
+  
+  // DOM-specific init always runs
   Cell.initAll();
-  
-  // Initialize signals (reactive bindings)
   Signal.initAll();
-  
-  // Initialize pulse (event interception)
-  Pulse.init();
-
-  // Register core modules for signals
   Signal.register('Pulse', Pulse);
   
   console.log(`[Surf] Initialized v${Surf.version}`);

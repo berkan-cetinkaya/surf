@@ -32,7 +32,7 @@ const listeners = {
  * @param {string} event 
  * @param {Object} detail 
  */
-function emit(event, detail) {
+export function emit(event, detail) {
   if (listeners[event]) {
     listeners[event].forEach(cb => {
       try {
@@ -381,6 +381,7 @@ export function submit(element) {
 export default {
   on,
   off,
+  emit,
   navigate,
   commit,
   refresh,
