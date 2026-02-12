@@ -179,6 +179,17 @@
     </div>
 
     <script src="/dist/surf.min.js"></script>
+    <script src="/dist/plugins/top-loader.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Surf && window.SurfTopLoader) {
+                Surf.use(SurfTopLoader, {
+                    color: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                    height: '3px'
+                });
+            }
+        });
+    </script>
     <%- locals.extraScripts || '' %>
 </body>
 

@@ -1204,10 +1204,17 @@
 
     <script src="/dist/surf.min.js"></script>
     <script src="/dist/plugins/clipboard.js"></script>
+    <script src="/dist/plugins/top-loader.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.Surf && window.SurfClipboard) {
-                Surf.use(SurfClipboard);
+            if (window.Surf) {
+                if (window.SurfClipboard) Surf.use(SurfClipboard);
+                if (window.SurfTopLoader) {
+                    Surf.use(SurfTopLoader, {
+                        color: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                        height: '3px'
+                    });
+                }
             }
         });
     </script>
