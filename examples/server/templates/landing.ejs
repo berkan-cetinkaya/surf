@@ -834,7 +834,7 @@
 
         <!-- Quick Start Modal -->
         <div class="modal-overlay" d-show="modal" d-signal="click: modal = false" style="display: none;">
-            <div class="modal" d-signal="click: $event.stopPropagation()">
+            <div class="modal" d-signal="click: event.stopPropagation()">
                 <h3>Install in seconds</h3>
                 <p>Add this script tag to your <code>&lt;head&gt;</code>:</p>
 
@@ -850,7 +850,8 @@
                             <span d-show="copied" style="display: none;">Copied!</span>
                         </button>
                     </div>
-                    <pre><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+                    <pre
+                        style="font-size: 0.8rem; padding: 1rem 1.25rem; background: rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; text-align: left;"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
                 </div>
 
                 <p class="modal-note">No build step required. Just HTML.</p>
@@ -872,12 +873,9 @@
                                 <span d-show="copied" style="display: none;">Copied!</span>
                             </button>
                         </div>
-                        <pre style="text-align: left;">&lt;!DOCTYPE html&gt;
-&lt;script src="https://unpkg.com/surf-core" defer&gt;&lt;/script&gt;
-
-&lt;button d-cell="{ count: 0 }" d-signal="click: count++"&gt;
-  Clicked &lt;span d-text="count"&gt;0&lt;/span&gt; times
-&lt;/button&gt;</pre>
+                        <pre style="text-align: left; padding: 1.25rem; font-size: 0.75rem;"><span class="tag">&lt;button</span> <span class="attr">d-cell</span>=<span class="string">"{ count: 0 }"</span> <span class="attr">d-signal</span>=<span class="string">"click: count++"</span><span class="tag">&gt;</span>
+  Clicked <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span class="string">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span> times
+<span class="tag">&lt;/button&gt;</span></pre>
                     </div>
                 </div>
 

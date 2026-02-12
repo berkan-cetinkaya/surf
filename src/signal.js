@@ -117,7 +117,7 @@ function executeAssignment(expr, state, event, element) {
   const trimmed = expr.trim();
   
   // Check for module method call: module.method() or module.method(args)
-  const methodMatch = trimmed.match(/^(\w+)\.(\w+)\((.*)\)$/);
+  const methodMatch = trimmed.match(/^([$\w]+)\.(\w+)\((.*)\)$/);
   if (methodMatch) {
     const [, moduleName, methodName, argsStr] = methodMatch;
     
@@ -136,6 +136,18 @@ function executeAssignment(expr, state, event, element) {
       } else {
          console.warn(`[Surf] Element does not have method: ${methodName}`, element);
          return {};
+      }
+    }
+
+    // Special handling for 'event' or '$event'
+    if (moduleName === 'event' || moduleName === '$event') {
+      if (event && typeof event[methodName] === 'function') {
+        const args = parseArguments(argsStr, state, event, element);
+        event[methodName](...args);
+        return {};
+      } else {
+        console.warn(`[Surf] Event does not have method: ${methodName}`, event);
+        return {};
       }
     }
 
