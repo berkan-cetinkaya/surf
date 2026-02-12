@@ -613,15 +613,23 @@
 
                                 <h3>Key Design Decisions</h3>
                                 <ul>
-                                    <li><strong>WeakMap:</strong> State is automatically cleaned up when the element is
-                                        removed from the DOM</li>
-                                    <li><strong>Dual storage:</strong> <code>cellStates</code> (element→state) and
-                                        <code>cellIdStates</code> (id→state) — the latter for Echo
+                                    <li><strong>Decentralized Storage:</strong> State is tied to the DOM element via
+                                        <strong>WeakMap</strong> instead of a central global object. When the element is
+                                        removed from the DOM, the state is automatically garbage collected.
                                     </li>
+                                    <li><strong>Encapsulation:</strong> Each Cell manages its own state by default. This
+                                        isolation keeps components predictable and side-effect free.</li>
+                                    <li><strong>Universal Access (Emergency Hatch):</strong> While Cells are isolated,
+                                        one can use the <code>Surf</code> API
+                                        (<code>getState</code>/<code>setState</code>) to interact between Cells if
+                                        needed. Note: Overuse of this may indicate a need for refactoring towards a more
+                                        server-driven approach.</li>
+                                    <li><strong>Dual Storage:</strong> Internal use of <code>cellStates</code>
+                                        (element→state) and <code>cellIdStates</code> (id→state) — the latter enables
+                                        state preservation via Echo.</li>
                                     <li><strong>Seed parsing:</strong> safe expression evaluation with
-                                        <code>new Function()</code></li>
-                                    <li><strong>Isolation:</strong> Each Cell manages its own state; there is no global
-                                        store</li>
+                                        <code>new Function()</code>
+                                    </li>
                                 </ul>
 
                                 <div class="highlight-box purple">
@@ -1007,7 +1015,8 @@ Surf.<span class="fn">use</span>(MyPlugin, { <span class="comment">/* options */
                                 </ul>
 
                                 <p>The power of plugins comes from being connected to Signal via
-                                    <code>Surf.register()</code>. This allows them to be called directly from HTML:</p>
+                                    <code>Surf.register()</code>. This allows them to be called directly from HTML:
+                                </p>
 
                                 <div class="code-block">
                                     <div class="code-block-header">
