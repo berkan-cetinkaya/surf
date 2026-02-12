@@ -8,5 +8,14 @@
         "readTime": "15 min read",
         "icon": "🌊",
         "heroImage": "/brand/why_surf_hero.png"
+    },
+    {
+        "slug": "surf-architecture",
+        "title": "Surf Architecture — The Complete Guide",
+        "description": "Deep dive into Surf's 6 core modules - Cell, Signal, Surface, Patch, Pulse, Echo - and the plugin system.",
+        "category": "Architecture",
+        "date": "February 11, 2026",
+        "readTime": "12 min read",
+        "icon": "🏗️"
     }
 ]
