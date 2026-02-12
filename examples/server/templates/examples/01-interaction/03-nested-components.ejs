@@ -162,7 +162,7 @@
       OUTER COMPONENT: Project Manager 
       State: { mode: 'view' }
     -->
-    <div class="card outer-card" d-cell="{ mode: 'view' }">
+    <div class="card outer-card" d-cell="{ mode: 'view' }" d-id="outer-card">
         <h2>📦 Project Manager (Outer Cell)</h2>
         <p>
             Current Mode: <span class="status-badge" d-text="mode"></span>
@@ -177,7 +177,7 @@
           INNER COMPONENT: Task Item 1
           State: { mode: 'pending' } -> Uses SAME variable name 'mode' to test isolation!
         -->
-        <div class="card inner-card" d-cell="{ mode: 'pending', title: 'Fix Bug #123' }">
+        <div class="card inner-card" d-cell="{ mode: 'pending', title: 'Fix Bug #123' }" d-id="inner-card-1">
             <h3>📄 Task Item 1 (Inner Cell)</h3>
 
             <p style="margin-bottom: 0.5rem">Task: <strong d-text="title" style="color: #fff"></strong></p>
@@ -202,7 +202,7 @@
           INNER COMPONENT: Task Item 2
           State: { mode: 'done' }
         -->
-        <div class="card inner-card" d-cell="{ mode: 'done', title: 'Write Documentation' }">
+        <div class="card inner-card" d-cell="{ mode: 'done', title: 'Write Documentation' }" d-id="inner-card-2">
             <h3>📄 Task Item 2 (Inner Cell)</h3>
             <p style="margin-bottom: 0.5rem">Task: <strong d-text="title" style="color: #fff"></strong></p>
             <p>

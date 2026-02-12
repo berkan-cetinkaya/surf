@@ -479,6 +479,7 @@
                 }
             }
         </style>
+        <%- include('../partials/core-scripts') %>
 </head>
 
 <body>
@@ -1169,7 +1170,7 @@ export default class extends Controller {
                                 </div>
                             </section>
 
-                            <section class="call-to-action" d-cell="{ joined: false }">
+                            <section class="call-to-action" d-cell="{ joined: false }" d-id="cta-join">
                                 <div d-show="!joined">
                                     <h3>Ready to ride the wave?</h3>
                                     <p>Start building with SURF today and experience the simplicity of server-driven

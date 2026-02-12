@@ -850,7 +850,7 @@
         </ul>
     </nav>
 
-    <section class="hero" d-cell="{ modal: false }">
+    <section class="hero" d-cell="{ modal: false }" d-id="hero-cell">
         <span class="badge">
             <span class="badge-dot"></span>
             v0.2.0 — HTML-first framework
@@ -866,7 +866,7 @@
         <div class="cta-group">
             <a href="/articles/why-surf" d-pulse="navigate" class="btn btn-secondary">Why SURF?</a>
             <button class="btn btn-primary" d-signal="click: modal = true">Quick Start ⚡</button>
-            <a href="/examples" class="btn btn-secondary">Explore Examples</a>
+            <a href="/examples" d-pulse="navigate" class="btn btn-secondary">Explore Examples</a>
             <a target="_blank" href="https://github.com/berkan-cetinkaya/surf" class="btn btn-secondary">GitHub →</a>
         </div>
 
@@ -876,7 +876,7 @@
                 <h3>Install in seconds</h3>
                 <p>Add this script tag to your <code>&lt;head&gt;</code>:</p>
 
-                <div class="code-block" d-cell="{ copied: false }">
+                <div class="code-block" d-cell="{ copied: false }" d-id="install-code">
                     <div class="code-block-header">
                         <div class="code-tabs">
                             <div class="code-tab active">
@@ -902,7 +902,7 @@
                     <p class="modal-note" style="margin-bottom: 1rem;">Create an <code>index.html</code> file and paste
                         this:</p>
 
-                    <div class="code-block" d-cell="{ copied: false }">
+                    <div class="code-block" d-cell="{ copied: false }" d-id="index-code">
                         <div class="code-block-header">
                             <div class="code-tabs">
                                 <div class="code-tab active">
@@ -936,7 +936,7 @@
                 <span class="demo-title"><span class="icon">🔋</span> Cell — Local State</span>
                 <span class="demo-badge client">Client</span>
             </div>
-            <div class="demo-body" d-cell="count: 0">
+            <div class="demo-body" d-cell="count: 0" d-id="demo-counter">
                 <div class="counter-value" d-text="count">0</div>
                 <div class="counter-buttons">
                     <button class="counter-btn" d-signal="click: count = count - 1">−</button>

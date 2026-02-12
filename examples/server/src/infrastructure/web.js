@@ -93,6 +93,24 @@ export async function createServer() {
         root: join(rootDir, 'examples', 'server') // templates are in examples/server/templates
     });
 
+    // Pre-load CSS for inlining (FOUC prevention)
+    const cssPath = join(rootDir, 'css', 'app.css');
+    let cssContent = '';
+    try {
+        cssContent = readFileSync(cssPath, 'utf-8');
+    } catch (e) {
+        console.error('Failed to load CSS for inlining:', e);
+    }
+
+    // Inject CSS into all views
+    fastify.addHook('preHandler', (req, reply, done) => {
+        reply.locals = { 
+            css: cssContent,
+            ...reply.locals 
+        };
+        done();
+    });
+
     // Routes
     
     // Landing Page (Homepage) - default version
@@ -216,7 +234,8 @@ export async function createServer() {
     fastify.get('/articles', async (req, reply) => {
         const html = await req.server.view('templates/articles/index.ejs', {
             title: 'Articles',
-            posts: ARTICLES
+            posts: ARTICLES,
+            ...reply.locals
         });
 
         return reply.type('text/html').send(html);
@@ -231,7 +250,8 @@ export async function createServer() {
         try {
             const html = await req.server.view(`templates/articles/${slug}.ejs`, {
                 ...post,
-                activePost: slug
+                activePost: slug,
+                ...reply.locals
             });
 
 

@@ -54,11 +54,22 @@ const TopLoader = {
     },
 
     /**
-     * Ensure DOM element exists
+     * Ensure DOM element exists and is attached
      */
     ensureDom() {
-        if (document.getElementById(this.config.className)) {
-            this.element = document.getElementById(this.config.className);
+        // If element exists but was removed from DOM (e.g. page navigation), re-attach it
+        if (this.element && !document.body.contains(this.element)) {
+            document.body.appendChild(this.element);
+            return;
+        }
+
+        // If element exists and is attached, nothing to do
+        if (this.element) return;
+
+        // Check if element already exists in DOM (from previous instance)
+        const existing = document.getElementById(this.config.className);
+        if (existing) {
+            this.element = existing;
             return;
         }
 
@@ -94,6 +105,7 @@ const TopLoader = {
             this.state.status = 'PENDING';
             this.state.progress = 0.08; // Start at 8% (psychological start)
             this.state.opacity = 0;
+            this.ensureDom(); // Ensure DOM is ready before rendering
             this.render();
 
             // Delay showing to prevent flicker on fast requests
@@ -113,6 +125,7 @@ const TopLoader = {
         this.state.status = 'VISIBLE';
         this.state.lastShow = Date.now();
         this.state.opacity = 1;
+        this.ensureDom(); // Ensure DOM is ready
         this.render();
         this.tick();
     },
@@ -121,7 +134,11 @@ const TopLoader = {
      * Request completed
      */
     done(force = false) {
-        if (!force && this.state.active > 0) {
+        // If called by an event listener, force will be the event detail object (truthy)
+        // We only want to treat it as true if explicitly passed as true
+        const isForce = force === true;
+
+        if (!isForce && this.state.active > 0) {
             this.state.active--;
         }
 
@@ -157,11 +174,18 @@ const TopLoader = {
         const shownTime = Date.now() - this.state.lastShow;
         const remainingTime = Math.max(0, this.config.minVisible - shownTime);
 
+        // Ensure DOM is ready for completion animation
+        this.ensureDom();
+
         setTimeout(() => {
+            if (this.state.status !== 'COMPLETING') return;
+            
             this.state.progress = 1;
             this.render();
 
             setTimeout(() => {
+                if (this.state.status !== 'COMPLETING') return;
+
                 this.state.status = 'FADING';
                 this.state.opacity = 0;
                 this.render();
