@@ -60,5 +60,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "dependencies": {
+    "go-like-ctx": "^0.1.1"
   }
 }

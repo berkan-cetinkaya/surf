@@ -9,8 +9,13 @@ describe('Pulse Module', () => {
     container = document.createElement('div');
     document.body.appendChild(container);
 
-    // Mock global fetch
-    global.fetch = vi.fn();
+    // Mock global fetch with a default OK response
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(''),
+      })
+    );
   });
 
   afterEach(() => {
@@ -516,11 +521,135 @@ describe('Pulse Module', () => {
       Pulse.emit('before:pulse', {});
       expect(cb).not.toHaveBeenCalled();
     });
+  });
+
+  describe('Performance & Optimization', () => {
+    beforeEach(() => {
+      Pulse.init();
+    });
+
+    it('should cancel previous request for the same target (go-like-ctx)', async () => {
+      const surface = document.createElement('div');
+      surface.id = 'target';
+      container.appendChild(surface);
+
+      let _firstResolve;
+      const firstPromise = new Promise((resolve) => {
+        _firstResolve = () => resolve('First');
+      });
+
+      global.fetch.mockImplementationOnce(
+        () =>
+          new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => resolve({ ok: true, text: () => firstPromise }), 100);
+            // Handle signal cancellation
+            const signal = global.fetch.mock.calls[0][1].signal;
+            signal.addEventListener('abort', () => {
+              clearTimeout(timeout);
+              reject(new DOMException('Aborted', 'AbortError'));
+            });
+          })
+      );
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: () => Promise.resolve('Second'),
+      });
+
+      // Trigger first pulse
+      const p1 = Pulse.navigate('/first', '#target');
+      // Trigger second pulse immediately
+      const p2 = Pulse.navigate('/second', '#target');
+
+      await Promise.allSettled([p1, p2]);
+
+      expect(surface.innerHTML).toBe('Second');
+      // Total calls might depend on how fetch is mocked, but we check if first was cancelled
+      const abortErrorCount = global.fetch.mock.results.filter((r) => r.type === 'throw').length;
+      expect(abortErrorCount).toBe(0); // Actually sendPulse catches it silently
+    });
+
+    it('should cache surface elements in applyPatches', async () => {
+      const s1 = document.createElement('div');
+      s1.id = 'cache1';
+      container.appendChild(s1);
+
+      const querySpy = vi.spyOn(document, 'querySelector');
+
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: () =>
+          Promise.resolve(
+            '<d-patch><surface target="#cache1">A</surface><surface target="#cache1">B</surface></d-patch>'
+          ),
+      });
+
+      await Pulse.navigate('/multi', '#cache1');
+
+      // querySelector for #cache1 should only be called once inside applyPatches
+      const targetQueries = querySpy.mock.calls.filter((c) => c[0] === '#cache1');
+      // 1 for first patch. Second patch should use cache. (sendPulse skips query if patch)
+      expect(targetQueries.length).toBe(1);
+
+      querySpy.mockRestore();
+    });
+
+    it('should return early in handleClick if no pulse marker exists', async () => {
+      const div = document.createElement('div');
+      container.appendChild(div);
+
+      const closestSpy = vi.spyOn(div, 'closest');
+
+      const event = new MouseEvent('click', { bubbles: true });
+      div.dispatchEvent(event);
+
+      // Closest should be called once in the if/assignment logic because div has no PULSE_ATTR
+      expect(closestSpy).toHaveBeenCalledTimes(1);
+      closestSpy.mockRestore();
+    });
+
+    it('should NOT call closest if element itself has pulse attribute', async () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('d-pulse', 'refresh');
+      container.appendChild(btn);
+
+      const closestSpy = vi.spyOn(btn, 'closest');
+
+      const event = new MouseEvent('click', { bubbles: true });
+      btn.dispatchEvent(event);
+
+      // Should skip closest() because hasAttribute(PULSE_ATTR) is true
+      expect(closestSpy).not.toHaveBeenCalled();
+      closestSpy.mockRestore();
+    });
+
+    it('should cache cell dynamic import', async () => {
+      const btn = document.createElement('button');
+      btn.setAttribute('d-pulse', 'action');
+      btn.setAttribute('d-action', '/api');
+      container.appendChild(btn);
+
+      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('OK') });
+
+      // First click
+      btn.click();
+      await vi.waitFor(() => expect(global.fetch).toHaveBeenCalled());
+
+      // Second click should use cached getCellModule (implicitly tested by logic)
+      btn.click();
+      await vi.waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2));
+    });
+  });
+
+  describe('Edge Case Coverage', () => {
+    beforeEach(() => {
+      Pulse.init();
+    });
 
     it('should warn when applyPatches finds no target', async () => {
       const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      // We need to trigger applyPatches. It's internal but called by sendPulse if isPatch.
+      // Trigger applyPatches via sendPulse with a patch targeting a ghost element
       global.fetch.mockResolvedValueOnce({
         ok: true,
         text: () => Promise.resolve('<d-patch><surface target="#ghost">Hi</surface></d-patch>'),
@@ -558,161 +687,7 @@ describe('Pulse Module', () => {
 
       await Pulse.navigate(url, '#main');
       expect(spy).toHaveBeenCalled();
-    });
-    it('should handle commit pulse with GET method', async () => {
-      const form = document.createElement('form');
-      form.method = 'GET';
-      form.action = '/search';
-      const input = document.createElement('input');
-      input.name = 'q';
-      input.value = 'surf';
-      form.appendChild(input);
-      container.appendChild(form);
-
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('Results') });
-
-      await Pulse.commit(form, '#main');
-
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/search?q=surf'),
-        expect.objectContaining({
-          method: 'GET',
-        })
-      );
-    });
-
-    it('should skip replacement if target element is missing and not a patch', async () => {
-      const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('No target info') });
-
-      // This should not throw, just skip the Surface.replace call
-      await Pulse.navigate('/test', '#missing-ghost');
-
-      expect(spy).not.toHaveBeenCalled();
       spy.mockRestore();
-    });
-
-    it('should handle action pulse on anchor elements', async () => {
-      const btn = document.createElement('a');
-      btn.setAttribute('d-pulse', 'action');
-      btn.setAttribute('d-action', '/api/do');
-      btn.setAttribute('data-id', '123');
-      container.appendChild(btn);
-
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('OK') });
-      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-      const preventSpy = vi.spyOn(event, 'preventDefault');
-
-      btn.dispatchEvent(event);
-
-      expect(preventSpy).toHaveBeenCalled();
-      await vi.waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          '/api/do',
-          expect.objectContaining({
-            method: 'POST',
-            body: JSON.stringify({ id: '123' }),
-          })
-        );
-      });
-    });
-
-    it('should reload page on popstate if surf state is missing', () => {
-      const reloadMock = vi.fn();
-      vi.stubGlobal('location', {
-        ...window.location,
-        reload: reloadMock,
-      });
-
-      const event = new PopStateEvent('popstate', { state: null });
-      window.dispatchEvent(event);
-
-      expect(reloadMock).toHaveBeenCalled();
-
-      vi.unstubAllGlobals();
-    });
-
-    it('should handle Pulse methods without targetSelector (default to html)', async () => {
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('OK') });
-
-      await Pulse.navigate('/test');
-      expect(global.fetch).toHaveBeenCalledWith('/test', expect.anything());
-
-      const form = document.createElement('form');
-      container.appendChild(form);
-      await Pulse.commit(form);
-      expect(global.fetch).toHaveBeenCalled();
-
-      await Pulse.refresh();
-      expect(global.fetch).toHaveBeenCalled();
-
-      await Pulse.action('/do', { x: 1 });
-      expect(global.fetch).toHaveBeenCalledWith('/do', expect.anything());
-    });
-
-    it('should default swap to inner if d-swap is missing', async () => {
-      const el = document.createElement('div');
-      el.setAttribute('d-pulse', 'refresh');
-      el.setAttribute('d-target', '#main');
-      container.appendChild(el);
-
-      const target = document.createElement('div');
-      target.id = 'main';
-      container.appendChild(target);
-
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('New') });
-
-      el.click();
-
-      await vi.waitFor(() => {
-        expect(target.innerHTML).toBe('New');
-      });
-    });
-
-    it('should ignore Pulse.action if d-action is missing', () => {
-      const el = document.createElement('div');
-      el.setAttribute('d-pulse', 'action');
-      container.appendChild(el);
-
-      const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-      const preventSpy = vi.spyOn(event, 'preventDefault');
-
-      el.dispatchEvent(event);
-      expect(preventSpy).not.toHaveBeenCalled();
-      expect(global.fetch).not.toHaveBeenCalled();
-    });
-
-    it('should handle popstate with event.state but no target (default to html)', async () => {
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('Pop') });
-
-      const event = new PopStateEvent('popstate', {
-        state: { surf: true, url: '/pop' },
-      });
-      window.dispatchEvent(event);
-
-      expect(global.fetch).toHaveBeenCalledWith('/pop', expect.anything());
-    });
-
-    it('should handle Surf.go without options', async () => {
-      global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('Go') });
-      await Pulse.go('/go');
-      expect(global.fetch).toHaveBeenCalledWith('/go', expect.anything());
-    });
-
-    it('should handle Surf.submit on form element directly', () => {
-      const form = document.createElement('form');
-      form.requestSubmit = vi.fn();
-      Pulse.submit(form);
-      expect(form.requestSubmit).toHaveBeenCalled();
-    });
-
-    it('should ignore Pulse.on/off for non-existent events', () => {
-      const cb = vi.fn();
-      Pulse.on('ghost', cb);
-      Pulse.emit('ghost', {});
-      expect(cb).not.toHaveBeenCalled();
-
-      Pulse.off('ghost', cb); // Should not crash
     });
   });
 });

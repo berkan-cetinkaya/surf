@@ -14,11 +14,11 @@
 ## To Do
 
 - [ ] Add detailed descriptions to all interaction examples
-- [ ] Improve unit test coverage for `surf-core`
 - [ ] Refactor `pulse.js` for better performance
 - [ ] Add more examples goal is to add 100 examples
 - [ ] Add more plugins goal is to add plugins to support most important functionality that modern web apps need
 
 ## Doing
 
-- [ ] Polish Landing Page copy and visuals
+- [x] Refactor `pulse.js` for better performance
+- [ ] Visual Debugger / DevTools plugin — overlay showing Cell state, Surface boundaries, Signal bindings in real-time

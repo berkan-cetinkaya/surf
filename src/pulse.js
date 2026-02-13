@@ -15,6 +15,7 @@
 import * as Surface from './surface.js';
 import * as Patch from './patch.js';
 import * as Echo from './echo.js';
+import { background } from 'go-like-ctx';
 
 const PULSE_ATTR = 'd-pulse';
 const TARGET_ATTR = 'd-target';
@@ -26,6 +27,19 @@ const listeners = {
   'after:patch': [],
   'error:network': [],
 };
+
+// Context management
+const rootCtx = background();
+const contexts = new Map();
+
+// Dynamic import cache
+let cellModule = null;
+async function getCellModule() {
+  if (!cellModule) {
+    cellModule = await import('./cell.js');
+  }
+  return cellModule;
+}
 
 /**
  * Emit an event to listeners
@@ -74,8 +88,14 @@ export function off(event, callback) {
  * @param {Array<{target: string, content: string}>} patches
  */
 function applyPatches(patches) {
+  const surfaceCache = new Map();
+
   patches.forEach(({ target, content }) => {
-    const surface = document.querySelector(target);
+    let surface = surfaceCache.get(target);
+    if (!surface) {
+      surface = document.querySelector(target);
+      if (surface) surfaceCache.set(target, surface);
+    }
 
     if (!surface) {
       console.warn(`[Surf] Target not found for patch: ${target}`);
@@ -83,7 +103,7 @@ function applyPatches(patches) {
     }
 
     Echo.withPreservation(surface, () => {
-      Surface.replace(target, content);
+      Surface.replace(surface, content);
     });
   });
 }
@@ -97,9 +117,18 @@ function applyPatches(patches) {
 async function sendPulse(url, options, targetSelector) {
   emit('before:pulse', { url, options, target: targetSelector });
 
+  // Cancel previous context for same target
+  if (targetSelector && contexts.has(targetSelector)) {
+    contexts.get(targetSelector).cancel();
+  }
+
+  const ctx = rootCtx.withCancel();
+  if (targetSelector) contexts.set(targetSelector, ctx);
+
   try {
     const response = await fetch(url, {
       ...options,
+      signal: ctx.signal(),
       headers: {
         Accept: 'text/html',
         'X-Surf-Request': 'true',
@@ -117,31 +146,33 @@ async function sendPulse(url, options, targetSelector) {
     if (Patch.isPatch(html)) {
       const patches = Patch.parse(html);
       applyPatches(patches);
-    } else {
+    } else if (targetSelector) {
       // Treat as single surface replacement
-      if (targetSelector) {
-        const surface = document.querySelector(targetSelector);
-        if (surface) {
-          // Check for swap mode (inner, append, prepend) from options or element
-          const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
+      const surface = document.querySelector(targetSelector);
+      if (surface) {
+        const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
 
-          Echo.withPreservation(surface, () => {
-            if (swapMode === 'append') {
-              Surface.append(surface, html);
-            } else if (swapMode === 'prepend') {
-              Surface.prepend(surface, html);
-            } else {
-              Surface.replace(surface, html);
-            }
-          });
-        }
+        Echo.withPreservation(surface, () => {
+          if (swapMode === 'append') {
+            Surface.append(surface, html);
+          } else if (swapMode === 'prepend') {
+            Surface.prepend(surface, html);
+          } else {
+            Surface.replace(surface, html);
+          }
+        });
       }
     }
 
     emit('after:patch', { url, target: targetSelector });
   } catch (error) {
+    if (ctx.cancelled()) return;
     console.error('[Surf] Pulse error:', error);
     emit('error:network', { url, error });
+  } finally {
+    if (targetSelector && contexts.get(targetSelector) === ctx) {
+      contexts.delete(targetSelector);
+    }
   }
 }
 
@@ -248,7 +279,11 @@ export async function action(url, data = {}, targetSelector, options = {}) {
  * @param {Event} event
  */
 async function handleClick(event) {
-  const element = event.target.closest(`[${PULSE_ATTR}]`);
+  const target = event.target;
+  if (!target.closest) return;
+
+  // Use the cached result of closest to avoid redundant searches
+  const element = target.hasAttribute?.(PULSE_ATTR) ? target : target.closest(`[${PULSE_ATTR}]`);
   if (!element) return;
 
   const pulseType = element.getAttribute(PULSE_ATTR);
@@ -288,10 +323,10 @@ async function handleClick(event) {
     // Also include Cell state if element is inside a d-cell
     const parentCell = element.closest('[d-cell]');
     if (parentCell) {
-      const Cell = await import('./cell.js');
-      const cellState = Cell.default
-        ? Cell.default.getState(parentCell)
-        : Cell.getState(parentCell);
+      const cell = await getCellModule();
+      const cellState = cell.default
+        ? cell.default.getState(parentCell)
+        : cell.getState(parentCell);
       if (cellState) {
         Object.assign(data, cellState);
       }
