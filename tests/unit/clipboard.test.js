@@ -2,150 +2,150 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Clipboard from '../../src/plugins/clipboard.js';
 
 describe('Clipboard Plugin', () => {
-    let mockSurf;
-    let mockClipboard;
-    let container;
+  let mockSurf;
+  let mockClipboard;
+  let container;
 
-    beforeEach(() => {
-        container = document.createElement('div');
-        document.body.appendChild(container);
-        
-        // Mock Surf
-        mockSurf = {
-            register: vi.fn(),
-            setState: vi.fn(),
-            getState: vi.fn()
-        };
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
 
-        // Mock navigator.clipboard
-        mockClipboard = {
-            writeText: vi.fn().mockResolvedValue()
-        };
-        Object.assign(navigator, { clipboard: mockClipboard });
+    // Mock Surf
+    mockSurf = {
+      register: vi.fn(),
+      setState: vi.fn(),
+      getState: vi.fn(),
+    };
 
-        // Use fake timers for feedback duration
-        vi.useFakeTimers();
-    });
+    // Mock navigator.clipboard
+    mockClipboard = {
+      writeText: vi.fn().mockResolvedValue(),
+    };
+    Object.assign(navigator, { clipboard: mockClipboard });
 
-    afterEach(() => {
-        document.body.removeChild(container);
-        vi.restoreAllMocks();
-        vi.useRealTimers();
-    });
+    // Use fake timers for feedback duration
+    vi.useFakeTimers();
+  });
 
-    it('should register itself via Surf.use', () => {
-        Clipboard.install(mockSurf);
-        expect(mockSurf.register).toHaveBeenCalledWith('Clipboard', expect.any(Object));
-        expect(mockSurf.register).toHaveBeenCalledTimes(1);
-    });
+  afterEach(() => {
+    document.body.removeChild(container);
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
 
-    it('should copy text from target element (string)', async () => {
-        Clipboard.install(mockSurf);
-        const plugin = mockSurf.register.mock.calls[0][1];
+  it('should register itself via Surf.use', () => {
+    Clipboard.install(mockSurf);
+    expect(mockSurf.register).toHaveBeenCalledWith('Clipboard', expect.any(Object));
+    expect(mockSurf.register).toHaveBeenCalledTimes(1);
+  });
 
-        // Scenario: target is just a string (not element)
-        await plugin.copy("Hello World");
-        
-        expect(mockClipboard.writeText).toHaveBeenCalledWith("Hello World");
-    });
+  it('should copy text from target element (string)', async () => {
+    Clipboard.install(mockSurf);
+    const plugin = mockSurf.register.mock.calls[0][1];
 
-    it('should copy text from previous sibling code block', async () => {
-        Clipboard.install(mockSurf);
-        const plugin = mockSurf.register.mock.calls[0][1];
+    // Scenario: target is just a string (not element)
+    await plugin.copy('Hello World');
 
-        // DOM Structure: <code>Text</code> <button>Copy</button>
-        const codeEl = document.createElement('code');
-        codeEl.innerText = "Code Content";
-        container.appendChild(codeEl);
+    expect(mockClipboard.writeText).toHaveBeenCalledWith('Hello World');
+  });
 
-        const btn = document.createElement('button');
-        container.appendChild(btn);
+  it('should copy text from previous sibling code block', async () => {
+    Clipboard.install(mockSurf);
+    const plugin = mockSurf.register.mock.calls[0][1];
 
-        // Call copy with button element
-        await plugin.copy(btn);
+    // DOM Structure: <code>Text</code> <button>Copy</button>
+    const codeEl = document.createElement('code');
+    codeEl.innerText = 'Code Content';
+    container.appendChild(codeEl);
 
-        expect(mockClipboard.writeText).toHaveBeenCalledWith("Code Content");
-    });
+    const btn = document.createElement('button');
+    container.appendChild(btn);
 
-    it('should prevent copy if already copied (double-click prevention)', async () => {
-        Clipboard.install(mockSurf);
-        const plugin = mockSurf.register.mock.calls[0][1];
+    // Call copy with button element
+    await plugin.copy(btn);
 
-        // DOM Structure: <div d-cell> <button>...</div>
-        const cell = document.createElement('div');
-        cell.setAttribute('d-cell', '{ copied: true }');
-        container.appendChild(cell);
+    expect(mockClipboard.writeText).toHaveBeenCalledWith('Code Content');
+  });
 
-        const btn = document.createElement('button');
-        cell.appendChild(btn);
+  it('should prevent copy if already copied (double-click prevention)', async () => {
+    Clipboard.install(mockSurf);
+    const plugin = mockSurf.register.mock.calls[0][1];
 
-        // Mock Surf.getState to return copied: true
-        mockSurf.getState.mockReturnValue({ copied: true });
+    // DOM Structure: <div d-cell> <button>...</div>
+    const cell = document.createElement('div');
+    cell.setAttribute('d-cell', '{ copied: true }');
+    container.appendChild(cell);
 
-        await plugin.copy(btn);
+    const btn = document.createElement('button');
+    cell.appendChild(btn);
 
-        // Should NOT call clipboard write
-        expect(mockClipboard.writeText).not.toHaveBeenCalled();
-    });
+    // Mock Surf.getState to return copied: true
+    mockSurf.getState.mockReturnValue({ copied: true });
 
-    it('should set copied state and revert after timeout', async () => {
-        Clipboard.install(mockSurf, { timeout: 1000 });
-        const plugin = mockSurf.register.mock.calls[0][1];
+    await plugin.copy(btn);
 
-        const cell = document.createElement('div');
-        cell.setAttribute('d-cell', '{ copied: false }');
-        container.appendChild(cell);
+    // Should NOT call clipboard write
+    expect(mockClipboard.writeText).not.toHaveBeenCalled();
+  });
 
-        // Add code element so resolveText finds text
-        const code = document.createElement('code');
-        code.innerText = "Test Code";
-        cell.appendChild(code);
+  it('should set copied state and revert after timeout', async () => {
+    Clipboard.install(mockSurf, { timeout: 1000 });
+    const plugin = mockSurf.register.mock.calls[0][1];
 
-        const btn = document.createElement('button');
-        cell.appendChild(btn);
+    const cell = document.createElement('div');
+    cell.setAttribute('d-cell', '{ copied: false }');
+    container.appendChild(cell);
 
-        mockSurf.getState.mockReturnValue({ copied: false });
+    // Add code element so resolveText finds text
+    const code = document.createElement('code');
+    code.innerText = 'Test Code';
+    cell.appendChild(code);
 
-        // Trigger copy
-        await plugin.copy(btn);
+    const btn = document.createElement('button');
+    cell.appendChild(btn);
 
-        expect(mockClipboard.writeText).toHaveBeenCalled();
-        
-        // Wait for promise resolution (microtask)
-        await Promise.resolve();
-        // Wait for then() callback
-        await Promise.resolve();
+    mockSurf.getState.mockReturnValue({ copied: false });
 
-        // Should set state to true
-        expect(mockSurf.setState).toHaveBeenCalledWith(cell, { copied: true });
+    // Trigger copy
+    await plugin.copy(btn);
 
-        // Fast forward timer
-        vi.advanceTimersByTime(1000);
+    expect(mockClipboard.writeText).toHaveBeenCalled();
 
-        // Should revert state
-        expect(mockSurf.setState).toHaveBeenCalledWith(cell, { copied: false });
-    });
+    // Wait for promise resolution (microtask)
+    await Promise.resolve();
+    // Wait for then() callback
+    await Promise.resolve();
 
-    it('should handle event object and stop propagation', async () => {
-        Clipboard.install(mockSurf);
-        const plugin = mockSurf.register.mock.calls[0][1];
-        
-        const btn = document.createElement('button');
-        const event = new Event('click');
-        Object.defineProperty(event, 'currentTarget', { value: btn });
-        vi.spyOn(event, 'stopPropagation');
-        
-        // Mock text resolution (since button has no sibling code, pass explicit text? No, plugin resolves from sibling)
-        // Let's rely on resolveText returning null if no code found, but propagation should still stop.
-        // Or setup DOM.
-        const codeEl = document.createElement('code');
-        codeEl.innerText = "Text";
-        container.appendChild(codeEl);
-        container.appendChild(btn);
+    // Should set state to true
+    expect(mockSurf.setState).toHaveBeenCalledWith(cell, { copied: true });
 
-        await plugin.copy(event);
+    // Fast forward timer
+    vi.advanceTimersByTime(1000);
 
-        expect(event.stopPropagation).toHaveBeenCalled();
-        expect(mockClipboard.writeText).toHaveBeenCalledWith("Text");
-    });
+    // Should revert state
+    expect(mockSurf.setState).toHaveBeenCalledWith(cell, { copied: false });
+  });
+
+  it('should handle event object and stop propagation', async () => {
+    Clipboard.install(mockSurf);
+    const plugin = mockSurf.register.mock.calls[0][1];
+
+    const btn = document.createElement('button');
+    const event = new Event('click');
+    Object.defineProperty(event, 'currentTarget', { value: btn });
+    vi.spyOn(event, 'stopPropagation');
+
+    // Mock text resolution (since button has no sibling code, pass explicit text? No, plugin resolves from sibling)
+    // Let's rely on resolveText returning null if no code found, but propagation should still stop.
+    // Or setup DOM.
+    const codeEl = document.createElement('code');
+    codeEl.innerText = 'Text';
+    container.appendChild(codeEl);
+    container.appendChild(btn);
+
+    await plugin.copy(event);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(mockClipboard.writeText).toHaveBeenCalledWith('Text');
+  });
 });

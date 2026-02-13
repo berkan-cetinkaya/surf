@@ -21,3 +21,6 @@ steps:
     image: node:20
     commands:
       - npm run build
+    when:
+      branch: main
+      event: push

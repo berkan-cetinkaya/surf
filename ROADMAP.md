@@ -1,6 +1,7 @@
 # Surf Framework Roadmap
 
 ## Backlog
+
 - [ ] Implement robust error boundary component
 - [ ] Support ternary operator (`? :`) in expressions
 - [ ] Add dark/light mode toggle example
@@ -11,6 +12,7 @@
 - [ ] Visual Debugger / DevTools plugin — overlay showing Cell state, Surface boundaries, Signal bindings in real-time
 
 ## To Do
+
 - [ ] Add detailed descriptions to all interaction examples
 - [ ] Improve unit test coverage for `surf-core`
 - [ ] Refactor `pulse.js` for better performance
@@ -18,5 +20,5 @@
 - [ ] Add more plugins goal is to add plugins to support most important functionality that modern web apps need
 
 ## Doing
-- [ ] Polish Landing Page copy and visuals
 
+- [ ] Polish Landing Page copy and visuals

@@ -1,21 +1,21 @@
 [
-    {
-        "slug": "why-surf",
-        "title": "Why SURF? A Journey Through Web Development History",
-        "description": "From PHP spaghetti to SPA chaos, and back to sanity. A deep dive into why server-driven UI with local state is the future.",
-        "category": "Deep Dive",
-        "date": "February 9, 2026",
-        "readTime": "15 min read",
-        "icon": "🌊",
-        "heroImage": "/brand/why_surf_hero.png"
-    },
-    {
-        "slug": "surf-architecture",
-        "title": "Surf Architecture — The Complete Guide",
-        "description": "Deep dive into Surf's 6 core modules - Cell, Signal, Surface, Patch, Pulse, Echo - and the plugin system.",
-        "category": "Architecture",
-        "date": "February 11, 2026",
-        "readTime": "12 min read",
-        "icon": "🏗️"
-    }
+  {
+    "slug": "why-surf",
+    "title": "Why SURF? A Journey Through Web Development History",
+    "description": "From PHP spaghetti to SPA chaos, and back to sanity. A deep dive into why server-driven UI with local state is the future.",
+    "category": "Deep Dive",
+    "date": "February 9, 2026",
+    "readTime": "15 min read",
+    "icon": "🌊",
+    "heroImage": "/brand/why_surf_hero.png"
+  },
+  {
+    "slug": "surf-architecture",
+    "title": "Surf Architecture — The Complete Guide",
+    "description": "Deep dive into Surf's 6 core modules - Cell, Signal, Surface, Patch, Pulse, Echo - and the plugin system.",
+    "category": "Architecture",
+    "date": "February 11, 2026",
+    "readTime": "12 min read",
+    "icon": "🏗️"
+  }
 ]

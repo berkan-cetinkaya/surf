@@ -1,11 +1,11 @@
 /**
  * Pulse Module
- * 
+ *
  * A Pulse represents user intent that triggers a server interaction.
  * Examples: navigation, form submission, refresh.
- * 
+ *
  * Defined with: d-pulse, d-target
- * 
+ *
  * Pulse types:
  * - navigate: GET request, replace surface
  * - commit: POST form data, apply patch
@@ -24,17 +24,17 @@ const ACTION_ATTR = 'd-action';
 const listeners = {
   'before:pulse': [],
   'after:patch': [],
-  'error:network': []
+  'error:network': [],
 };
 
 /**
  * Emit an event to listeners
- * @param {string} event 
- * @param {Object} detail 
+ * @param {string} event
+ * @param {Object} detail
  */
 export function emit(event, detail) {
   if (listeners[event]) {
-    listeners[event].forEach(cb => {
+    listeners[event].forEach((cb) => {
       try {
         cb(detail);
       } catch (e) {
@@ -46,8 +46,8 @@ export function emit(event, detail) {
 
 /**
  * Register an event listener
- * @param {string} event 
- * @param {function} callback 
+ * @param {string} event
+ * @param {function} callback
  */
 export function on(event, callback) {
   if (listeners[event]) {
@@ -57,8 +57,8 @@ export function on(event, callback) {
 
 /**
  * Remove an event listener
- * @param {string} event 
- * @param {function} callback 
+ * @param {string} event
+ * @param {function} callback
  */
 export function off(event, callback) {
   if (listeners[event]) {
@@ -71,17 +71,17 @@ export function off(event, callback) {
 
 /**
  * Apply patches to surfaces with Echo preservation
- * @param {Array<{target: string, content: string}>} patches 
+ * @param {Array<{target: string, content: string}>} patches
  */
 function applyPatches(patches) {
   patches.forEach(({ target, content }) => {
     const surface = document.querySelector(target);
-    
+
     if (!surface) {
       console.warn(`[Surf] Target not found for patch: ${target}`);
       return;
     }
-    
+
     Echo.withPreservation(surface, () => {
       Surface.replace(target, content);
     });
@@ -90,29 +90,29 @@ function applyPatches(patches) {
 
 /**
  * Send a pulse request to the server
- * @param {string} url 
- * @param {Object} options 
- * @param {string} targetSelector 
+ * @param {string} url
+ * @param {Object} options
+ * @param {string} targetSelector
  */
 async function sendPulse(url, options, targetSelector) {
   emit('before:pulse', { url, options, target: targetSelector });
-  
+
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Accept': 'text/html',
+        Accept: 'text/html',
         'X-Surf-Request': 'true',
-        ...options.headers
-      }
+        ...options.headers,
+      },
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     const html = await response.text();
-    
+
     // Check if response is a patch
     if (Patch.isPatch(html)) {
       const patches = Patch.parse(html);
@@ -124,7 +124,7 @@ async function sendPulse(url, options, targetSelector) {
         if (surface) {
           // Check for swap mode (inner, append, prepend) from options or element
           const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
-          
+
           Echo.withPreservation(surface, () => {
             if (swapMode === 'append') {
               Surface.append(surface, html);
@@ -137,9 +137,8 @@ async function sendPulse(url, options, targetSelector) {
         }
       }
     }
-    
+
     emit('after:patch', { url, target: targetSelector });
-    
   } catch (error) {
     console.error('[Surf] Pulse error:', error);
     emit('error:network', { url, error });
@@ -148,19 +147,19 @@ async function sendPulse(url, options, targetSelector) {
 
 /**
  * Handle navigate pulse (GET request)
- * @param {string} url 
- * @param {string} targetSelector 
+ * @param {string} url
+ * @param {string} targetSelector
  * @param {Object} options
  */
 export async function navigate(url, targetSelector, options = {}) {
   const target = targetSelector || 'html';
   await sendPulse(url, { method: 'GET', ...options }, target);
-  
+
   // Update browser history
   if (target) {
     const currentUrl = new URL(window.location.href);
     const nextUrl = new URL(url, window.location.origin);
-    
+
     // If navigating to the same URL, replace state instead of pushing
     if (currentUrl.href === nextUrl.href) {
       history.replaceState({ surf: true, url: nextUrl.href, target }, '', nextUrl.href);
@@ -172,8 +171,8 @@ export async function navigate(url, targetSelector, options = {}) {
 
 /**
  * Handle commit pulse (POST form data)
- * @param {HTMLFormElement} form 
- * @param {string} targetSelector 
+ * @param {HTMLFormElement} form
+ * @param {string} targetSelector
  */
 export async function commit(form, targetSelector) {
   const method = form.method?.toUpperCase() || 'POST';
@@ -182,32 +181,36 @@ export async function commit(form, targetSelector) {
   const swap = form.getAttribute('d-swap');
   const options = swap ? { swap } : {};
   const target = targetSelector || 'html';
-  
+
   // Convert FormData to URLSearchParams for standard form encoding
   const params = new URLSearchParams();
   formData.forEach((value, key) => params.append(key, value));
-  
+
   // GET requests cannot have a body - append as URL params instead
   if (method === 'GET') {
     const separator = url.includes('?') ? '&' : '?';
     url = url + separator + params.toString();
-    
+
     await sendPulse(url, { method: 'GET', ...options }, target);
   } else {
-    await sendPulse(url, {
-      method,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+    await sendPulse(
+      url,
+      {
+        method,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
+        ...options,
       },
-      body: params.toString(),
-      ...options
-    }, target);
+      target
+    );
   }
 }
 
 /**
  * Handle refresh pulse (GET current content)
- * @param {string} targetSelector 
+ * @param {string} targetSelector
  */
 export async function refresh(targetSelector) {
   const url = window.location.href;
@@ -226,30 +229,34 @@ export async function refresh(targetSelector) {
  */
 export async function action(url, data = {}, targetSelector, options = {}) {
   const target = targetSelector || 'html';
-  await sendPulse(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
+  await sendPulse(
+    url,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      ...options,
     },
-    body: JSON.stringify(data),
-    ...options
-  }, target);
+    target
+  );
 }
 
 /**
  * Handle click events on pulse elements
- * @param {Event} event 
+ * @param {Event} event
  */
 async function handleClick(event) {
   const element = event.target.closest(`[${PULSE_ATTR}]`);
   if (!element) return;
-  
+
   const pulseType = element.getAttribute(PULSE_ATTR);
   const targetSelector = element.getAttribute(TARGET_ATTR);
   const actionUrl = element.getAttribute(ACTION_ATTR);
   const swap = element.getAttribute('d-swap');
   const options = swap ? { swap } : {};
-  
+
   // Handle anchor navigation
   if (element.tagName === 'A' && pulseType === 'navigate') {
     event.preventDefault();
@@ -257,18 +264,18 @@ async function handleClick(event) {
     navigate(url, targetSelector, options);
     return;
   }
-  
+
   // Handle refresh
   if (pulseType === 'refresh') {
     event.preventDefault();
     refresh(targetSelector);
     return;
   }
-  
+
   // Handle action - send POST to d-action URL
   if (pulseType === 'action' && actionUrl) {
     event.preventDefault();
-    
+
     // Collect data from data-* attributes on the element
     const data = {};
     for (const attr of element.attributes) {
@@ -277,17 +284,19 @@ async function handleClick(event) {
         data[key] = attr.value;
       }
     }
-    
+
     // Also include Cell state if element is inside a d-cell
     const parentCell = element.closest('[d-cell]');
     if (parentCell) {
       const Cell = await import('./cell.js');
-      const cellState = Cell.default ? Cell.default.getState(parentCell) : Cell.getState(parentCell);
+      const cellState = Cell.default
+        ? Cell.default.getState(parentCell)
+        : Cell.getState(parentCell);
       if (cellState) {
         Object.assign(data, cellState);
       }
     }
-    
+
     action(actionUrl, data, targetSelector, options);
     return;
   }
@@ -295,15 +304,15 @@ async function handleClick(event) {
 
 /**
  * Handle form submission on pulse elements
- * @param {Event} event 
+ * @param {Event} event
  */
 function handleSubmit(event) {
   const form = event.target;
   if (!form.hasAttribute(PULSE_ATTR)) return;
-  
+
   const pulseType = form.getAttribute(PULSE_ATTR);
   const targetSelector = form.getAttribute(TARGET_ATTR);
-  
+
   if (pulseType === 'commit') {
     event.preventDefault();
     commit(form, targetSelector);
@@ -312,7 +321,7 @@ function handleSubmit(event) {
 
 /**
  * Handle browser back/forward navigation
- * @param {PopStateEvent} event 
+ * @param {PopStateEvent} event
  */
 function handlePopState(event) {
   if (event.state?.surf) {
@@ -332,29 +341,31 @@ function handlePopState(event) {
 export function init() {
   // Delegate click events
   document.addEventListener('click', handleClick);
-  
+
   // Delegate form submissions
   document.addEventListener('submit', handleSubmit);
-  
+
   // Handle browser navigation
   window.addEventListener('popstate', handlePopState);
-  
-
 
   // Initialize history state if missing
   if (!history.state) {
-    history.replaceState({
-      surf: true,
-      url: window.location.href,
-      target: 'html'
-    }, '', window.location.href);
+    history.replaceState(
+      {
+        surf: true,
+        url: window.location.href,
+        target: 'html',
+      },
+      '',
+      window.location.href
+    );
   }
 }
 
 /**
  * Programmatic navigation (Surf.go)
- * @param {string} url 
- * @param {Object} options 
+ * @param {string} url
+ * @param {Object} options
  */
 export async function go(url, options = {}) {
   const target = options.target || 'html';
@@ -388,5 +399,5 @@ export default {
   action,
   go,
   submit,
-  init
+  init,
 };

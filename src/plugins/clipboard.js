@@ -1,8 +1,8 @@
 /**
  * Clipboard Plugin
- * 
+ *
  * Adds clipboard copy capabilities to Surf signals.
- * Usage: 
+ * Usage:
  *   Surf.use(Clipboard, { timeout: 2000 });
  *   d-signal="click: Clipboard.copy(this)"
  */
@@ -11,17 +11,19 @@ const FEEDBACK_DURATION = 2000;
 
 const Clipboard = {
   name: 'SurfClipboard',
-  
+
   install(Surf, options = {}) {
     let duration = options.timeout;
 
     // Default to constant if undefined
     if (duration === undefined) {
       duration = FEEDBACK_DURATION;
-    } 
+    }
     // Validate custom duration
     else if (typeof duration !== 'number' || duration <= 0) {
-      console.warn(`[Surf Clipboard] Invalid timeout: ${duration}. Using default: ${FEEDBACK_DURATION}ms`);
+      console.warn(
+        `[Surf Clipboard] Invalid timeout: ${duration}. Using default: ${FEEDBACK_DURATION}ms`
+      );
       duration = FEEDBACK_DURATION;
     }
 
@@ -49,24 +51,25 @@ const Clipboard = {
         const text = resolveText(target);
         if (!text) return {};
 
-        navigator.clipboard.writeText(text)
+        navigator.clipboard
+          .writeText(text)
           .then(() => flashState(target, Surf, duration))
-          .catch(err => console.error('[Surf Clipboard] Copy failed:', err));
+          .catch((err) => console.error('[Surf Clipboard] Copy failed:', err));
 
         return {};
-      }
+      },
     });
-  }
+  },
 };
 
 function resolveText(target) {
   if (typeof target === 'string') return target;
-  
+
   if (target instanceof Element) {
     const codeEl = target.previousElementSibling;
     if (codeEl) return codeEl.innerText;
   }
-  
+
   return null;
 }
 
@@ -79,7 +82,7 @@ function flashState(target, Surf, duration) {
 
   // Set copied state to true
   Surf.setState(cell, { copied: true });
-  
+
   // Revert state after duration
   if (duration > 0) {
     setTimeout(() => {

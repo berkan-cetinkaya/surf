@@ -1,4 +1,3 @@
-
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Surface, { getSignature, smartReplaceHead } from '../../src/surface.js';
 
@@ -32,7 +31,7 @@ describe('Surface Module', () => {
       expect(main).toBeTruthy();
       expect(main.textContent).toBe('Main Content');
     });
-    
+
     it('should handle # in ID', () => {
       const main = Surface.getById('#main');
       expect(main).toBeTruthy();
@@ -52,7 +51,7 @@ describe('Surface Module', () => {
 
   describe('Modification', () => {
     let surface;
-    
+
     beforeEach(() => {
       surface = document.createElement('div');
       surface.id = 'content';
@@ -79,13 +78,12 @@ describe('Surface Module', () => {
       Surface.prepend(surface, '<p>Prepended</p>');
       expect(surface.innerHTML).toBe('<p>Prepended</p><p>Initial</p>');
     });
-    
+
     it('should handle multiple elements in append/prepend', () => {
-        Surface.append(surface, '<span>A</span><span>B</span>');
-        expect(surface.innerHTML).toContain('<span>A</span><span>B</span>');
+      Surface.append(surface, '<span>A</span><span>B</span>');
+      expect(surface.innerHTML).toContain('<span>A</span><span>B</span>');
     });
   });
-
 
   describe('Smart Head Replacement', () => {
     describe('getSignature', () => {
@@ -128,12 +126,12 @@ describe('Surface Module', () => {
 
     describe('smartReplaceHead', () => {
       let originalHeadHTML;
-      
+
       beforeEach(() => {
         originalHeadHTML = document.head.innerHTML;
         document.head.innerHTML = '<title>Old Title</title>';
       });
-      
+
       afterEach(() => {
         document.head.innerHTML = originalHeadHTML;
       });
@@ -186,11 +184,11 @@ describe('Surface Module', () => {
       it('integration: replace(document.documentElement) uses smart head replacement', () => {
         document.head.innerHTML = '<title>Old</title><link href="keep.css">';
         const oldLink = document.head.querySelector('link');
-        
+
         const newHtml = `<!DOCTYPE html><html><head><title>New</title><link href="keep.css"><script src="new.js"></script></head><body><div id="new-body">New Body</div></body></html>`;
-        
+
         Surface.replace(document.documentElement, newHtml);
-        
+
         expect(document.title).toBe('New');
         expect(document.head.querySelector('link')).toBe(oldLink);
         expect(document.head.querySelector('script[src="new.js"]')).not.toBeNull();
@@ -226,7 +224,7 @@ describe('Surface Module', () => {
         const newScript = body.querySelector('script');
         expect(newScript).not.toBe(script);
         // Our fix forces non-async for activated scripts unless explicit
-        expect(newScript.async).toBe(false); 
+        expect(newScript.async).toBe(false);
       });
 
       it('preserves script attributes when activating', () => {
@@ -258,27 +256,27 @@ describe('Surface Module', () => {
         expect(spy).toHaveBeenCalledWith(expect.stringContaining('Surface not found: #ghost'));
         spy.mockRestore();
       });
-      
+
       it('should use string selector in inject (append/prepend)', () => {
-          const div = document.createElement('div');
-          div.id = 'target-div';
-          container.appendChild(div);
-          
-          Surface.append('#target-div', '<span>Appended</span>');
-          expect(div.innerHTML).toBe('<span>Appended</span>');
+        const div = document.createElement('div');
+        div.id = 'target-div';
+        container.appendChild(div);
+
+        Surface.append('#target-div', '<span>Appended</span>');
+        expect(div.innerHTML).toBe('<span>Appended</span>');
       });
     });
 
     it('replaces scripts and respects async attribute', () => {
-        const body = document.createElement('body');
-        const script = document.createElement('script');
-        script.setAttribute('async', 'true');
-        body.appendChild(script);
+      const body = document.createElement('body');
+      const script = document.createElement('script');
+      script.setAttribute('async', 'true');
+      body.appendChild(script);
 
-        Surface.activateScripts(body);
+      Surface.activateScripts(body);
 
-        const newScript = body.querySelector('script');
-        expect(newScript.async).toBe(true);
+      const newScript = body.querySelector('script');
+      expect(newScript.async).toBe(true);
     });
 
     describe('getSignature Edge Cases', () => {
@@ -293,10 +291,10 @@ describe('Surface Module', () => {
       });
 
       it('handles script with hasAttribute("src") but empty src', () => {
-          const script = document.createElement('script');
-          script.setAttribute('src', '');
-          const sig = getSignature(script);
-          expect(sig).toContain('SCRIPT:');
+        const script = document.createElement('script');
+        script.setAttribute('src', '');
+        const sig = getSignature(script);
+        expect(sig).toContain('SCRIPT:');
       });
     });
 

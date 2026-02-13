@@ -1,9 +1,9 @@
 /**
  * Echo Module
- * 
+ *
  * Echo is the rule that preserves Cell state across Surface patches.
  * If a Cell survives in the DOM, its state must not be reset.
- * 
+ *
  * Mental model: "Surface changes, Cell lives."
  */
 
@@ -18,7 +18,7 @@ import * as Signal from './signal.js';
 export function before(surface) {
   // Cleanup existing signal bindings
   Signal.cleanup(surface);
-  
+
   // Snapshot all cell states within the surface
   return Cell.snapshot(surface);
 }
@@ -31,10 +31,10 @@ export function before(surface) {
 export function after(surface, snapshot) {
   // Restore cell states from snapshot
   Cell.restore(snapshot);
-  
+
   // Initialize cells in the new content
   Cell.initAll(surface);
-  
+
   // Initialize signals in the new content
   Signal.initAll(surface);
 }
@@ -47,10 +47,10 @@ export function after(surface, snapshot) {
 export function withPreservation(surface, replaceFn) {
   // Before: snapshot state
   const snapshot = before(surface);
-  
+
   // Perform the replacement
   replaceFn();
-  
+
   // After: restore state and reinitialize
   after(surface, snapshot);
 }
@@ -58,5 +58,5 @@ export function withPreservation(surface, replaceFn) {
 export default {
   before,
   after,
-  withPreservation
+  withPreservation,
 };

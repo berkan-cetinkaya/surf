@@ -1,47 +1,64 @@
 {
-    "name": "surf-core",
-    "version": "0.2.0",
-    "description": "HTML-first, server-driven UI framework with local client-side state",
-    "main": "dist/surf.min.js",
-    "module": "src/surf.js",
-    "types": "src/surf.d.ts",
-    "type": "module",
-    "files": [
-        "dist",
-        "src",
-        "README.md",
-        "LICENSE"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/berkan-cetinkaya/surf.git"
-    },
-    "imports": {
-        "#helpers/*": "./helpers/*"
-    },
-    "scripts": {
-        "build": "esbuild src/surf.js --bundle --minify --outfile=dist/surf.min.js --format=iife --global-name=SurfModule --footer:js=\"window.Surf=SurfModule.default\" && esbuild src/plugins/drag-and-drop.js --bundle --minify --outfile=dist/plugins/drag-and-drop.js --format=iife --global-name=SurfDragAndDrop --footer:js=\"window.SurfDragAndDrop=SurfDragAndDrop.default\" && esbuild src/plugins/debounce.js --bundle --minify --outfile=dist/plugins/debounce.js --format=iife --global-name=SurfDebounce --footer:js=\"window.SurfDebounce=SurfDebounce.default\" && esbuild src/plugins/clipboard.js --bundle --minify --outfile=dist/plugins/clipboard.js --format=iife --global-name=SurfClipboard --footer:js=\"window.SurfClipboard=SurfClipboard.default\" && esbuild src/plugins/top-loader.js --bundle --minify --outfile=dist/plugins/top-loader.js --format=iife --global-name=SurfTopLoader --footer:js=\"window.SurfTopLoader=SurfTopLoader.default\" && esbuild src/plugins/auto-refresh.js --bundle --minify --outfile=dist/plugins/auto-refresh.js --format=iife --global-name=SurfAutoRefresh --footer:js=\"window.SurfAutoRefresh=SurfAutoRefresh.default\"",
-        "dev": "esbuild src/surf.js --bundle --outfile=dist/surf.js --format=iife --global-name=SurfModule --footer:js=\"window.Surf=SurfModule.default\" --watch",
-        "test": "vitest",
-        "coverage": "vitest run --coverage",
-        "prepublishOnly": "npm run build"
-    },
-    "keywords": [
-        "framework",
-        "html-first",
-        "server-driven",
-        "progressive-enhancement",
-        "surf",
-        "reactive",
-        "state-management"
-    ],
-    "author": "Berkan Çetinkaya",
-    "license": "MIT",
-    "devDependencies": {
-        "@vitest/coverage-v8": "^4.0.18",
-        "esbuild": "^0.20.0",
-        "jsdom": "^28.0.0",
-        "vitest": "^4.0.18"
-    },
-    "dependencies": {}
+  "name": "surf-core",
+  "version": "0.2.0",
+  "description": "HTML-first, server-driven UI framework with local client-side state",
+  "main": "dist/surf.min.js",
+  "module": "src/surf.js",
+  "types": "src/surf.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/berkan-cetinkaya/surf.git"
+  },
+  "imports": {
+    "#helpers/*": "./helpers/*"
+  },
+  "scripts": {
+    "build": "esbuild src/surf.js --bundle --minify --outfile=dist/surf.min.js --format=iife --global-name=SurfModule --footer:js=\"window.Surf=SurfModule.default\" && esbuild src/plugins/drag-and-drop.js --bundle --minify --outfile=dist/plugins/drag-and-drop.js --format=iife --global-name=SurfDragAndDrop --footer:js=\"window.SurfDragAndDrop=SurfDragAndDrop.default\" && esbuild src/plugins/debounce.js --bundle --minify --outfile=dist/plugins/debounce.js --format=iife --global-name=SurfDebounce --footer:js=\"window.SurfDebounce=SurfDebounce.default\" && esbuild src/plugins/clipboard.js --bundle --minify --outfile=dist/plugins/clipboard.js --format=iife --global-name=SurfClipboard --footer:js=\"window.SurfClipboard=SurfClipboard.default\" && esbuild src/plugins/top-loader.js --bundle --minify --outfile=dist/plugins/top-loader.js --format=iife --global-name=SurfTopLoader --footer:js=\"window.SurfTopLoader=SurfTopLoader.default\" && esbuild src/plugins/auto-refresh.js --bundle --minify --outfile=dist/plugins/auto-refresh.js --format=iife --global-name=SurfAutoRefresh --footer:js=\"window.SurfAutoRefresh=SurfAutoRefresh.default\"",
+    "dev": "esbuild src/surf.js --bundle --outfile=dist/surf.js --format=iife --global-name=SurfModule --footer:js=\"window.Surf=SurfModule.default\" --watch",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prepublishOnly": "npm run build",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "framework",
+    "html-first",
+    "server-driven",
+    "progressive-enhancement",
+    "surf",
+    "reactive",
+    "state-management"
+  ],
+  "author": "Berkan Çetinkaya",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.18",
+    "esbuild": "^0.20.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.3.0",
+    "husky": "^9.1.7",
+    "jsdom": "^28.0.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "*.{js,json,md}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  }
 }

@@ -1,8 +1,8 @@
 /**
  * SURF - HTML-first, server-driven UI framework
- * 
+ *
  * Mental model: "Surface changes, Cell lives."
- * 
+ *
  * The server is the source of truth.
  * The client handles only temporary, local interactions.
  * HTML is the primary data format.
@@ -20,11 +20,14 @@ import * as Echo from './echo.js';
  * Global Surf object - the public API
  * Using a singleton pattern to handle state across full-page navigations
  */
-let Surf = (typeof window !== 'undefined' && window.Surf) ? window.Surf : {
-  version: '0.2.0',
-  plugins: [],
-  _pulseBound: false
-};
+let Surf =
+  typeof window !== 'undefined' && window.Surf
+    ? window.Surf
+    : {
+        version: '0.2.0',
+        plugins: [],
+        _pulseBound: false,
+      };
 
 // Update/Attach core methods to the instance (allows hot-updates of framework code)
 Object.assign(Surf, {
@@ -36,7 +39,7 @@ Object.assign(Surf, {
   go(url, options = {}) {
     return Pulse.go(url, options);
   },
-  
+
   /**
    * Refresh a surface's content from the server
    * @param {string} selector - The surface selector to refresh
@@ -44,7 +47,7 @@ Object.assign(Surf, {
   refresh(selector) {
     return Pulse.refresh(selector);
   },
-  
+
   /**
    * Subscribe to framework events
    * @param {string} event - Event name: 'before:pulse', 'after:patch', 'error:network'
@@ -53,7 +56,7 @@ Object.assign(Surf, {
   on(event, callback) {
     Pulse.on(event, callback);
   },
-  
+
   /**
    * Unsubscribe from framework events
    * @param {string} event - Event name
@@ -62,32 +65,30 @@ Object.assign(Surf, {
   off(event, callback) {
     Pulse.off(event, callback);
   },
-  
+
   /**
    * Get cell state for an element
    * @param {Element|string} cellOrSelector - Cell element or selector
    * @returns {Object} The cell's current state
    */
   getState(cellOrSelector) {
-    const cell = typeof cellOrSelector === 'string' 
-      ? document.querySelector(cellOrSelector)
-      : cellOrSelector;
+    const cell =
+      typeof cellOrSelector === 'string' ? document.querySelector(cellOrSelector) : cellOrSelector;
     return Cell.getState(cell);
   },
-  
+
   /**
    * Set cell state for an element
    * @param {Element|string} cellOrSelector - Cell element or selector
    * @param {Object} state - State to merge
    */
   setState(cellOrSelector, state) {
-    const cell = typeof cellOrSelector === 'string'
-      ? document.querySelector(cellOrSelector)
-      : cellOrSelector;
+    const cell =
+      typeof cellOrSelector === 'string' ? document.querySelector(cellOrSelector) : cellOrSelector;
     Cell.setState(cell, state);
     Signal.updateBindings(cell);
   },
-  
+
   /**
    * Manually apply a patch response
    * @param {string} patchHtml - The patch HTML string
@@ -105,7 +106,7 @@ Object.assign(Surf, {
       }
     });
   },
-  
+
   /**
    * Register a module for signal expressions
    * @param {string} name - Module namespace
@@ -124,7 +125,7 @@ Object.assign(Surf, {
     if (plugin && typeof plugin.install === 'function') {
       const name = plugin.name || 'Anonymous';
       // Prevent duplicate installation
-      if (this.plugins.some(p => p.name === name)) {
+      if (this.plugins.some((p) => p.name === name)) {
         return this;
       }
 
@@ -134,18 +135,27 @@ Object.assign(Surf, {
     return this;
   },
 
-
   /**
    * Core modules (exposed for plugins)
    */
-  Surface, Cell, Signal, Pulse, Patch, Echo,
+  Surface,
+  Cell,
+  Signal,
+  Pulse,
+  Patch,
+  Echo,
 
   /**
    * @deprecated Use Surf.Pulse, Surf.Surface, etc. directly
    */
   _modules: {
-    Surface, Cell, Signal, Pulse, Patch, Echo
-  }
+    Surface,
+    Cell,
+    Signal,
+    Pulse,
+    Patch,
+    Echo,
+  },
 });
 
 /**
@@ -157,12 +167,12 @@ function init() {
     Pulse.init();
     Surf._pulseBound = true;
   }
-  
+
   // DOM-specific init always runs
   Cell.initAll();
   Signal.initAll();
   Signal.register('Pulse', Pulse);
-  
+
   console.log(`[Surf] Initialized v${Surf.version}`);
 }
 

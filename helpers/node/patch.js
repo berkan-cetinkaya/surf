@@ -1,6 +1,6 @@
 /**
  * SURF Patch Helper for Node.js
- * 
+ *
  * Generates d-patch responses for server-side applications.
  */
 
@@ -33,7 +33,10 @@ export class Patch {
     }
 
     const surfaceHtml = this.surfaces
-      .map(s => `  <surface target="${escapeHtml(s.target)}"><template>${s.content}</template></surface>`)
+      .map(
+        (s) =>
+          `  <surface target="${escapeHtml(s.target)}"><template>${s.content}</template></surface>`
+      )
       .join('\n');
 
     return `<d-patch>\n${surfaceHtml}\n</d-patch>`;
@@ -50,7 +53,7 @@ export class Patch {
 
 /**
  * Escape HTML special characters in a string
- * @param {string} str 
+ * @param {string} str
  * @returns {string}
  */
 export function escapeHtml(str) {
@@ -77,9 +80,9 @@ export const CONTENT_TYPE = 'text/html; charset=utf-8';
 
 /**
  * Express middleware for setting patch headers
- * @param {Request} req 
- * @param {Response} res 
- * @param {Function} next 
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Function} next
  */
 export function patchMiddleware(req, res, next) {
   // Check if this is a SURF request
@@ -98,8 +101,6 @@ export function sendPatch(res, patch) {
   res.setHeader('Content-Type', CONTENT_TYPE);
   res.send(patch.render());
 }
-
-
 
 // Example usage:
 //

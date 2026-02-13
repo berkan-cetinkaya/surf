@@ -2,127 +2,127 @@ import { describe, it, expect, beforeEach, afterEach, beforeAll, vi } from 'vite
 import Debounce from '../../src/plugins/debounce.js';
 
 describe('Debounce Plugin', () => {
-    let mockSurf;
-    let container;
+  let mockSurf;
+  let container;
 
-    beforeAll(() => {
-        // Mock Surf interface
-        mockSurf = {
-            go: vi.fn()
-        };
+  beforeAll(() => {
+    // Mock Surf interface
+    mockSurf = {
+      go: vi.fn(),
+    };
 
-        // Install plugin ONCE to avoid duplicate listeners on document
-        Debounce.install(mockSurf);
-    });
+    // Install plugin ONCE to avoid duplicate listeners on document
+    Debounce.install(mockSurf);
+  });
 
-    beforeEach(() => {
-        container = document.createElement('div');
-        document.body.appendChild(container);
-        
-        // Use fake timers
-        vi.useFakeTimers();
-        
-        // Reset mocks between tests
-        mockSurf.go.mockClear();
-    });
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
 
-    afterEach(() => {
-        document.body.removeChild(container);
-        vi.restoreAllMocks();
-        vi.useRealTimers();
-        // Note: document listener persists, but that's handled by beforeAll
-    });
+    // Use fake timers
+    vi.useFakeTimers();
 
-    it('should trigger Surf.go after delay', () => {
-        const input = document.createElement('input');
-        input.setAttribute('d-input', '/search');
-        input.setAttribute('d-debounce', '300');
-        input.value = 'test';
-        container.appendChild(input);
+    // Reset mocks between tests
+    mockSurf.go.mockClear();
+  });
 
-        // Trigger input
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+  afterEach(() => {
+    document.body.removeChild(container);
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+    // Note: document listener persists, but that's handled by beforeAll
+  });
 
-        // Should not call immediately
-        expect(mockSurf.go).not.toHaveBeenCalled();
+  it('should trigger Surf.go after delay', () => {
+    const input = document.createElement('input');
+    input.setAttribute('d-input', '/search');
+    input.setAttribute('d-debounce', '300');
+    input.value = 'test';
+    container.appendChild(input);
 
-        // Advance timer
-        vi.advanceTimersByTime(300);
+    // Trigger input
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-        // Should call
-        expect(mockSurf.go).toHaveBeenCalledWith('/search?q=test', expect.anything());
-    });
+    // Should not call immediately
+    expect(mockSurf.go).not.toHaveBeenCalled();
 
-    it('should debounce multiple inputs', () => {
-        const input = document.createElement('input');
-        input.setAttribute('d-input', '/search');
-        input.setAttribute('d-debounce', '300');
-        container.appendChild(input);
+    // Advance timer
+    vi.advanceTimersByTime(300);
 
-        // Type "t"
-        input.value = 't';
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        vi.advanceTimersByTime(100);
-        
-        // Type "te"
-        input.value = 'te';
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        vi.advanceTimersByTime(100);
+    // Should call
+    expect(mockSurf.go).toHaveBeenCalledWith('/search?q=test', expect.anything());
+  });
 
-        // Type "tes"
-        input.value = 'tes';
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        // Advance 299ms (total from last input)
-        vi.advanceTimersByTime(299);
-        expect(mockSurf.go).not.toHaveBeenCalled();
+  it('should debounce multiple inputs', () => {
+    const input = document.createElement('input');
+    input.setAttribute('d-input', '/search');
+    input.setAttribute('d-debounce', '300');
+    container.appendChild(input);
 
-        // Advance 1ms more
-        vi.advanceTimersByTime(1);
-        expect(mockSurf.go).toHaveBeenCalledTimes(1);
-        expect(mockSurf.go).toHaveBeenCalledWith('/search?q=tes', expect.anything());
-    });
+    // Type "t"
+    input.value = 't';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-    it('should respect d-min-length', () => {
-        const input = document.createElement('input');
-        input.setAttribute('d-input', '/search');
-        input.setAttribute('d-debounce', '300');
-        input.setAttribute('d-min-length', '5');
-        container.appendChild(input);
+    vi.advanceTimersByTime(100);
 
-        input.value = 'short'; // 5 chars
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Type "te"
+    input.value = 'te';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-        vi.advanceTimersByTime(300);
-        
-        // 'short' is 5 chars. min-length 5 means >= 5 or > 5?
-        // Code: value.length < minLength return.
-        // 5 < 5 is false. So it proceeds.
-        expect(mockSurf.go).toHaveBeenCalledTimes(1);
-        expect(mockSurf.go).toHaveBeenCalledWith('/search?q=short', expect.anything());
-        
-        mockSurf.go.mockClear();
+    vi.advanceTimersByTime(100);
 
-        input.value = 'tiny'; // 4 chars
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+    // Type "tes"
+    input.value = 'tes';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-        vi.advanceTimersByTime(300);
-        expect(mockSurf.go).not.toHaveBeenCalled();
-    });
+    // Advance 299ms (total from last input)
+    vi.advanceTimersByTime(299);
+    expect(mockSurf.go).not.toHaveBeenCalled();
 
-    it('should use custom parameter name if provided', () => {
-        const input = document.createElement('input');
-        input.setAttribute('d-input', '/filter');
-        input.name = 'category';
-        input.value = 'books';
-        container.appendChild(input);
+    // Advance 1ms more
+    vi.advanceTimersByTime(1);
+    expect(mockSurf.go).toHaveBeenCalledTimes(1);
+    expect(mockSurf.go).toHaveBeenCalledWith('/search?q=tes', expect.anything());
+  });
 
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+  it('should respect d-min-length', () => {
+    const input = document.createElement('input');
+    input.setAttribute('d-input', '/search');
+    input.setAttribute('d-debounce', '300');
+    input.setAttribute('d-min-length', '5');
+    container.appendChild(input);
 
-        vi.advanceTimersByTime(300);
+    input.value = 'short'; // 5 chars
+    input.dispatchEvent(new Event('input', { bubbles: true }));
 
-        expect(mockSurf.go).toHaveBeenCalledWith('/filter?category=books', expect.anything());
-    });
+    vi.advanceTimersByTime(300);
+
+    // 'short' is 5 chars. min-length 5 means >= 5 or > 5?
+    // Code: value.length < minLength return.
+    // 5 < 5 is false. So it proceeds.
+    expect(mockSurf.go).toHaveBeenCalledTimes(1);
+    expect(mockSurf.go).toHaveBeenCalledWith('/search?q=short', expect.anything());
+
+    mockSurf.go.mockClear();
+
+    input.value = 'tiny'; // 4 chars
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    vi.advanceTimersByTime(300);
+    expect(mockSurf.go).not.toHaveBeenCalled();
+  });
+
+  it('should use custom parameter name if provided', () => {
+    const input = document.createElement('input');
+    input.setAttribute('d-input', '/filter');
+    input.name = 'category';
+    input.value = 'books';
+    container.appendChild(input);
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+
+    vi.advanceTimersByTime(300);
+
+    expect(mockSurf.go).toHaveBeenCalledWith('/filter?category=books', expect.anything());
+  });
 });

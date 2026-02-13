@@ -1,4 +1,8 @@
-# SURF [![Build Status](https://ci.berkan.cc/api/badges/2/status.svg)](https://ci.berkan.cc/repos/2)
+# SURF
+
+[![Build Status](https://ci.berkan.cc/api/badges/2/status.svg)](https://ci.berkan.cc/repos/2)
+[![Coverage Status](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/berkan-cetinkaya/surf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 HTML-first, server-driven UI framework with local client-side state.
 
@@ -67,11 +71,11 @@ Signals define reactive behavior inside a Cell.
 ### Signal Features
 
 **Form Resetting:**
-Use the `reset` keyword to clear forms declaratively. Surf automatically ensures this happens *after* submission data is captured.
+Use the `reset` keyword to clear forms declaratively. Surf automatically ensures this happens _after_ submission data is captured.
 
 ```html
 <form d-pulse="commit" d-signal="submit: reset">
-  <input name="msg">
+  <input name="msg" />
 </form>
 ```
 
@@ -79,7 +83,7 @@ Use the `reset` keyword to clear forms declaratively. Surf automatically ensures
 Call native DOM methods on the element triggering the signal.
 
 ```html
-<input type="text" d-signal="focus: this.select()">
+<input type="text" d-signal="focus: this.select()" />
 <video d-signal="mouseenter: this.play()"></video>
 ```
 
@@ -117,7 +121,7 @@ A Pulse triggers server interaction.
 
 <!-- Form submission (POST) -->
 <form d-pulse="commit" d-target="#form">
-  <input name="email" required>
+  <input name="email" required />
   <button type="submit">Submit</button>
 </form>
 
