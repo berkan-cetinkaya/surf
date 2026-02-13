@@ -38,8 +38,47 @@ function findParentCell(element) {
 }
 
 /**
+ * Get a nested property from an object using dot notation
+ * @param {Object} obj 
+ * @param {string} path 
+ * @returns {any}
+ */
+function getPath(obj, path) {
+  if (!path || !obj) return undefined;
+  if (path in obj) return obj[path];
+  return path.split('.').reduce((prev, curr) => prev && prev[curr], obj);
+}
+
+/**
+ * Set a nested property on an object using dot notation, preserving sibling keys
+ * @param {Object} obj - The changes object to populate
+ * @param {string} path 
+ * @param {any} value 
+ * @param {Object} state - The current state for sibling preservation
+ */
+function setPath(obj, path, value, state) {
+  const keys = path.split('.');
+  let current = obj;
+  let currentState = state;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!(key in current)) {
+      // Initialize with existing state if available to preserve sibling properties
+      current[key] = (currentState && currentState[key] && typeof currentState[key] === 'object') 
+        ? { ...currentState[key] } 
+        : {};
+    }
+    current = current[key];
+    currentState = currentState ? currentState[key] : undefined;
+  }
+  current[keys[keys.length - 1]] = value;
+}
+
+
+/**
  * Evaluate a simple expression against cell state
- * Supports: property access, boolean operators, simple arithmetic
+ * Supports: property access (including nested), boolean operators, simple arithmetic, literals
  * @param {string} expr 
  * @param {Object} state 
  * @returns {any}
@@ -48,51 +87,52 @@ function evaluate(expr, state) {
   if (!expr || !state) return undefined;
   
   const trimmed = expr.trim();
-  
-  // Direct property access
-  if (trimmed in state) {
-    return state[trimmed];
+
+  // Literals
+  if (trimmed === 'true') return true;
+  if (trimmed === 'false') return false;
+  if (trimmed === 'null') return null;
+  if (trimmed === 'undefined') return undefined;
+  if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || 
+      (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
   }
+  
+  // Direct or nested property access
+  const val = getPath(state, trimmed);
+  if (val !== undefined) return val;
   
   // Boolean negation
   if (trimmed.startsWith('!')) {
     const prop = trimmed.slice(1).trim();
-    return !state[prop];
+    const target = evaluate(prop, state);
+    return !target;
   }
   
   // Simple comparison: prop == value or prop === value
-  const eqMatch = trimmed.match(/^(\w+)\s*={2,3}\s*(.+)$/);
+  const eqMatch = trimmed.match(/^([\w.]+)\s*(==|===)\s*(.+)$/);
   if (eqMatch) {
-    const [, prop, value] = eqMatch;
-    const propVal = state[prop];
-    const compareVal = value === 'true' ? true : 
-                       value === 'false' ? false : 
-                       value.startsWith('"') || value.startsWith("'") ? value.slice(1, -1) :
-                       Number(value);
-    return propVal === compareVal;
+    const [, prop, op, value] = eqMatch;
+    return evaluate(prop, state) === evaluate(value, state);
   }
   
   // Simple inequality: prop != value
-  const neqMatch = trimmed.match(/^(\w+)\s*!=\s*(.+)$/);
+  const neqMatch = trimmed.match(/^([\w.]+)\s*(!=|!==)\s*(.+)$/);
   if (neqMatch) {
-    const [, prop, value] = neqMatch;
-    const propVal = state[prop];
-    const compareVal = value === 'true' ? true : 
-                       value === 'false' ? false : 
-                       value.startsWith('"') || value.startsWith("'") ? value.slice(1, -1) :
-                       Number(value);
-    return propVal !== compareVal;
+    const [, prop, op, value] = neqMatch;
+    return evaluate(prop, state) !== evaluate(value, state);
   }
   
   // Greater/less than
-  const gtMatch = trimmed.match(/^(\w+)\s*>\s*(\d+)$/);
+  const gtMatch = trimmed.match(/^([\w.]+)\s*>\s*(.+)$/);
   if (gtMatch) {
-    return state[gtMatch[1]] > Number(gtMatch[2]);
+    return (evaluate(gtMatch[1], state) || 0) > (evaluate(gtMatch[2], state) || 0);
   }
   
-  const ltMatch = trimmed.match(/^(\w+)\s*<\s*(\d+)$/);
+  const ltMatch = trimmed.match(/^([\w.]+)\s*<\s*(.+)$/);
   if (ltMatch) {
-    return state[ltMatch[1]] < Number(ltMatch[2]);
+    return (evaluate(ltMatch[1], state) || 0) < (evaluate(ltMatch[2], state) || 0);
   }
   
   return undefined;
@@ -193,7 +233,7 @@ function executeAssignment(expr, state, event, element) {
   }
   
   // Match: property = expression
-  const match = trimmed.match(/^(\w+)\s*=\s*(.+)$/);
+  const match = trimmed.match(/^([\w.]+)\s*=\s*(.+)$/);
   if (!match) return {};
   
   const [, prop, valueExpr] = match;
@@ -201,59 +241,104 @@ function executeAssignment(expr, state, event, element) {
   
   // Boolean toggle: prop = !prop
   if (valueExprTrimmed === `!${prop}`) {
-    return { [prop]: !state[prop] };
+    const currentVal = getPath(state, prop);
+    const changes = {};
+    setPath(changes, prop, !currentVal, state);
+    return changes;
   }
   
   // Boolean literal
   if (valueExprTrimmed === 'true') {
-    return { [prop]: true };
+    const changes = {};
+    setPath(changes, prop, true, state);
+    return changes;
   }
   if (valueExprTrimmed === 'false') {
-    return { [prop]: false };
+    const changes = {};
+    setPath(changes, prop, false, state);
+    return changes;
   }
   
   // Arithmetic: prop = prop + N or prop = prop - N
-  const addMatch = valueExprTrimmed.match(/^(\w+)\s*\+\s*(\d+)$/);
+  const addMatch = valueExprTrimmed.match(/^([\w.]+)\s*\+\s*(\d+)$/);
   if (addMatch) {
     const [, srcProp, num] = addMatch;
-    return { [prop]: (state[srcProp] || 0) + Number(num) };
+    const changes = {};
+    setPath(changes, prop, (getPath(state, srcProp) || 0) + Number(num), state);
+    return changes;
   }
   
-  const subMatch = valueExprTrimmed.match(/^(\w+)\s*-\s*(\d+)$/);
+  const subMatch = valueExprTrimmed.match(/^([\w.]+)\s*-\s*(\d+)$/);
   if (subMatch) {
     const [, srcProp, num] = subMatch;
-    return { [prop]: (state[srcProp] || 0) - Number(num) };
+    const changes = {};
+    setPath(changes, prop, (getPath(state, srcProp) || 0) - Number(num), state);
+    return changes;
   }
   
   // Math.max(prop, N) - clamp to minimum
-  const maxMatch = valueExprTrimmed.match(/^Math\.max\((\w+)\s*-\s*(\d+),\s*(\d+)\)$/);
+  const maxMatch = valueExprTrimmed.match(/^Math\.max\(([\w.]+)\s*-\s*(\d+),\s*(\d+)\)$/);
   if (maxMatch) {
     const [, srcProp, delta, min] = maxMatch;
-    const newVal = (state[srcProp] || 0) - Number(delta);
-    return { [prop]: Math.max(newVal, Number(min)) };
+    const newVal = (getPath(state, srcProp) || 0) - Number(delta);
+    const changes = {};
+    setPath(changes, prop, Math.max(newVal, Number(min)), state);
+    return changes;
   }
   
   // Math.min(prop, N) - clamp to maximum
-  const minMatch = valueExprTrimmed.match(/^Math\.min\((\w+)\s*\+\s*(\d+),\s*(\d+)\)$/);
+  const minMatch = valueExprTrimmed.match(/^Math\.min\(([\w.]+)\s*\+\s*(\d+),\s*(\d+)\)$/);
   if (minMatch) {
     const [, srcProp, delta, max] = minMatch;
-    const newVal = (state[srcProp] || 0) + Number(delta);
-    return { [prop]: Math.min(newVal, Number(max)) };
+    const newVal = (getPath(state, srcProp) || 0) + Number(delta);
+    const changes = {};
+    setPath(changes, prop, Math.min(newVal, Number(max)), state);
+    return changes;
   }
   
   // String literal
   if (valueExprTrimmed.startsWith('"') || valueExprTrimmed.startsWith("'")) {
-    return { [prop]: valueExprTrimmed.slice(1, -1) };
+    const changes = {};
+    setPath(changes, prop, valueExprTrimmed.slice(1, -1), state);
+    return changes;
   }
   
   // Number literal
   if (/^\d+$/.test(valueExprTrimmed)) {
-    return { [prop]: Number(valueExprTrimmed) };
+    const changes = {};
+    setPath(changes, prop, Number(valueExprTrimmed), state);
+    return changes;
   }
+
+  // Handle object literals (simple JSON)
+  if (valueExprTrimmed.startsWith('{') && valueExprTrimmed.endsWith('}')) {
+    try {
+      // Very basic parser for object literals since we don't have full JS eval
+      // Replace single quotes with double quotes for JSON.parse if it looks like a simple object
+      const jsonStr = valueExprTrimmed.replace(/'/g, '"').replace(/([\w]+):/g, '"$1":');
+      const val = JSON.parse(jsonStr);
+      const changes = {};
+      setPath(changes, prop, val, state);
+      return changes;
+    } catch (e) {
+      console.warn('[Surf] Failed to parse object literal:', valueExprTrimmed);
+    }
+  }
+
+  // Generic expression - try to evaluate
+  const result = evaluate(valueExprTrimmed, state, event, element);
+  if (result !== undefined) {
+    const changes = {};
+    setPath(changes, prop, result, state);
+    return changes;
+  }
+
   
   // Property copy: prop = otherProp
   if (valueExprTrimmed in state) {
-    return { [prop]: state[valueExprTrimmed] };
+    const changes = {};
+    setPath(changes, prop, state[valueExprTrimmed], state);
+    return changes;
   }
   
   return {};
@@ -372,7 +457,7 @@ export function updateBindings(cellElement) {
       }
       
       // Standard attr:expression format
-      const match = binding.match(/^(\w+):(.+)$/);
+      const match = binding.match(/^([\w-]+):(.+)$/);
       if (!match) return;
 
       const [, attrName, expr] = match;
@@ -532,5 +617,7 @@ export default {
   cleanup,
   evaluate,
   executeAssignment,
-  register
+  register,
+  __test_parseArguments: parseArguments,
+  __test_boundListeners: boundListeners
 };

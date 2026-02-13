@@ -32,7 +32,15 @@ describe('Auto-Refresh Plugin', () => {
             text: () => Promise.resolve('Updated')
         });
 
-        AutoRefresh.init();
+        const mockSurf = {
+            _modules: {
+                Surface: { replace: vi.fn() },
+                Patch: { isPatch: vi.fn().mockReturnValue(false), parse: vi.fn() },
+                Echo: { withPreservation: (el, cb) => cb() }
+            }
+        };
+
+        AutoRefresh.install(mockSurf);
 
         // Should fetch immediately
         expect(global.fetch).toHaveBeenCalledWith(url, expect.anything());
@@ -58,7 +66,15 @@ describe('Auto-Refresh Plugin', () => {
          
          global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('ok')});
          
-         AutoRefresh.init();
+         const mockSurf = {
+             _modules: {
+                 Surface: { replace: vi.fn() },
+                 Patch: { isPatch: vi.fn().mockReturnValue(false), parse: vi.fn() },
+                 Echo: { withPreservation: (el, cb) => cb() }
+             }
+         };
+         
+         AutoRefresh.install(mockSurf);
          
          expect(global.fetch).toHaveBeenCalledTimes(2); // Initial calls
          
@@ -67,5 +83,69 @@ describe('Auto-Refresh Plugin', () => {
          
          vi.advanceTimersByTime(1000); // Total 2000
          expect(global.fetch).toHaveBeenCalledTimes(5); // el1 (2nd time) + el2 (1st time)
+    });
+
+    it('should handle patch responses in auto-refresh', async () => {
+        const el = document.createElement('div');
+        el.setAttribute('d-auto-refresh', '1000');
+        container.appendChild(el);
+
+        const target1 = document.createElement('div');
+        target1.id = 's1';
+        container.appendChild(target1);
+
+        const target2 = document.createElement('div');
+        target2.id = 's2';
+        container.appendChild(target2);
+
+        global.fetch.mockResolvedValue({
+            ok: true,
+            text: () => Promise.resolve('<d-patch><surface target="#s1">P1</surface><surface target="#s2">P2</surface></d-patch>')
+        });
+
+        const mockSurf = {
+            _modules: {
+                Surface: { replace: vi.fn() },
+                Patch: { 
+                    isPatch: vi.fn().mockReturnValue(true), 
+                    parse: vi.fn().mockReturnValue([
+                        { target: '#s1', content: 'P1' },
+                        { target: '#s2', content: 'P2' }
+                    ]) 
+                },
+                Echo: { withPreservation: (el, cb) => cb() }
+            }
+        };
+
+        AutoRefresh.install(mockSurf);
+        
+        // Initial fetch happens immediately
+        await vi.waitFor(() => {
+            expect(mockSurf._modules.Surface.replace).toHaveBeenCalledWith(target1, 'P1');
+            expect(mockSurf._modules.Surface.replace).toHaveBeenCalledWith(target2, 'P2');
+        });
+    });
+
+    it('should handle fetch errors gracefully', async () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const el = document.createElement('div');
+        el.setAttribute('d-auto-refresh', '1000');
+        container.appendChild(el);
+
+        global.fetch.mockRejectedValue(new Error('Fail'));
+
+        const mockSurf = {
+            _modules: {
+                Surface: { replace: vi.fn() },
+                Patch: { isPatch: vi.fn() },
+                Echo: { withPreservation: (el, cb) => cb() }
+            }
+        };
+
+        AutoRefresh.install(mockSurf);
+        await Promise.resolve();
+
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Auto-refresh failed'), expect.anything());
+        spy.mockRestore();
     });
 });

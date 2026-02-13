@@ -131,4 +131,57 @@ describe('Cell Module', () => {
         spy.mockRestore();
     });
   });
+
+  describe('Edge Cases', () => {
+    it('should warn and return empty object when initializing non-cell element', () => {
+      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const el = document.createElement('div');
+      container.appendChild(el);
+      
+      const state = Cell.init(el);
+      expect(state).toEqual({});
+      expect(spy).toHaveBeenCalledWith(expect.stringContaining('Element is not a cell'), el);
+      spy.mockRestore();
+    });
+
+    it('should initialize cell automatically in getState if not initialized', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-cell', 'auto: true');
+      container.appendChild(el);
+      
+      // We don't call Cell.init(el)
+      const state = Cell.getState(el);
+      expect(state.auto).toBe(true);
+    });
+
+    it('should support setProperty helper', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-cell', 'prop: 1');
+      container.appendChild(el);
+      Cell.init(el);
+      
+      Cell.setProperty(el, 'prop', 2);
+      expect(Cell.getState(el).prop).toBe(2);
+    });
+
+    it('should support clearPreserved for ID-based state', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-cell', 'val: 1');
+      el.setAttribute('d-id', 'clear-me');
+      container.appendChild(el);
+      Cell.init(el);
+      Cell.setState(el, { val: 10 });
+      
+      Cell.clearPreserved('clear-me');
+      
+      const el2 = document.createElement('div');
+      el2.setAttribute('d-cell', 'val: 1');
+      el2.setAttribute('d-id', 'clear-me');
+      container.appendChild(el2);
+      
+      // Should get initial seed instead of preserved 10
+      const state = Cell.init(el2);
+      expect(state.val).toBe(1);
+    });
+  });
 });

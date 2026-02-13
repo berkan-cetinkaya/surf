@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Surface, { getSignature, smartReplaceHead } from '../../src/surface.js';
 
 describe('Surface Module', () => {
@@ -182,6 +182,7 @@ describe('Surface Module', () => {
 
         expect(document.head.querySelector('script[src="new.js"]')).not.toBeNull();
       });
+
       it('integration: replace(document.documentElement) uses smart head replacement', () => {
         document.head.innerHTML = '<title>Old</title><link href="keep.css">';
         const oldLink = document.head.querySelector('link');
@@ -194,6 +195,130 @@ describe('Surface Module', () => {
         expect(document.head.querySelector('link')).toBe(oldLink);
         expect(document.head.querySelector('script[src="new.js"]')).not.toBeNull();
         expect(document.body.querySelector('#new-body')).not.toBeNull();
+      });
+
+      it('replaces script if attributes change (e.g. async/defer)', () => {
+        const oldScript = document.createElement('script');
+        oldScript.src = 'app.js';
+        document.head.appendChild(oldScript);
+
+        const newHead = document.createElement('head');
+        // Same src, but added async attribute
+        newHead.innerHTML = '<script src="app.js" async></script>';
+
+        smartReplaceHead(newHead);
+
+        const currentScript = document.head.querySelector('script[src="app.js"]');
+        expect(currentScript).not.toBe(oldScript);
+        expect(currentScript.hasAttribute('async')).toBe(true);
+      });
+    });
+
+    describe('activateScripts', () => {
+      it('replaces scripts with executable clones (non-async)', () => {
+        const body = document.createElement('body');
+        const script = document.createElement('script');
+        script.textContent = 'window.testVal = 1';
+        body.appendChild(script);
+
+        Surface.activateScripts(body);
+
+        const newScript = body.querySelector('script');
+        expect(newScript).not.toBe(script);
+        // Our fix forces non-async for activated scripts unless explicit
+        expect(newScript.async).toBe(false); 
+      });
+
+      it('preserves script attributes when activating', () => {
+        const body = document.createElement('body');
+        const script = document.createElement('script');
+        script.setAttribute('type', 'module');
+        script.setAttribute('data-test', 'true');
+        body.appendChild(script);
+
+        Surface.activateScripts(body);
+
+        const newScript = body.querySelector('script');
+        expect(newScript.getAttribute('type')).toBe('module');
+        expect(newScript.getAttribute('data-test')).toBe('true');
+      });
+    });
+
+    describe('Warnings & Edge Cases', () => {
+      it('should warn when replace target is not found', () => {
+        const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        Surface.replace('#ghost', '<div>Content</div>');
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Surface not found: #ghost'));
+        spy.mockRestore();
+      });
+
+      it('should warn when inject target is not found', () => {
+        const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        Surface.append('#ghost', '<div>Content</div>');
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Surface not found: #ghost'));
+        spy.mockRestore();
+      });
+      
+      it('should use string selector in inject (append/prepend)', () => {
+          const div = document.createElement('div');
+          div.id = 'target-div';
+          container.appendChild(div);
+          
+          Surface.append('#target-div', '<span>Appended</span>');
+          expect(div.innerHTML).toBe('<span>Appended</span>');
+      });
+    });
+
+    it('replaces scripts and respects async attribute', () => {
+        const body = document.createElement('body');
+        const script = document.createElement('script');
+        script.setAttribute('async', 'true');
+        body.appendChild(script);
+
+        Surface.activateScripts(body);
+
+        const newScript = body.querySelector('script');
+        expect(newScript.async).toBe(true);
+    });
+
+    describe('getSignature Edge Cases', () => {
+      it('handles script with defer and type', () => {
+        const script = document.createElement('script');
+        script.src = 'test.js';
+        script.setAttribute('defer', 'true');
+        script.setAttribute('type', 'module');
+        const sig = getSignature(script);
+        expect(sig).toContain(':defer');
+        expect(sig).toContain(':module');
+      });
+
+      it('handles script with hasAttribute("src") but empty src', () => {
+          const script = document.createElement('script');
+          script.setAttribute('src', '');
+          const sig = getSignature(script);
+          expect(sig).toContain('SCRIPT:');
+      });
+    });
+
+    describe('smartReplaceHead Duplicate Management', () => {
+      it('removes duplicate instances when sig matches', () => {
+        const head = document.head;
+        const link1 = document.createElement('link');
+        link1.href = 'style.css';
+        const link2 = document.createElement('link');
+        link2.href = 'style.css';
+        head.appendChild(link1);
+        head.appendChild(link2);
+
+        const newHead = document.createElement('head');
+        const link3 = document.createElement('link');
+        link3.href = 'style.css';
+        newHead.appendChild(link3);
+
+        smartReplaceHead(newHead);
+
+        const links = head.querySelectorAll('link[href="style.css"]');
+        expect(links.length).toBe(1);
       });
     });
   });

@@ -39,7 +39,13 @@ export function getSignature(node) {
   if (node.tagName === 'TITLE') return 'TITLE';
   if (node.tagName === 'LINK' && node.href) return `LINK:${node.getAttribute('href')}`;
   if (node.tagName === 'META' && node.getAttribute('name')) return `META:${node.getAttribute('name')}`;
-  if (node.tagName === 'SCRIPT' && node.src) return `SCRIPT:${node.getAttribute('src')}`;
+  if (node.tagName === 'SCRIPT' && (node.src || node.hasAttribute('src'))) {
+    const src = node.getAttribute('src');
+    const async = node.hasAttribute('async') ? ':async' : '';
+    const defer = node.hasAttribute('defer') ? ':defer' : '';
+    const type = node.getAttribute('type') ? `:${node.getAttribute('type')}` : '';
+    return `SCRIPT:${src}${async}${defer}${type}`;
+  }
   if (node.tagName === 'STYLE') return `STYLE:${node.textContent.trim()}`; 
   return node.outerHTML; 
 }
@@ -105,14 +111,14 @@ function activateScripts(container) {
   scripts.forEach(oldScript => {
     const newScript = document.createElement('script');
     
-    // Force sequential execution for scripts with src
-    if (oldScript.src) {
-        newScript.async = false;
-    }
-
     Array.from(oldScript.attributes).forEach(attr => {
       newScript.setAttribute(attr.name, attr.value);
     });
+
+    // Force sequential execution unless explicitly async
+    if (!newScript.hasAttribute('async')) {
+        newScript.async = false;
+    }
     
     // Copy content
     newScript.textContent = oldScript.textContent;
@@ -242,5 +248,7 @@ export default {
   getBySelector,
   replace,
   append,
-  prepend
+  prepend,
+  activateScripts,
+  replaceDocument
 };
