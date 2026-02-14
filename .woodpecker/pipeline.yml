@@ -3,21 +3,21 @@ when:
 
 steps:
   install:
-    image: node:20
+    image: bash
     commands:
       - npm install
 
   lint:
-    image: node:20
+    image: bash
     commands:
       - npm run lint
 
-  test:
-    image: node:20
-    commands:
-      - npm run coverage
-
   build:
-    image: node:20
+    image: bash
     commands:
       - npm run build
+
+  test:
+    image: bash
+    commands:
+      - npm run coverage
