@@ -173,7 +173,6 @@ export function replace(selectorOrElement, html) {
     return replaceDocument(html);
   }
 
-  // Create a template to parse the HTML
   const template = document.createElement('template');
   template.innerHTML = html.trim();
 
@@ -181,9 +180,16 @@ export function replace(selectorOrElement, html) {
   surface.innerHTML = '';
 
   // Append all children from the template
-  while (template.content.firstChild) {
-    surface.appendChild(template.content.firstChild);
-  }
+  const children = Array.from(template.content.childNodes);
+  children.forEach((child) => {
+    surface.appendChild(child);
+
+    // Initialize if it's an element
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      import('./cell.js').then((m) => m.initAll(child));
+      import('./signal.js').then((m) => m.initAll(child));
+    }
+  });
 
   return surface;
 }
@@ -231,11 +237,12 @@ function inject(selectorOrElement, html, position) {
   const template = document.createElement('template');
   template.innerHTML = html.trim();
 
-  // Use DocumentFragment for efficient insertion
+  const children = Array.from(template.content.childNodes);
   const fragment = document.createDocumentFragment();
-  while (template.content.firstChild) {
-    fragment.appendChild(template.content.firstChild);
-  }
+
+  children.forEach((child) => {
+    fragment.appendChild(child);
+  });
 
   if (position === 'beforeend') {
     surface.appendChild(fragment);
@@ -243,7 +250,32 @@ function inject(selectorOrElement, html, position) {
     surface.insertBefore(fragment, surface.firstChild);
   }
 
+  // Initialize new elements after they are in the DOM
+  children.forEach((child) => {
+    if (child.nodeType === Node.ELEMENT_NODE) {
+      import('./cell.js').then((m) => m.initAll(child));
+      import('./signal.js').then((m) => m.initAll(child));
+    }
+  });
+
   return surface;
+}
+
+/**
+ * Remove element from DOM
+ * @param {string|Element} selectorOrElement
+ */
+export function remove(selectorOrElement) {
+  let element;
+  if (typeof selectorOrElement === 'string') {
+    element = document.querySelector(selectorOrElement);
+  } else {
+    element = selectorOrElement;
+  }
+
+  if (element && element.parentNode) {
+    element.remove();
+  }
 }
 
 export default {
@@ -252,6 +284,7 @@ export default {
   replace,
   append,
   prepend,
+  remove,
   activateScripts,
   replaceDocument,
 };

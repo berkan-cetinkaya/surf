@@ -60,10 +60,9 @@
             </div>
             <% } %>
 
-                <div class="action-bar">
+                <div class="action-bar" d-signal="click: event.stopPropagation()">
                     <form action="/examples/kanban/delete" method="POST" d-pulse="commit"
-                        d-target="#col-<%= currentColumnId %>"
-                        d-signal="submit: if(!confirm('Delete this task?')) event.preventDefault(); event.stopPropagation()">
+                        d-target="#col-<%= currentColumnId %>">
                         <input type="hidden" name="taskId" value="<%= task.id %>">
                         <input type="hidden" name="columnId" value="<%= currentColumnId %>">
                         <input type="hidden" name="sprintId" value="<%= task.sprintId || '' %>">

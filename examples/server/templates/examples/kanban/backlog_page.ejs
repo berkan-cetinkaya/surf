@@ -5,6 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surf Board - Backlog & Planning</title>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <%- include('partials/sidebar.ejs') %>
+
+            <div class="dashboard-main">
+                <%- include('partials/header.ejs') %>
+
+                    <div class="dashboard-content">
+                        <div class="board-container">
+
+                            <div class="nav-header">
+                                <a href="/examples/kanban" class="nav-link" d-pulse="navigate" d-target="body">Active
+                                    Board</a>
+                                <a href="/examples/kanban/backlog" class="nav-link active" d-pulse="navigate"
+                                    d-target="body">Backlog & Planning</a>
+                            </div>
+
+                            <%- include('partials/backlog.ejs', { backlogBuckets: backlogBuckets }) %>
+                        </div>
+                    </div>
+            </div>
+    </div>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -102,29 +127,6 @@
             background: rgba(56, 189, 248, 0.1);
         }
     </style>
-</head>
-
-<body>
-    <div class="dashboard-layout">
-        <%- include('partials/sidebar.ejs') %>
-
-            <div class="dashboard-main">
-                <%- include('partials/header.ejs') %>
-
-                    <div class="dashboard-content">
-                        <div class="board-container">
-
-                            <div class="nav-header">
-                                <a href="/examples/kanban" class="nav-link">Active Board</a>
-                                <a href="/examples/kanban/backlog" class="nav-link active">Backlog & Planning</a>
-                            </div>
-
-                            <%- include('partials/backlog.ejs', { backlogBuckets: backlogBuckets }) %>
-                        </div>
-                    </div>
-            </div>
-    </div>
-
     <%- include('partials/scripts.ejs') %>
 </body>
 

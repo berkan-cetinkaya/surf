@@ -66,7 +66,13 @@ const AutoRefresh = {
       }
 
       // Set up interval
-      setInterval(() => refreshSurface(surface, url), interval);
+      const intervalId = setInterval(() => {
+        if (!surface.isConnected) {
+          clearInterval(intervalId);
+          return;
+        }
+        refreshSurface(surface, url);
+      }, interval);
     });
 
     console.log('[Surf] Auto-refresh plugin installed');

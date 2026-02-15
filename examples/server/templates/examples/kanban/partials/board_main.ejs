@@ -1,0 +1,29 @@
+<div class="board-container">
+    <% if (activeSprintId) { %>
+        <div class="kanban-board" d-auto-refresh="3000"
+            d-auto-refresh-url="/examples/kanban?sprintId=<%= activeSprintId %>&mode=fragment">
+            <% board.forEach(col=> { %>
+                <%- include('column.ejs', { column: col, activeSprintId: activeSprintId }) %>
+                    <% }); %>
+
+                        <!-- Add Column Placeholder (Visual Only) -->
+                        <div
+                            style="min-width: 300px; height: 60px; border: 2px dashed var(--border-subtle); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; opacity: 0.6;">
+                            + Add Section
+                        </div>
+        </div>
+        <% } else { %>
+            <div
+                style="text-align: center; padding: 4rem; color: var(--text-muted); border: 2px dashed var(--border-subtle); border-radius: 12px;">
+                <h3>Select a Sprint to view the board</h3>
+                <p style="margin-top: 1rem;">
+                    No active sprint selected.
+                    <a href="/examples/kanban/backlog" d-pulse="navigate" d-target="body"
+                        style="color: var(--brand-primary); text-decoration: none; border-bottom: 1px dashed var(--brand-primary);">
+                        Go to Backlog
+                    </a>
+                    to create a new sprint or add tasks.
+                </p>
+            </div>
+            <% } %>
+</div>

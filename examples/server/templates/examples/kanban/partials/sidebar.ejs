@@ -1,23 +1,23 @@
 <aside class="dashboard-sidebar">
-    <a href="/" d-pulse="navigate" d-target="html" class="sidebar-logo">
-        <img src="/brand/surf-logo.png" alt="SURF Logo" class="logo-img">
-        <div class="logo-text-group">
-            <span class="logo-brand">Surf</span>
-            <div class="logo-badges">
-                <span class="badge-beta">Beta</span>
-                <span class="version-tag">v0.2.0</span>
-            </div>
-        </div>
+    <a href="/" d-pulse="navigate" class="nav-logo"
+        style="display: flex; align-items: center; text-decoration: none; color: var(--cyan); font-weight: 700; font-size: 1.25rem;">
+        <img src="/brand/surf-logo.png" alt="SURF" height="56" width="56"
+            style="height: 56px; width: 56px; display: block;">
+        <span style="margin-left: 0.75rem;">Surf</span>
+        <span
+            style="font-size: 0.6rem; background: var(--purple); color: #282a36; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; vertical-align: middle; line-height: 1;">Beta</span>
+        <span
+            style="font-size: 0.65rem; color: var(--text-muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.2.0</span>
     </a>
 
     <div class="sidebar-group">
         <h3 class="group-title">Workspace</h3>
         <nav class="nav-menu">
-            <a href="/examples/kanban" class="nav-item" d-pulse="navigate" d-target="html">
+            <a href="/examples/kanban" class="nav-item" d-pulse="navigate" d-target="body">
                 <span class="icon">⊞</span>
                 Board
             </a>
-            <a href="/examples/kanban/backlog" class="nav-item" d-pulse="navigate" d-target="html">
+            <a href="/examples/kanban/backlog" class="nav-item" d-pulse="navigate" d-target="body">
                 <span class="icon">≣</span>
                 Planning
             </a>
@@ -51,66 +51,13 @@
         /* Fixed height for sticky sidebar */
     }
 
-    .sidebar-logo {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding-bottom: 2rem;
-        text-decoration: none;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    .nav-logo {
+        transition: opacity 0.2s;
+        margin-bottom: 2rem;
     }
 
-    .sidebar-logo:hover {
-        transform: translateY(-2px);
-        opacity: 0.9;
-    }
-
-    .logo-img {
-        height: 36px;
-        width: 36px;
-        object-fit: contain;
-        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.3));
-    }
-
-    .logo-text-group {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.1;
-    }
-
-    .logo-brand {
-        font-weight: 800;
-        font-size: 1.4rem;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #fff, var(--brand-primary), var(--cyan));
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .logo-badges {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        margin-top: 0.2rem;
-    }
-
-    .badge-beta {
-        font-size: 0.55rem;
-        background: var(--brand-secondary);
-        color: #0f172a;
-        padding: 1px 4px;
-        border-radius: 4px;
-        text-transform: uppercase;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-    }
-
-    .version-tag {
-        font-size: 0.6rem;
-        color: var(--text-muted);
-        font-family: monospace;
-        opacity: 0.6;
+    .nav-logo:hover {
+        opacity: 0.8;
     }
 
     .group-title {
