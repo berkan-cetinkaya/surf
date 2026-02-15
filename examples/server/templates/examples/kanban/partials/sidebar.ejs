@@ -1,6 +1,11 @@
 <aside class="dashboard-sidebar">
     <div class="sidebar-logo">
-        <div class="logo-box">S</div>
+        <div class="logo-box">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 19.78h20L12 2zm0 4.45L18.5 18H5.5L12 6.45z" fill="currentColor" />
+                <path d="M12 9l-4 7h8l-4-7z" fill="currentColor" opacity="0.8" />
+            </svg>
+        </div>
         <span class="logo-text">SURF</span>
     </div>
 
@@ -55,19 +60,24 @@
     .logo-box {
         width: 32px;
         height: 32px;
-        background: var(--brand-primary);
-        border-radius: 6px;
+        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
         color: white;
+        padding: 6px;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
     }
 
     .logo-text {
-        font-weight: 700;
-        font-size: 1.2rem;
-        letter-spacing: 0.05em;
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: 0.1em;
+        background: linear-gradient(to right, #fff, var(--text-muted));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .group-title {
