@@ -698,20 +698,27 @@ export const VisualDebugger = {
     });
 
     Surf.on('cell:warn', (detail) => {
-      const cellId = detail.cell?.getAttribute('d-id') || detail.cell?.id || 'anonymous';
+      const el = detail.cell || detail.element;
+      if (!el) return;
+
+      const cellId = el.getAttribute('d-id') || el.id || 'anonymous';
       const originKey =
         cellId === 'anonymous'
-          ? `anon-${detail.cell.tagName.toLowerCase()}-${detail.cell.innerText?.slice(0, 20).replace(/\s+/g, '_') || Math.random().toString(36).slice(2, 6)}`
+          ? `anon-${el.tagName.toLowerCase()}-${el.innerText?.slice(0, 20).replace(/\s+/g, '_') || Math.random().toString(36).slice(2, 6)}`
           : cellId;
 
+      let action = 'Check component configuration.';
+      if (detail.type === 'missing-id') {
+        action = `1. Add a unique "d-id" to the <${el.tagName.toLowerCase()}> element.\n2. Example: <${el.tagName.toLowerCase()} d-cell d-id="my-cell-name">`;
+      } else if (detail.type === 'orphaned-signal') {
+        action = `1. Wrap this element (or a parent) in a "d-cell" attribute.\n2. Example: <div d-cell="{...}"> <${el.tagName.toLowerCase()} d-signal="..."> </div>`;
+      }
+
       addLog('warn', `Framework Warning: ${detail.type}`, {
-        cell: detail.cell,
+        cell: el,
         cellId: originKey,
         description: detail.message,
-        action:
-          detail.type === 'missing-id'
-            ? `1. Add a unique "d-id" to the <${detail.cell.tagName.toLowerCase()}> element.\n2. Example: <${detail.cell.tagName.toLowerCase()} d-cell d-id="my-cell-name">`
-            : 'Check component configuration.',
+        action: action,
       });
     });
 

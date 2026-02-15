@@ -568,7 +568,13 @@ function bindSignalElement(element) {
     const cellElement = findParentCell(element);
 
     if (!cellElement) {
-      console.warn('[Surf] Signal element has no parent cell:', element);
+      const warnMsg = `[Surf] Signal element has no parent cell: <${element.tagName.toLowerCase()}${element.id ? '#' + element.id : ''}>`;
+      console.warn(warnMsg, element);
+      Events.emit('cell:warn', {
+        element: element,
+        message: warnMsg,
+        type: 'orphaned-signal',
+      });
       return;
     }
 

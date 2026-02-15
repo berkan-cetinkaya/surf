@@ -1,6 +1,13 @@
 <aside class="dashboard-sidebar">
     <a href="/" d-pulse="navigate" d-target="html" class="sidebar-logo">
-        <img src="/brand/surf-logo.png" alt="SURF Logo" style="height: 28px; width: auto; object-fit: contain;">
+        <img src="/brand/surf-logo.png" alt="SURF Logo" class="logo-img">
+        <div class="logo-text-group">
+            <span class="logo-brand">Surf</span>
+            <div class="logo-badges">
+                <span class="badge-beta">Beta</span>
+                <span class="version-tag">v0.2.0</span>
+            </div>
+        </div>
     </a>
 
     <div class="sidebar-group">
@@ -48,36 +55,62 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding-bottom: 1.5rem;
+        padding-bottom: 2rem;
         text-decoration: none;
-        transition: transform 0.2s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar-logo:hover {
-        transform: translateX(4px);
+        transform: translateY(-2px);
+        opacity: 0.9;
     }
 
-    .logo-box {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-        border-radius: 8px;
+    .logo-img {
+        height: 36px;
+        width: 36px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.3));
+    }
+
+    .logo-text-group {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        padding: 6px;
-        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        flex-direction: column;
+        line-height: 1.1;
     }
 
-    .logo-text {
+    .logo-brand {
         font-weight: 800;
         font-size: 1.4rem;
-        letter-spacing: 0.1em;
-        background: linear-gradient(to right, #fff, var(--text-muted));
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #fff, var(--brand-primary), var(--cyan));
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    .logo-badges {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.2rem;
+    }
+
+    .badge-beta {
+        font-size: 0.55rem;
+        background: var(--brand-secondary);
+        color: #0f172a;
+        padding: 1px 4px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+    }
+
+    .version-tag {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        font-family: monospace;
+        opacity: 0.6;
     }
 
     .group-title {

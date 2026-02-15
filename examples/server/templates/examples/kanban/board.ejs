@@ -236,7 +236,8 @@
                 <%- include('partials/header.ejs') %>
 
                     <!-- Sprint Selector / Board Header -->
-                    <div style="padding: 0 2rem; margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
+                    <div d-cell d-id="sprint-header"
+                        style="padding: 0 2rem; margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
                         <form action="/examples/kanban" method="GET" d-pulse="navigate" d-target=".board-container"
                             style="display: flex; gap: 0.5rem; align-items: center;">
                             <label for="sprint-select"
