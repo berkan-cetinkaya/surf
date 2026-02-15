@@ -52,26 +52,46 @@ describe('Pulse Module', () => {
       expect(surface.innerHTML).toBe('<h1>New Page</h1>');
     });
 
-    it('should emit lifecycle events', async () => {
+    it('should emit lifecycle events and include headers', async () => {
       const surface = document.createElement('div');
       surface.id = 'main';
       container.appendChild(surface);
 
       global.fetch.mockResolvedValue({
         ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Map([
+          ['Content-Type', 'text/html'],
+          ['X-Custom', 'Value'],
+        ]),
         text: () => Promise.resolve('Content'),
       });
 
       const beforeSpy = vi.fn();
       const afterSpy = vi.fn();
+      const endSpy = vi.fn();
 
       Pulse.on('before:pulse', beforeSpy);
       Pulse.on('after:patch', afterSpy);
+      Pulse.on('pulse:end', endSpy);
 
       await Pulse.navigate('/test', '#main');
 
       expect(beforeSpy).toHaveBeenCalled();
       expect(afterSpy).toHaveBeenCalled();
+      expect(endSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            'Content-Type': 'text/html',
+            'X-Custom': 'Value',
+          }),
+        })
+      );
+
+      Pulse.off('before:pulse', beforeSpy);
+      Pulse.off('after:patch', afterSpy);
+      Pulse.off('pulse:end', endSpy);
     });
 
     it('should handle network errors', async () => {
@@ -80,7 +100,7 @@ describe('Pulse Module', () => {
       const errorSpy = vi.fn();
       Pulse.on('error:network', errorSpy);
 
-      await Pulse.navigate('/fail', '#main');
+      await expect(Pulse.navigate('/fail', '#main')).rejects.toThrow('Network Error');
 
       expect(errorSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
@@ -411,6 +431,7 @@ describe('Pulse Module', () => {
 
     it('should include cell state in action pulse', async () => {
       const cell = document.createElement('div');
+      cell.setAttribute('d-id', 'pulse-action-cell');
       cell.setAttribute('d-cell', 'id: 1');
       container.appendChild(cell);
 
@@ -506,7 +527,7 @@ describe('Pulse Module', () => {
       Pulse.emit('before:pulse', {});
 
       expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('Error in before:pulse listener'),
+        expect.stringContaining('[Surf] Error in lifecycle listener [before:pulse]:'),
         expect.any(Error)
       );
 
@@ -671,9 +692,25 @@ describe('Pulse Module', () => {
         statusText: 'Internal Server Error',
       });
 
-      await Pulse.navigate('/fail', '#main');
+      await expect(Pulse.navigate('/fail', '#main')).rejects.toThrow('HTTP 500');
       expect(spy).toHaveBeenCalledWith(expect.stringContaining('Pulse error:'), expect.any(Error));
       spy.mockRestore();
+    });
+
+    it('should handle network errors (rejection) in sendPulse', async () => {
+      const error = new Error('Network Failure');
+      global.fetch.mockRejectedValueOnce(error);
+
+      const events = [];
+      const cb = (e) => events.push(e);
+      Pulse.on('pulse:error', cb);
+
+      await expect(Pulse.navigate('/error', '#main')).rejects.toThrow('Network Failure');
+
+      expect(events.length).toBe(1);
+      expect(events[0].error).toBe(error);
+
+      Pulse.off('pulse:error', cb);
     });
 
     it('should replaceState when navigating to same URL', async () => {

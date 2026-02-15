@@ -18,6 +18,7 @@ describe('Signal Module', () => {
   // Helper to create an initialized cell
   function createCell(stateSeed = 'count: 0') {
     const el = document.createElement('div');
+    el.setAttribute('d-id', 'test-cell-' + Math.random().toString(36).slice(2, 9));
     el.setAttribute('d-cell', stateSeed);
     container.appendChild(el);
     Cell.init(el);
@@ -107,6 +108,15 @@ describe('Signal Module', () => {
 
       Signal.updateBindings(cell);
       expect(span.textContent).toBe('Hello');
+    });
+
+    it('should parse object literal WITHOUT braces', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-id', 'parse-no-braces');
+      el.setAttribute('d-cell', 'count: 20');
+      container.appendChild(el);
+      Cell.init(el);
+      expect(Cell.getState(el)).toEqual({ count: 20 });
     });
 
     it('should update d-show', () => {
@@ -311,6 +321,15 @@ describe('Signal Module', () => {
       Signal.initAll(cell);
       expect(spy).toHaveBeenCalledWith(expect.stringContaining('Invalid signal expression'));
       spy.mockRestore();
+    });
+
+    it('should parse object literal with braces', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-id', 'parse-braces');
+      el.setAttribute('d-cell', '{ count: 10 }');
+      container.appendChild(el);
+      Cell.init(el);
+      expect(Cell.getState(el)).toEqual({ count: 10 });
     });
 
     it('should handle signals on elements without parent cell', () => {

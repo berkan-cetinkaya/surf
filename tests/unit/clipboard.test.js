@@ -73,6 +73,7 @@ describe('Clipboard Plugin', () => {
 
     // DOM Structure: <div d-cell> <button>...</div>
     const cell = document.createElement('div');
+    cell.setAttribute('d-id', 'clipboard-test-cell-1');
     cell.setAttribute('d-cell', '{ copied: true }');
     container.appendChild(cell);
 
@@ -93,6 +94,7 @@ describe('Clipboard Plugin', () => {
     const plugin = mockSurf.register.mock.calls[0][1];
 
     const cell = document.createElement('div');
+    cell.setAttribute('d-id', 'clipboard-test-cell-2');
     cell.setAttribute('d-cell', '{ copied: false }');
     container.appendChild(cell);
 

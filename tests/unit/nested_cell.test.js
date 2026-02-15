@@ -17,10 +17,10 @@ describe('Nested d-cell behavior', () => {
 
   it('Inner cell bindings should persist when outer cell updates', () => {
     document.body.innerHTML = `
-            <div id="outer" d-cell="{ val: 'outer' }">
+            <div id="outer" d-cell="{ val: 'outer' }" d-id="outer-cell">
                 <span id="outer-span" d-text="val"></span>
                 
-                <div id="inner" d-cell="{ val: 'inner' }">
+                <div id="inner" d-cell="{ val: 'inner' }" d-id="inner-cell">
                     <span id="inner-span" d-text="val"></span>
                 </div>
             </div>

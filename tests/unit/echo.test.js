@@ -54,6 +54,7 @@ describe('Echo Module', () => {
   it('should initialize new cells found in content', () => {
     Echo.withPreservation(container, () => {
       const newEl = document.createElement('div');
+      newEl.setAttribute('d-id', 'echo-new-cell');
       newEl.setAttribute('d-cell', 'val: 10');
       container.appendChild(newEl);
     });

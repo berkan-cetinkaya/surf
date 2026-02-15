@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import Cell from '../../src/cell.js';
+import Events from '../../src/events.js';
 
 describe('Cell Module', () => {
   let container;
@@ -117,6 +118,10 @@ describe('Cell Module', () => {
 
     it('should warn when d-cell has no d-id', () => {
       const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const warnSpy = vi.fn();
+
+      Events.on('cell:warn', warnSpy);
+
       const el = document.createElement('div');
       el.setAttribute('d-cell', 'count: 0');
       container.appendChild(el);
@@ -124,6 +129,15 @@ describe('Cell Module', () => {
       Cell.initAll(container);
 
       expect(spy).toHaveBeenCalledWith(expect.stringContaining('missing a "d-id"'), el);
+      expect(warnSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'missing-id',
+          message: expect.stringContaining('missing a "d-id"'),
+        })
+      );
+
+      Events.off('cell:warn', warnSpy);
       spy.mockRestore();
     });
   });
@@ -138,6 +152,23 @@ describe('Cell Module', () => {
       expect(state).toEqual({});
       expect(spy).toHaveBeenCalledWith(expect.stringContaining('Element is not a cell'), el);
       spy.mockRestore();
+    });
+
+    it('should handle null elements in init and getState gracefully', () => {
+      expect(Cell.init(null)).toEqual({});
+      expect(Cell.getState(null)).toEqual({});
+    });
+
+    it('should handle empty or missing d-cell attribute in init', () => {
+      const el = document.createElement('div');
+      el.setAttribute('d-cell', '');
+      container.appendChild(el);
+      expect(Cell.init(el)).toEqual({});
+
+      const el2 = document.createElement('div');
+      el2.setAttribute('d-cell', '   ');
+      container.appendChild(el2);
+      expect(Cell.init(el2)).toEqual({});
     });
 
     it('should initialize cell automatically in getState if not initialized', () => {
