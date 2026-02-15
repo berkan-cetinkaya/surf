@@ -16,17 +16,11 @@ import * as Surface from './surface.js';
 import * as Patch from './patch.js';
 import * as Echo from './echo.js';
 import { background } from 'go-like-ctx';
+import Events from './events.js';
 
 const PULSE_ATTR = 'd-pulse';
 const TARGET_ATTR = 'd-target';
 const ACTION_ATTR = 'd-action';
-
-// Event emitter for pulse lifecycle
-const listeners = {
-  'before:pulse': [],
-  'after:patch': [],
-  'error:network': [],
-};
 
 // Context management
 const rootCtx = background();
@@ -41,32 +35,31 @@ async function getCellModule() {
   return cellModule;
 }
 
-/**
- * Emit an event to listeners
- * @param {string} event
- * @param {Object} detail
- */
+const EVENT_ALIASES = {
+  'before:pulse': 'pulse:start',
+  'after:patch': 'pulse:end',
+  'error:network': 'pulse:error',
+};
+
 export function emit(event, detail) {
-  if (listeners[event]) {
-    listeners[event].forEach((cb) => {
-      try {
-        cb(detail);
-      } catch (e) {
-        console.error(`[Surf] Error in ${event} listener:`, e);
-      }
-    });
+  // Emit standard event
+  Events.emit(event, detail);
+
+  // Emit alias if exists
+  if (EVENT_ALIASES[event]) {
+    Events.emit(EVENT_ALIASES[event], detail);
+  }
+
+  // Handle reverse: if standard is emitted, also emit legacy alias
+  for (const [alias, standard] of Object.entries(EVENT_ALIASES)) {
+    if (event === standard) {
+      Events.emit(alias, detail);
+    }
   }
 }
 
-/**
- * Register an event listener
- * @param {string} event
- * @param {function} callback
- */
 export function on(event, callback) {
-  if (listeners[event]) {
-    listeners[event].push(callback);
-  }
+  Events.on(event, callback);
 }
 
 /**
@@ -75,12 +68,7 @@ export function on(event, callback) {
  * @param {function} callback
  */
 export function off(event, callback) {
-  if (listeners[event]) {
-    const index = listeners[event].indexOf(callback);
-    if (index > -1) {
-      listeners[event].splice(index, 1);
-    }
-  }
+  Events.off(event, callback);
 }
 
 /**
@@ -115,7 +103,7 @@ function applyPatches(patches) {
  * @param {string} targetSelector
  */
 async function sendPulse(url, options, targetSelector) {
-  emit('before:pulse', { url, options, target: targetSelector });
+  emit('pulse:start', { url, options, target: targetSelector });
 
   // Cancel previous context for same target
   if (targetSelector && contexts.has(targetSelector)) {
@@ -164,11 +152,26 @@ async function sendPulse(url, options, targetSelector) {
       }
     }
 
-    emit('after:patch', { url, target: targetSelector });
+    const responseHeaders = {};
+    if (response.headers && typeof response.headers.forEach === 'function') {
+      response.headers.forEach((value, name) => {
+        responseHeaders[name] = value;
+      });
+    }
+
+    emit('pulse:end', {
+      url,
+      target: targetSelector,
+      status: response.status,
+      statusText: response.statusText,
+      headers: responseHeaders,
+      body: html,
+    });
   } catch (error) {
     if (ctx.cancelled()) return;
     console.error('[Surf] Pulse error:', error);
-    emit('error:network', { url, error });
+    emit('pulse:error', { url, target: targetSelector, error });
+    throw error;
   } finally {
     if (targetSelector && contexts.get(targetSelector) === ctx) {
       contexts.delete(targetSelector);

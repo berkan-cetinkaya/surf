@@ -7,6 +7,7 @@
  */
 
 import * as Cell from './cell.js';
+import Events from './events.js';
 
 const SIGNAL_ATTR = 'd-signal';
 const TEXT_ATTR = 'd-text';
@@ -83,7 +84,7 @@ function setPath(obj, path, value, state) {
  * @param {Object} state
  * @returns {any}
  */
-function evaluate(expr, state) {
+export function evaluate(expr, state) {
   if (!expr || !state) return undefined;
 
   const trimmed = expr.trim();
@@ -135,6 +136,16 @@ function evaluate(expr, state) {
   const ltMatch = trimmed.match(/^([\w.]+)\s*<\s*(.+)$/);
   if (ltMatch) {
     return (evaluate(ltMatch[1], state) || 0) < (evaluate(ltMatch[2], state) || 0);
+  }
+
+  // Module method calls: MyMod.doSomething()
+  const callMatch = trimmed.match(/^([\w]+)\.([\w]+)\((.*)\)$/);
+  if (callMatch) {
+    const [, modName, method, argsExpr] = callMatch;
+    if (modules[modName] && typeof modules[modName][method] === 'function') {
+      const args = argsExpr ? argsExpr.split(',').map((a) => evaluate(a.trim(), state)) : [];
+      return modules[modName][method](...args);
+    }
   }
 
   return undefined;
@@ -405,7 +416,7 @@ function resolvePath(obj, path) {
  * @param {Element} cellElement
  */
 
-export function updateBindings(cellElement) {
+export function updateBindings(cellElement, { silent = false } = {}) {
   const state = Cell.getState(cellElement);
 
   // Update d-text bindings
@@ -481,6 +492,8 @@ export function updateBindings(cellElement) {
       }
     });
   });
+
+  if (!silent) Events.emit('signal:update', { cellElement });
 }
 
 /**
@@ -588,7 +601,7 @@ export function initAll(container = document) {
 
   // Initialize bindings for all cells
   const cells = Cell.findAll(container);
-  cells.forEach((cell) => updateBindings(cell));
+  cells.forEach((cell) => updateBindings(cell, { silent: true }));
 }
 
 /**

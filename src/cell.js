@@ -11,10 +11,14 @@ const CELL_ATTR = 'd-cell';
 const ID_ATTR = 'd-id';
 
 // WeakMap to store cell states without polluting DOM
-const cellStates = new WeakMap();
+export const cellStates = new WeakMap();
+export const cellIdStates = new Map();
 
-// Map for cell IDs to support Echo (state preservation)
-const cellIdStates = new Map();
+// Underscored aliases for plugin access
+export const _cellStates = cellStates;
+export const _cellIdStates = cellIdStates;
+
+import Events from './events.js';
 
 /**
  * Parse the seed expression from d-cell attribute
@@ -62,8 +66,8 @@ export function findAll(container = document) {
  * @returns {Object} The initialized state
  */
 export function init(element) {
-  if (!element.hasAttribute(CELL_ATTR)) {
-    console.warn('[Surf] Element is not a cell:', element);
+  if (!element || !element.hasAttribute(CELL_ATTR)) {
+    if (element) console.warn('[Surf] Element is not a cell:', element);
     return {};
   }
 
@@ -88,6 +92,8 @@ export function init(element) {
     cellIdStates.set(cellId, state);
   }
 
+  Events.emit('cell:init', { element, state, cellId });
+
   return state;
 }
 
@@ -97,6 +103,7 @@ export function init(element) {
  * @returns {Object}
  */
 export function getState(element) {
+  if (!element) return {};
   if (!cellStates.has(element)) {
     return init(element);
   }
@@ -110,6 +117,7 @@ export function getState(element) {
  * @returns {Object} The updated state
  */
 export function setState(element, newState) {
+  if (!element) return {};
   const currentState = getState(element);
   const updatedState = { ...currentState, ...newState };
 
@@ -120,6 +128,8 @@ export function setState(element, newState) {
   if (cellId) {
     cellIdStates.set(cellId, updatedState);
   }
+
+  Events.emit('cell:change', { element, state: updatedState, cellId });
 
   return updatedState;
 }
@@ -172,11 +182,15 @@ export function initAll(container = document) {
   const cells = findAll(container);
   cells.forEach((cell) => {
     if (!cell.getAttribute(ID_ATTR) && !cell.id) {
-      console.warn(
+      const msg =
         '[Surf] Cell is missing a "d-id" attribute. ' +
-          'Add d-id="unique-name" for reliable state preservation.',
-        cell
-      );
+        'Add d-id="unique-name" for reliable state preservation.';
+      console.warn(msg, cell);
+      Events.emit('cell:warn', {
+        cell,
+        message: msg,
+        type: 'missing-id',
+      });
     }
     init(cell);
   });
@@ -201,4 +215,6 @@ export default {
   restore,
   initAll,
   clearPreserved,
+  _cellStates: cellStates,
+  _cellIdStates: cellIdStates,
 };

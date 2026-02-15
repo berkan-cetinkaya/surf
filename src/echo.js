@@ -9,6 +9,7 @@
 
 import * as Cell from './cell.js';
 import * as Signal from './signal.js';
+import Events from './events.js';
 
 /**
  * Prepare for a surface update by capturing cell states
@@ -20,7 +21,9 @@ export function before(surface) {
   Signal.cleanup(surface);
 
   // Snapshot all cell states within the surface
-  return Cell.snapshot(surface);
+  const snapshot = Cell.snapshot(surface);
+  Events.emit('echo:before', { surface, snapshot });
+  return snapshot;
 }
 
 /**
@@ -37,6 +40,8 @@ export function after(surface, snapshot) {
 
   // Initialize signals in the new content
   Signal.initAll(surface);
+
+  Events.emit('echo:after', { surface });
 }
 
 /**

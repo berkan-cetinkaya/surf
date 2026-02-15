@@ -15,6 +15,7 @@ import * as Signal from './signal.js';
 import * as Pulse from './pulse.js';
 import * as Patch from './patch.js';
 import * as Echo from './echo.js';
+import Events from './events.js';
 
 /**
  * Global Surf object - the public API
@@ -50,11 +51,11 @@ Object.assign(Surf, {
 
   /**
    * Subscribe to framework events
-   * @param {string} event - Event name: 'before:pulse', 'after:patch', 'error:network'
+   * @param {string} event - Event name: 'pulse:start', 'pulse:end', 'pulse:error', 'cell:change', 'signal:update', 'echo:before', 'echo:after'
    * @param {function} callback - Event handler
    */
   on(event, callback) {
-    Pulse.on(event, callback);
+    Events.on(event, callback);
   },
 
   /**
@@ -63,7 +64,7 @@ Object.assign(Surf, {
    * @param {function} callback - Event handler to remove
    */
   off(event, callback) {
-    Pulse.off(event, callback);
+    Events.off(event, callback);
   },
 
   /**
