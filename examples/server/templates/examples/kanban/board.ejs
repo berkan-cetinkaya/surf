@@ -237,12 +237,12 @@
 
                     <!-- Sprint Selector / Board Header -->
                     <div style="padding: 0 2rem; margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
-                        <form action="/examples/kanban" method="GET"
+                        <form action="/examples/kanban" method="GET" d-pulse="navigate" d-target=".board-container"
                             style="display: flex; gap: 0.5rem; align-items: center;">
                             <label for="sprint-select"
                                 style="font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">Active
                                 Sprint:</label>
-                            <select id="sprint-select" name="sprintId" onchange="this.form.submit()"
+                            <select id="sprint-select" name="sprintId" d-signal="change: submit"
                                 style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 0.5rem; border-radius: 6px; min-width: 150px;">
                                 <option value="" disabled <%=!activeSprintId ? 'selected' : '' %>>Select Sprint</option>
                                 <% sprints.forEach(function(sprint) { %>

@@ -22,38 +22,22 @@
 
 <% if (column.id==='todo' ) { %>
     <form class="add-task-form" d-pulse="commit" method="POST" d-target="#col-<%= column.id %>"
-        action="/examples/kanban/add" d-swap="replace">
+        action="/examples/kanban/add" d-swap="replace" d-cell="{ editing: false }"
+        d-id="add-task-form-<%= column.id %>">
         <input type="hidden" name="columnId" value="<%= column.id %>">
         <% if (typeof activeSprintId !=='undefined' && activeSprintId) { %>
             <input type="hidden" name="sprintId" value="<%= activeSprintId %>">
             <% } %>
 
                 <!-- Toggle Button -->
-                <button type="button" class="ghost-add-btn" onclick="const form = this.parentElement; 
-                         const input = form.querySelector('.add-input'); 
-                         const uiGroup = form.querySelector('.input-group');
-                         uiGroup.style.display='flex'; 
-                         input.focus(); 
-                         this.style.display='none';">
+                <button type="button" class="ghost-add-btn" d-show="!editing" d-signal="click: editing = true">
                     + New Task
                 </button>
 
-                <!-- Input Group (Hidden by default) -->
-                <div class="input-group" style="display: none; gap: 0.5rem; width: 100%;">
+                <!-- Input Group -->
+                <div class="input-group" d-show="editing" style="gap: 0.5rem; width: 100%;">
                     <input type="text" name="title" class="add-input" placeholder="Enter task title..." required
-                        onkeydown="if(event.key==='Escape') { 
-                        this.parentElement.style.display='none'; 
-                        this.form.querySelector('.ghost-add-btn').style.display='block'; 
-                        this.value=''; 
-                    }" onblur="if(this.value==='') { 
-                        // Small delay to allow button click to register
-                        setTimeout(() => {
-                            if (!document.activeElement.closest('.add-task-form')) {
-                                this.parentElement.style.display='none';
-                                this.form.querySelector('.ghost-add-btn').style.display='block'; 
-                            }
-                        }, 200);
-                    }">
+                        d-signal="blur: if(this.value === '') editing = false; keydown: if(event.key === 'Escape') editing = false">
 
                     <!-- Explicit Submit Button -->
                     <button type="submit" class="submit-btn-mini" title="Add Task">↵</button>

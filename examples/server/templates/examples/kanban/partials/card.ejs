@@ -1,6 +1,7 @@
-<div class="card" d-draggable="true"
+<div class="card" d-cell="{ expanded: false }" d-id="card-<%= task.id %>" d-attr="class.expanded: expanded"
+    d-draggable="true"
     d-drag-data='{"taskId": "<%= task.id %>", "fromCol": "<%= currentColumnId %>", "fromSprintId": "<%= task.sprintId || "" %>"}'>
-    <div class="card-content" onclick="toggleCard(this)" d-no-drag>
+    <div class="card-content" d-signal="click: expanded = !expanded" d-no-drag>
         <div class="card-meta">
             <span class="type-badge <%= task.type %>" title="<%= task.type.toUpperCase() %>">
                 <%= task.type %>
@@ -10,7 +11,7 @@
                     <span class="priority-indicator critical" title="Critical Priority">!</span>
                     <% } %>
                         <a href="/examples/kanban/task/<%= task.id %>" d-pulse="navigate" class="detail-link"
-                            onclick="event.stopPropagation()" title="Open Dedicated Page">
+                            d-signal="click: event.stopPropagation()" title="Open Dedicated Page">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -46,7 +47,7 @@
     </div>
 
     <!-- Expanded Details Overlay -->
-    <div class="card-details" style="display: none;">
+    <div class="card-details" d-show="expanded" style="display: none;">
         <p class="description">
             <%= task.content || 'No description provided.' %>
         </p>
@@ -62,7 +63,7 @@
                 <div class="action-bar">
                     <form action="/examples/kanban/delete" method="POST" d-pulse="commit"
                         d-target="#col-<%= currentColumnId %>"
-                        onsubmit="if(!confirm('Delete this task?')) { event.preventDefault(); return false; } event.stopPropagation();">
+                        d-signal="submit: if(!confirm('Delete this task?')) event.preventDefault(); event.stopPropagation()">
                         <input type="hidden" name="taskId" value="<%= task.id %>">
                         <input type="hidden" name="columnId" value="<%= currentColumnId %>">
                         <input type="hidden" name="sprintId" value="<%= task.sprintId || '' %>">
@@ -71,22 +72,6 @@
                 </div>
     </div>
 </div>
-
-<script>
-    function toggleCard(element) {
-        // Find the parent card
-        const card = element.closest('.card');
-        const details = card.querySelector('.card-details');
-
-        if (details.style.display === 'none') {
-            details.style.display = 'block';
-            card.classList.add('expanded');
-        } else {
-            details.style.display = 'none';
-            card.classList.remove('expanded');
-        }
-    }
-</script>
 
 <style>
     .card {
