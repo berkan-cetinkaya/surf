@@ -550,7 +550,7 @@
                                         </div>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <select name="type" class="form-select type-select" autofocus
                                                 d-signal="change: submit; blur: editing = false">
                                                 <option value="feature" <%=task.type==='feature' ? 'selected' : '' %>
@@ -572,7 +572,7 @@
                                         </h2>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <input type="text" name="title" value="<%= task.title %>" autofocus
                                                 class="form-input title-input"
                                                 d-signal="blur: submit; keydown: if(event.key === 'Enter') submit">
@@ -593,7 +593,7 @@
                                         </div>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <select name="status" class="form-select"
                                                 d-signal="change: submit; blur: editing = false" autofocus>
                                                 <option value="backlog" <%=task.columnId==='backlog' ? 'selected' : ''
@@ -621,7 +621,7 @@
                                         </div>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <select name="sprintId" class="form-select"
                                                 d-signal="change: submit; blur: editing = false" autofocus>
                                                 <option value="" <%=!task.sprintId ? 'selected' : '' %>>General Backlog
@@ -646,7 +646,7 @@
                                         </div>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <select name="priority" class="form-select"
                                                 d-signal="change: submit; blur: editing = false" autofocus>
                                                 <option value="low" <%=task.priority==='low' ? 'selected' : '' %>>Low
@@ -677,7 +677,7 @@
                                         </div>
                                         <form class="edit-view" action="/examples/kanban/task/<%= task.id %>"
                                             method="POST" style="display:none" d-show="editing" d-pulse="commit"
-                                            d-target="body">
+                                            d-target="body" d-signal="submit: editing = false">
                                             <select name="assignee_avatar" class="form-select" autofocus
                                                 d-signal="change: submit; blur: editing = false">
                                                 <option value="">Unassigned</option>
@@ -704,9 +704,10 @@
                                         </p>
                                     </div>
                                     <form class="edit-view" action="/examples/kanban/task/<%= task.id %>" method="POST"
-                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body">
-                                        <textarea name="content" class="content-textarea" rows="8"
-                                            autofocus><%= task.content ? task.content.trim() : '' %></textarea>
+                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body"
+                                        d-signal="submit: editing = false">
+                                        <textarea name="content" class="content-textarea" rows="8" autofocus
+                                            d-signal="keydown: if(event.key === 'Escape') editing = false"><%= task.content ? task.content.trim() : '' %></textarea>
                                         <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
                                             <button type="submit" class="save-btn small">Save</button>
                                             <button type="button" class="cancel-btn"
@@ -731,19 +732,20 @@
                                         </div>
                                     </div>
                                     <form class="edit-view" action="/examples/kanban/task/<%= task.id %>" method="POST"
-                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body">
+                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body"
+                                        d-signal="submit: editing = false">
                                         <input type="text" name="tags" class="form-input" autofocus
                                             value="<%= (task.tags || []).join(', ') %>"
-                                            placeholder="e.g. frontend, design"
-                                            d-signal="blur: submit; keydown: if(event.key === 'Enter') { event.preventDefault(); submit; }">
+                                            placeholder="e.g. frontend, design, urgency"
+                                            d-signal="keydown: if(event.key === 'Enter') { event.preventDefault(); submit; }">
                                     </form>
                                 </div>
 
                                 <div class="comments-section">
                                     <div class="comments-header">
-                                        Comments <span class="count-badge"
+                                        Comments <span id="comments-count" class="count-badge"
                                             style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">
-                                            <%= task.comments ? task.comments.length : 0 %>
+                                            <%= task.comments_count || 0 %>
                                         </span>
                                     </div>
 

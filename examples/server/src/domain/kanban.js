@@ -104,6 +104,21 @@ try {
   }
 }
 
+// Sync comments_count with actual comments table
+try {
+  console.log('Synchronizing comment counts...');
+  db.prepare(
+    `
+    UPDATE tasks 
+    SET comments_count = (
+      SELECT COUNT(*) FROM comments WHERE task_id = tasks.id
+    )
+  `
+  ).run();
+} catch (err) {
+  console.error('Failed to sync comment counts', err);
+}
+
 // Static Columns Definition
 const COLUMNS = {
   todo: { id: 'todo', title: 'To Do' },
@@ -304,7 +319,7 @@ export const Kanban = {
       ? 'critical'
       : priorities[Math.floor(Math.random() * priorities.length)];
     const avatar = avatars[Math.floor(Math.random() * avatars.length)];
-    const comments = Math.floor(Math.random() * 5);
+    const comments = 0;
     const tags = JSON.stringify(['surf']);
 
     const stmt = db.prepare(`
@@ -432,6 +447,8 @@ export const Kanban = {
     if (!task) return null;
     const mapped = this._mapTask(task);
     mapped.comments = this.getComments(taskId);
+    // Use the actual count from the list as the source of truth
+    mapped.comments_count = mapped.comments.length;
     return mapped;
   },
 

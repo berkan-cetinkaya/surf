@@ -13,7 +13,16 @@ export async function getBoard(req, reply) {
   }
 
   const board = Kanban.getBoardTasks(activeSprintId);
-  // No backlog buckets needed here anymore
+
+  // If it's a Surf request (Pulse) and explicitly asking for a fragment
+  if (req.headers['x-surf-request'] && req.query.mode === 'fragment') {
+    const html = await req.server.view('templates/examples/kanban/partials/board_main.ejs', {
+      board,
+      sprints,
+      activeSprintId,
+    });
+    return createPatch().addSurface('.board-container', html).render();
+  }
 
   return reply.view('templates/examples/kanban/board.ejs', {
     board,
@@ -332,8 +341,16 @@ export async function addComment(req, reply) {
 
   const comment = Kanban.addComment(taskId, content.trim(), author);
 
-  // Render just the new comment to prepend to the list
-  return reply.view('examples/kanban/partials/comment.ejs', { comment });
+  // Render just the new comment
+  const html = await req.server.view('templates/examples/kanban/partials/comment.ejs', { comment });
+
+  // Get updated task for fresh count
+  const task = Kanban.getTask(taskId);
+
+  return createPatch()
+    .addSurface('#comments-list', html, 'prepend')
+    .addSurface('#comments-count', String(task.comments_count))
+    .render();
 }
 
 export async function deleteComment(req, reply) {
@@ -342,8 +359,11 @@ export async function deleteComment(req, reply) {
   const result = Kanban.deleteComment(commentId);
 
   if (result) {
-    // Return empty content to remove the element from DOM
-    return '';
+    const task = Kanban.getTask(result.taskId);
+    return createPatch()
+      .addSurface(`#comment-${commentId}`, '', 'delete')
+      .addSurface('#comments-count', String(task.comments_count))
+      .render();
   }
 
   reply.code(404).send('Comment not found');
