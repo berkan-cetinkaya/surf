@@ -78,7 +78,7 @@ export function off(event, callback) {
 function applyPatches(patches) {
   const surfaceCache = new Map();
 
-  patches.forEach(({ target, content }) => {
+  patches.forEach(({ target, content, swap }) => {
     let surface = surfaceCache.get(target);
     if (!surface) {
       surface = document.querySelector(target);
@@ -91,7 +91,17 @@ function applyPatches(patches) {
     }
 
     Echo.withPreservation(surface, () => {
-      Surface.replace(surface, content);
+      const swapMode = swap || surface.getAttribute('d-swap') || 'replace';
+
+      if (swapMode === 'append') {
+        Surface.append(surface, content);
+      } else if (swapMode === 'prepend') {
+        Surface.prepend(surface, content);
+      } else if (swapMode === 'delete') {
+        Surface.remove(surface);
+      } else {
+        Surface.replace(surface, content);
+      }
     });
   });
 }
@@ -139,14 +149,22 @@ async function sendPulse(url, options, targetSelector) {
       const surface = document.querySelector(targetSelector);
       if (surface) {
         const swapMode = options.swap || surface.getAttribute('d-swap') || 'inner';
+        let content = html;
+
+        // If target is body and content is full HTML, extract body content
+        if (surface.tagName === 'BODY' && html.includes('<body')) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          content = doc.body.innerHTML;
+        }
 
         Echo.withPreservation(surface, () => {
           if (swapMode === 'append') {
-            Surface.append(surface, html);
+            Surface.append(surface, content);
           } else if (swapMode === 'prepend') {
-            Surface.prepend(surface, html);
+            Surface.prepend(surface, content);
           } else {
-            Surface.replace(surface, html);
+            Surface.replace(surface, content);
           }
         });
       }

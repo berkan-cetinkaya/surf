@@ -16,10 +16,11 @@ export class Patch {
    * Add a surface update to the patch
    * @param {string} target - CSS selector for the target surface
    * @param {string} content - HTML content to insert
+   * @param {string} swap - Optional swap mode ('replace', 'append', 'prepend')
    * @returns {Patch} - Returns this for chaining
    */
-  addSurface(target, content) {
-    this.surfaces.push({ target, content });
+  addSurface(target, content, swap = null) {
+    this.surfaces.push({ target, content, swap });
     return this;
   }
 
@@ -33,10 +34,12 @@ export class Patch {
     }
 
     const surfaceHtml = this.surfaces
-      .map(
-        (s) =>
-          `  <surface target="${escapeHtml(s.target)}"><template>${s.content}</template></surface>`
-      )
+      .map((s) => {
+        const swapAttr = s.swap ? ` swap="${escapeHtml(s.swap)}"` : '';
+        return `  <surface target="${escapeHtml(s.target)}"${swapAttr}><template>${
+          s.content
+        }</template></surface>`;
+      })
       .join('\n');
 
     return `<d-patch>\n${surfaceHtml}\n</d-patch>`;

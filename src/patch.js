@@ -37,6 +37,7 @@ export function parse(html) {
 
   surfaceElements.forEach((surface) => {
     const target = surface.getAttribute('target');
+    const swap = surface.getAttribute('swap');
     if (!target) {
       console.warn('[Surf] Surface element missing target attribute');
       return;
@@ -45,6 +46,7 @@ export function parse(html) {
     const template = surface.querySelector('template');
     patches.push({
       target,
+      swap,
       content: template ? template.innerHTML : surface.innerHTML,
     });
   });

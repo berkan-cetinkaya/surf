@@ -502,18 +502,24 @@ export function updateBindings(cellElement, { silent = false } = {}) {
  * @param {string} expr
  * @returns {string[]}
  */
-function splitSignals(expr) {
+const splitSignals = (expr) => {
   const signals = [];
   let current = '';
   let depth = 0;
+  let parenDepth = 0;
+  let bracketDepth = 0;
 
   for (let i = 0; i < expr.length; i++) {
     const char = expr[i];
 
     if (char === '{') depth++;
     else if (char === '}') depth--;
+    else if (char === '(') parenDepth++;
+    else if (char === ')') parenDepth--;
+    else if (char === '[') bracketDepth++;
+    else if (char === ']') bracketDepth--;
 
-    if (char === ';' && depth === 0) {
+    if (char === ';' && depth === 0 && parenDepth === 0 && bracketDepth === 0) {
       if (current.trim()) signals.push(current.trim());
       current = '';
     } else {
@@ -523,67 +529,59 @@ function splitSignals(expr) {
 
   if (current.trim()) signals.push(current.trim());
   return signals;
-}
+};
 
 /**
- * Bind signal event handlers to an element
+ * Bind signal to an element
  * @param {Element} element
  */
 function bindSignalElement(element) {
   const signalExpr = element.getAttribute(SIGNAL_ATTR);
   if (!signalExpr) return;
 
-  // Split into multiple signal definitions (separated by ;), respecting blocks
-  const signals = splitSignals(signalExpr);
-
-  // Remove existing listeners if any
-  const existingListeners = boundListeners.get(element);
-  if (existingListeners) {
-    if (Array.isArray(existingListeners)) {
-      existingListeners.forEach(({ event, handler }) => {
-        element.removeEventListener(event, handler);
-      });
+  // Cleanup old listeners if they exist (to avoid duplicates)
+  const existing = boundListeners.get(element);
+  if (existing) {
+    if (Array.isArray(existing)) {
+      existing.forEach((l) => element.removeEventListener(l.event, l.handler));
     } else {
-      element.removeEventListener(existingListeners.event, existingListeners.handler);
+      // Handle legacy single listener
+      element.removeEventListener(existing.event, existing.handler);
     }
   }
 
   const newListeners = [];
+  const signals = splitSignals(signalExpr);
+  const cellElement = findParentCell(element);
+
+  // Check if any signal on this element requires a cell (state-dependent)
+  const needsCell = signals.some((sig) => {
+    const actionMatch = sig.match(/^[\w:-]+:\s*(.+)$/s);
+    if (!actionMatch) return false;
+    const action = actionMatch[1].trim();
+    return action !== 'submit' && action !== 'reset';
+  });
+
+  if (needsCell && !cellElement) {
+    console.warn(`[Surf] d-signal found on element with no parent cell:`, element);
+  }
 
   signals.forEach((sig) => {
-    // Parse: event: expression
-    // We need to match the first colon that isn't inside a block?
-    // Usually event names are simple strings like "click", "keydown", "custom:event"
-    // So /^([\w:-]+):\s*(.+)$/ should work safely.
-    // However, if the expression itself has colons (e.g. object literal), we must be careful.
-    // But regex is greedy by default, so (.+) will eat everything.
-    // So we need non-greedy for the event part? No, event part is at start.
-    const match = sig.match(/^([\w:-]+):\s*(.+)$/s); // Added 's' flag for dotAll just in case of newlines
+    // We need to split by the FIRST colon only
+    const match = sig.match(/^([\w:-]+):\s*(.+)$/s);
     if (!match) {
       console.warn(`[Surf] Invalid signal expression: ${sig}`);
       return;
     }
 
     const [, eventName, actionExpr] = match;
-    const cellElement = findParentCell(element);
-
-    if (!cellElement) {
-      const warnMsg = `[Surf] Signal element has no parent cell: <${element.tagName.toLowerCase()}${element.id ? '#' + element.id : ''}>`;
-      console.warn(warnMsg, element);
-      Events.emit('cell:warn', {
-        element: element,
-        message: warnMsg,
-        type: 'orphaned-signal',
-      });
-      return;
-    }
 
     // Create and store new listener
     const handler = (e) => {
-      const state = Cell.getState(cellElement);
+      const state = cellElement ? Cell.getState(cellElement) : {};
       const changes = executeAssignment(actionExpr, state, e, element);
 
-      if (Object.keys(changes).length > 0) {
+      if (cellElement && Object.keys(changes).length > 0) {
         Cell.setState(cellElement, changes);
         updateBindings(cellElement);
       }

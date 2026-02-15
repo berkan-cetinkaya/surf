@@ -66,6 +66,14 @@ function resolveText(target) {
   if (typeof target === 'string') return target;
 
   if (target instanceof Element) {
+    // 1. Try finding a PRE tag in the closest code block container
+    const container = target.closest('.code-block') || target.parentElement;
+    if (container) {
+      const pre = container.querySelector('pre');
+      if (pre) return pre.innerText;
+    }
+
+    // 2. Fallback: Previous sibling (original behavior)
     const codeEl = target.previousElementSibling;
     if (codeEl) return codeEl.innerText;
   }
