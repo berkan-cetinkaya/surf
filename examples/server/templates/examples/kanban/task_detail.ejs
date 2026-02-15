@@ -542,7 +542,7 @@
                         <div class="detail-container">
                             <div class="detail-header">
                                 <div class="detail-title-group" style="width: 100%;">
-                                    <div class="editable-field" d-cell="{ editing: false }">
+                                    <div class="editable-field" d-cell="{ editing: false }" d-id="task-type-field">
                                         <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                             <span class="type-badge <%= task.type %>">
                                                 <%= task.type %>
@@ -565,7 +565,7 @@
                                         </form>
                                     </div>
 
-                                    <div class="editable-field" d-cell="{ editing: false }">
+                                    <div class="editable-field" d-cell="{ editing: false }" d-id="task-title-field">
                                         <h2 class="display-view" d-show="!editing" d-signal="click: editing = true"
                                             title="<%= task.title %>">
                                             <%= task.title %>
@@ -583,7 +583,8 @@
 
                             <div class="detail-body">
                                 <div class="meta-grid">
-                                    <div class="meta-item editable-field" d-cell="{ editing: false }">
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-status-field">
                                         <label>Status</label>
                                         <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                             <span class="status-pill <%= task.columnId %>">
@@ -607,7 +608,8 @@
                                         </form>
                                     </div>
 
-                                    <div class="meta-item editable-field" d-cell="{ editing: false }">
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-sprint-field">
                                         <label>Sprint</label>
                                         <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                             <% const sprint=sprints ? sprints.find(s=> s.id === task.sprintId) : null;
@@ -634,7 +636,8 @@
                                         </form>
                                     </div>
 
-                                    <div class="meta-item editable-field" d-cell="{ editing: false }">
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-priority-field">
                                         <label>Priority</label>
                                         <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                             <span class="priority-text <%= task.priority %>">
@@ -658,7 +661,8 @@
                                         </form>
                                     </div>
 
-                                    <div class="meta-item editable-field" d-cell="{ editing: false }">
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-assignee-field">
                                         <label>Assignee</label>
                                         <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                             <div class="assignee-info">
@@ -691,7 +695,8 @@
                                     </div>
                                 </div>
 
-                                <div class="content-section editable-field" d-cell="{ editing: false }">
+                                <div class="content-section editable-field" d-cell="{ editing: false }"
+                                    d-id="task-description-field">
                                     <label>Description</label>
                                     <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                         <p class="task-description">
@@ -710,7 +715,7 @@
                                     </form>
                                 </div>
 
-                                <div class="editable-field" d-cell="{ editing: false }">
+                                <div class="editable-field" d-cell="{ editing: false }" d-id="task-tags-field">
                                     <label>Tags</label>
                                     <div class="display-view" d-show="!editing" d-signal="click: editing = true">
                                         <div class="tags-list">
@@ -734,7 +739,7 @@
                                     </form>
                                 </div>
 
-                                <div class="comments-section" d-cell>
+                                <div class="comments-section">
                                     <div class="comments-header">
                                         Comments <span class="count-badge"
                                             style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">
