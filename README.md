@@ -42,10 +42,17 @@ npm install surf-core
 Surface handles DOM replacement — any element targeted by `d-target` becomes a surface.
 
 ```html
-<main id="main">
+<main id="main" d-swap="inner">
   <!-- Content that can be replaced -->
 </main>
 ```
+
+**Swap Strategies (`d-swap`):**
+
+- `inner` (default): Replaces children.
+- `outer`: Replaces the element itself.
+- `prepend`: Adds to start of content.
+- `append`: Adds to end of content.
 
 ### Cell
 
@@ -131,6 +138,8 @@ A Pulse triggers server interaction.
 
 ### Auto-Refresh
 
+(Requires `SurfAutoRefresh` plugin)
+
 Surfaces can automatically poll the server for updates.
 
 ```html
@@ -154,6 +163,57 @@ Server returns HTML patches to update Surfaces.
 </d-patch>
 ```
 
+## Plugins
+
+Surf works best with its official plugins. Include them after the core script.
+
+```html
+<script src="/dist/plugins/clipboard.js"></script>
+<script>
+  Surf.use(SurfClipboard);
+</script>
+```
+
+### Clipboard
+
+Copy content to clipboard with `d-signal`. Automatically handles "Copied!" state.
+
+```html
+<button d-signal="click: Clipboard.copy(event)">Copy</button>
+```
+
+### Top Loader
+
+YouTube-style progress bar for all Surf requests.
+
+```javascript
+Surf.use(SurfTopLoader, { color: '#29d', height: '3px' });
+```
+
+### Visual Debugger
+
+Press **Shift + D** to inspect cells, signals, and network events.
+
+```javascript
+Surf.use(SurfDebug);
+```
+
+### Auto-Refresh
+
+Poll a URL for updates.
+
+```html
+<div d-auto-refresh="5000" d-auto-refresh-url="/api/stats"></div>
+```
+
+### Debounce
+
+Debounce inputs for search/filter (replaces `d-pulse` on input).
+
+```html
+<input d-input="/search" d-debounce="300" d-target="#results" />
+```
+
 ## JavaScript API
 
 ```javascript
@@ -171,6 +231,15 @@ Surf.on('error:network', (e) => console.error(e.error));
 // Manual state access
 Surf.getState('#my-cell');
 Surf.setState('#my-cell', { count: 5 });
+
+// Register custom signal modules
+Surf.register('MyLogic', {
+  doSomething: () => console.log('Done'),
+});
+// Usage: d-signal="click: MyLogic.doSomething()"
+
+// Manually apply HTML patch
+Surf.applyPatch('<d-patch>...</d-patch>');
 ```
 
 ## Echo Rule
