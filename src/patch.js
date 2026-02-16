@@ -44,11 +44,14 @@ export function parse(html) {
     }
 
     const template = surface.querySelector('template');
-    patches.push({
+    const patch = {
       target,
-      swap,
       content: template ? template.innerHTML : surface.innerHTML,
-    });
+    };
+
+    if (swap) patch.swap = swap;
+
+    patches.push(patch);
   });
 
   return patches;
