@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        <%= title %> - SURF Showcase
+    </title>
+    <%- include('../partials/head') %>
+        <style>
+            .category-header {
+                margin-bottom: 2.5rem;
+            }
+
+            .category-title {
+                font-size: 2.2rem;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+            }
+
+            .category-title-text {
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .category-title-emoji {
+                -webkit-text-fill-color: initial;
+                background: none;
+            }
+
+            .category-subtitle {
+                color: var(--text-secondary);
+                font-size: 1.1rem;
+            }
+
+            .item-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .item-card {
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: 20px;
+                padding: 1.8rem;
+                text-decoration: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                flex-direction: column;
+                gap: 1.2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .item-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: var(--gradient-primary);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .item-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--accent-cyan);
+                background: rgba(255, 255, 255, 0.08);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            }
+
+            .item-card:hover::before {
+                opacity: 1;
+            }
+
+            .item-badge {
+                position: absolute;
+                top: 1.5rem;
+                right: 1.5rem;
+                background: rgba(0, 212, 255, 0.1);
+                color: var(--accent-cyan);
+                padding: 0.2rem 0.6rem;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                font-family: 'SF Mono', monospace;
+                font-weight: 700;
+                border: 1px solid rgba(0, 212, 255, 0.2);
+            }
+
+            .item-icon {
+                font-size: 2rem;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 12px;
+            }
+
+            .item-info h3 {
+                color: var(--text-primary);
+                font-size: 1.25rem;
+                font-weight: 700;
+                margin-bottom: 0.4rem;
+            }
+
+            .item-info p {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+
+            .item-footer {
+                margin-top: auto;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: var(--accent-cyan);
+                font-weight: 600;
+                font-size: 0.85rem;
+                opacity: 0.8;
+                transition: opacity 0.3s ease;
+            }
+
+            .item-card:hover .item-footer {
+                opacity: 1;
+            }
+
+            .empty-state {
+                padding: 5rem 2rem;
+                text-align: center;
+                background: var(--bg-card);
+                border: 2px dashed var(--border-color);
+                border-radius: 20px;
+                color: var(--text-secondary);
+            }
+
+            .empty-state-icon {
+                font-size: 3rem;
+                margin-bottom: 1.5rem;
+                display: block;
+            }
+        </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <%- include('../partials/header', { breadcrumbs: [{ label: 'Showcase' , href: '/showcase' }, { label: title }]
+            }) %>
+
+            <%- include('../partials/sidebar', { activeCategory: activeCategory, activeExample: null }) %>
+
+                <main class="app-main">
+                    <header class="category-header">
+                        <h2 class="category-title">
+                            <span class="category-title-emoji">
+                                <%= emoji %>
+                            </span>
+                            <span class="category-title-text">
+                                <%= title %>
+                            </span>
+                        </h2>
+                        <p class="category-subtitle">
+                            Discover <%= items.length %> interactive building block<%= items.length !==1 ? 's' : '' %>
+                                    for this category.
+                        </p>
+                    </header>
+
+                    <% if (items.length===0) { %>
+                        <div class="empty-state">
+                            <span class="empty-state-icon">🚧</span>
+                            <h3>Showcase items coming soon</h3>
+                            <p>This category is currently under active development.</p>
+                        </div>
+                        <% } else { %>
+                            <div class="item-grid">
+                                <% items.forEach(item=> { %>
+                                    <a href="/showcase/<%= activeCategory %>/<%= item.id %>" class="item-card">
+                                        <span class="item-badge">#<%= item.id.split('-')[0] %></span>
+                                        <div class="item-icon">🧩</div>
+                                        <div class="item-info">
+                                            <h3>
+                                                <%= item.title %>
+                                            </h3>
+                                            <p>Interactive demonstration of <%= item.title.toLowerCase() %> concepts
+                                                    using SURF signals and cells.</p>
+                                        </div>
+                                        <div class="item-footer">
+                                            <span>Learn More</span>
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <polyline points="12 5 19 12 12 19"></polyline>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                    <% }) %>
+                            </div>
+                            <% } %>
+                </main>
+    </div>
+
+    <%- include('../partials/core-scripts') %>
+</body>
+
+</html>

@@ -269,7 +269,7 @@ npm run build
 # Watch mode
 npm run dev
 
-# Serve examples
+# Serve showcase
 npm run serve
 ```
 

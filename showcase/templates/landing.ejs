@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SURF - HTML-First, Server-Driven UI</title>
+    <link rel="icon" type="image/png" href="/brand/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/brand/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/brand/favicon/site.webmanifest" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --surface-2: #141414;
+            --border: #262626;
+            --fg: #fafafa;
+            --muted: #a1a1aa;
+            --dim: #52525b;
+            --cyan: #00b4d8;
+            --green: #22c55e;
+            --purple: #a78bfa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--fg);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight {
+            color: var(--cyan);
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .api-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            color: var(--fg);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .insight-inline {
+            font-size: 0.95rem;
+            color: var(--dim);
+            max-width: 550px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        .insight-inline strong {
+            color: var(--cyan);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--cyan);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--fg);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+        }
+
+        /* API Details */
+        .api-details {
+            max-width: 900px;
+            margin: 4rem auto 0;
+            padding: 0 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 4rem;
+        }
+
+        .api-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 4rem;
+        }
+
+        .api-category h3 {
+            font-size: 1.1rem;
+            color: var(--fg);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .api-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .api-item {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .api-item:last-child {
+            border-bottom: none;
+        }
+
+        .api-item code {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.3);
+            min-width: 100px;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+        }
+
+        .api-item .check {
+            color: var(--green);
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .api-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* Demos Section */
+        .demos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .demos {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .why-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        .demo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .demo-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .demo-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-title .icon {
+            font-size: 1rem;
+        }
+
+        .demo-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .demo-badge.client {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--purple);
+        }
+
+        .demo-badge.server {
+            background: rgba(0, 180, 216, 0.2);
+            color: var(--cyan);
+        }
+
+        .demo-body {
+            padding: 2rem;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-footer {
+            padding: 1rem 1.5rem;
+            background: var(--surface-2);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Counter Demo */
+        .counter-value {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--fg);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .counter-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .counter-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--fg);
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .counter-btn:hover {
+            border-color: var(--cyan);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* Server Demo */
+        .server-demo-content {
+            text-align: center;
+            width: 100%;
+        }
+
+        .time-display {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--cyan);
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 0.5rem;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+
+        .refresh-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--fg);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--cyan);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* Why SURF Section */
+        .why-section {
+            max-width: 900px;
+            margin: 5rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .why-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .why-section .subtitle {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 3rem;
+            font-size: 1rem;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .why-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .why-card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .why-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .why-card h3 .like {
+            font-size: 0.7rem;
+            color: var(--dim);
+            font-weight: 400;
+        }
+
+        .why-card p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .why-card.highlight-card {
+            border-color: var(--cyan);
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.05), transparent);
+        }
+
+        .why-card code {
+            font-size: 0.75rem;
+            background: rgba(0, 180, 216, 0.1);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            color: var(--cyan);
+        }
+
+        /* The Insight */
+        .insight {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .insight h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--cyan);
+        }
+
+        .insight p {
+            font-size: 0.95rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .insight strong {
+            color: var(--fg);
+        }
+
+        /* Features */
+        .features {
+            display: flex;
+            gap: 3rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 5rem;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .feature {
+            text-align: center;
+        }
+
+        .feature .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature p {
+            font-size: 0.75rem;
+            color: var(--dim);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay[style*="display: block"],
+        .modal-overlay:not([style*="display: none"]) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay:not([style*="display: none"]) .modal {
+            transform: translateY(0);
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: var(--cyan);
+        }
+
+        .highlight-box .tag {
+            color: #f472b6;
+        }
+
+        .highlight-box .attr {
+            color: #60a5fa;
+        }
+
+        .highlight-box .val {
+            color: var(--cyan);
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--cyan);
+            color: var(--fg);
+        }
+
+        .copy-btn.copied {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .modal-note {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .live-preview {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .live-preview h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--dim);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .preview-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            min-width: 2ch;
+            text-align: center;
+        }
+
+        .modal-close {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--fg);
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+        }
+
+        /* Highlight Boxes */
+        .highlight-box {
+            background: rgba(0, 180, 216, 0.08);
+            /* Derived from --cyan */
+            border-left: 3px solid var(--cyan);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--muted);
+            overflow-x: auto;
+        }
+
+        .highlight-box.purple {
+            background: rgba(167, 139, 250, 0.08);
+            /* Derived from --purple */
+            border-left-color: var(--purple);
+        }
+
+        .highlight-box strong {
+            color: var(--cyan);
+        }
+
+        .highlight-box.purple strong {
+            color: var(--purple);
+        }
+
+        /* Terminal & Tab-style Code Blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block-header {
+            background: #1a1c1e;
+            /* Darker, tab-bar style */
+            padding: 0;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            height: 40px;
+        }
+
+        .code-tabs {
+            display: flex;
+            height: 100%;
+            padding-left: 12px;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .code-tab {
+            background: #2d3035;
+            color: var(--fg);
+            padding: 0 16px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            position: relative;
+        }
+
+        .code-tab.active {
+            background: #25282c;
+            border-color: rgba(0, 180, 216, 0.3);
+            z-index: 1;
+        }
+
+        .tab-logo {
+            width: 14px;
+            height: 14px;
+            opacity: 0.9;
+        }
+
+        .tab-close {
+            font-size: 14px;
+            opacity: 0.5;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+
+        .code-block-header .copy-btn {
+            margin-left: auto;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+
+        .code-block-header .copy-btn:hover {
+            opacity: 1;
+        }
+
+        .code-block-header .file-name {
+            margin-left: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .code-block-header .copy-btn {
+            margin-left: auto;
+        }
+
+        .code-block pre {
+            padding: 1.25rem;
+            margin: 0;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #d1d5db;
+        }
+
+        .code-block .tag {
+            color: #f472b6;
+        }
+
+        .code-block .attr {
+            color: #60a5fa;
+        }
+
+        .code-block .string {
+            color: var(--cyan);
+        }
+
+        .code-block .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="nav-logo" d-pulse="navigate" style="display: flex; align-items: center;"><img
+                src="/brand/surf-logo.png" alt="SURF" height="56" width="56"
+                style="height: 56px; width: 56px; display: block;"><span style="margin-left: 0.75rem;">Surf</span>
+            <span
+                style="font-size: 0.6rem; background: var(--purple); color: #282a36; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; vertical-align: middle; line-height: 1;">Beta</span>
+            <span
+                style="font-size: 0.65rem; color: var(--muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.2.0</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/roadmap" d-pulse="navigate">Roadmap</a></li>
+            <li><a href="/showcase" d-pulse="navigate">Showcase</a></li>
+            <li><a target="_blank" href="https://github.com/berkan-cetinkaya/surf" aria-label="GitHub"
+                    style="display: flex; align-items: center;"><svg width="24" height="24" viewBox="0 0 24 24"
+                        fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg></a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" d-cell="{ modal: false }" d-id="hero-cell">
+        <span class="badge">
+            <span class="badge-dot"></span>
+            v0.2.0 — HTML-first framework
+        </span>
+
+        <h1><span class="highlight">Surface</span> changes,<br><span class="highlight">Cell</span> lives.</h1>
+
+        <p class="tagline">
+            Server-driven updates + local reactivity in one tiny library.<br>
+            HTML attributes. No build step. Your local state survives server patches.
+        </p>
+
+        <div class="cta-group">
+            <a href="/articles/why-surf" d-pulse="navigate" class="btn btn-secondary">Why SURF?</a>
+            <button class="btn btn-primary" d-signal="click: modal = true">Quick Start ⚡</button>
+            <a href="/showcase" d-pulse="navigate" class="btn btn-secondary">Explore Showcase</a>
+            <a target="_blank" href="https://github.com/berkan-cetinkaya/surf" class="btn btn-secondary">GitHub →</a>
+        </div>
+
+        <!-- Quick Start Modal -->
+        <div class="modal-overlay" d-show="modal" d-signal="click: modal = false" style="display: none;">
+            <div class="modal" d-signal="click: event.stopPropagation()">
+                <h3>Install in seconds</h3>
+                <p>Add this script tag to your <code>&lt;head&gt;</code>:</p>
+
+                <div class="code-block" d-cell="{ copied: false }" d-id="install-code">
+                    <div class="code-block-header">
+                        <div class="code-tabs">
+                            <div class="code-tab active">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                head
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
+                        <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
+                            d-signal="click: Clipboard.copy(event)">
+                            <span d-show="!copied">Copy</span>
+                            <span d-show="copied" style="display: none;">Copied!</span>
+                        </button>
+                    </div>
+                    <pre
+                        style="font-size: 0.8rem; padding: 1rem 1.25rem; background: rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; text-align: left;"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+                </div>
+
+                <p class="modal-note">No build step required. Just HTML.</p>
+
+                <div class="live-preview">
+                    <h4>Try it yourself</h4>
+                    <p class="modal-note" style="margin-bottom: 1rem;">Create an <code>index.html</code> file and paste
+                        this:</p>
+
+                    <div class="code-block" d-cell="{ copied: false }" d-id="index-code">
+                        <div class="code-block-header">
+                            <div class="code-tabs">
+                                <div class="code-tab active">
+                                    <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                    index.html
+                                    <span class="tab-close">×</span>
+                                </div>
+                            </div>
+                            <button class="copy-btn" d-attr="class.copied: copied; disabled: copied"
+                                d-signal="click: Clipboard.copy(event)">
+                                <span d-show="!copied">Copy</span>
+                                <span d-show="copied" style="display: none;">Copied!</span>
+                            </button>
+                        </div>
+                        <pre style="text-align: left; padding: 1.25rem; font-size: 0.75rem;"><span class="tag">&lt;button</span> <span class="attr">d-cell</span>=<span class="string">"{ count: 0 }"</span> <span class="attr">d-signal</span>=<span class="string">"click: count++"</span><span class="tag">&gt;</span>
+  Clicked <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span class="string">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span> times
+<span class="tag">&lt;/button&gt;</span></pre>
+                    </div>
+                </div>
+
+                <button class="modal-close" d-signal="click: modal = false">Got it</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Two Demo Cards -->
+    <section class="demos">
+        <!-- Demo 1: Cell (Client-side state) -->
+        <div class="demo-card">
+            <div class="demo-header">
+                <span class="demo-title"><span class="icon">🔋</span> Cell — Local State</span>
+                <span class="demo-badge client">Client</span>
+            </div>
+            <div class="demo-body" d-cell="count: 0" d-id="demo-counter">
+                <div class="counter-value" d-text="count">0</div>
+                <div class="counter-buttons">
+                    <button class="counter-btn" d-signal="click: count = count - 1">−</button>
+                    <button class="counter-btn" d-signal="click: count = count + 1">+</button>
+                </div>
+            </div>
+            <div class="demo-footer" style="padding: 0;">
+                <div class="code-block"
+                    style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
+                    <div class="code-block-header"
+                        style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(167, 139, 250, 0.2);">
+                        <div class="code-tabs">
+                            <div class="code-tab active"
+                                style="color: var(--purple); border-color: rgba(167, 139, 250, 0.2);">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                Cell.html
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
+                    </div>
+                    <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">d-cell</span>=<span class="string">"count: 0"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;span</span> <span class="attr">d-text</span>=<span class="string">"count"</span><span class="tag">&gt;</span>0<span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;button</span> <span class="attr">d-signal</span>=<span class="string">"click: count++"</span><span class="tag">&gt;</span>+<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo 2: Surface (Server-driven) -->
+        <div class="demo-card">
+            <div class="demo-header">
+                <span class="demo-title"><span class="icon">🌊</span> Surface — Server HTML</span>
+                <span class="demo-badge server">Server</span>
+            </div>
+            <div class="demo-body">
+                <div class="server-demo-content" id="server-time">
+                    <div class="time-display">
+                        <%= new Date().toLocaleTimeString('tr-TR') %>
+                    </div>
+                    <div class="time-label">Server Time (click to refresh)</div>
+                    <form action="/api/time" method="GET" d-pulse="commit" d-target="#server-time">
+                        <button type="submit" class="refresh-btn">↻ Fetch from Server</button>
+                    </form>
+                </div>
+            </div>
+            <div class="demo-footer" style="padding: 0;">
+                <div class="code-block"
+                    style="margin: 0; border-radius: 0; border: none; background: rgba(0,0,0,0.25);">
+                    <div class="code-block-header"
+                        style="background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(0, 180, 216, 0.2);">
+                        <div class="code-tabs">
+                            <div class="code-tab active"
+                                style="color: var(--cyan); border-color: rgba(0, 180, 216, 0.2);">
+                                <img src="/brand/surf-logo.png" class="tab-logo" alt="">
+                                Surface.html
+                                <span class="tab-close">×</span>
+                            </div>
+                        </div>
+                    </div>
+                    <pre style="padding: 1rem; font-size: 0.75rem;"><span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="string">"server-time"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;%=</span> new Date() <span class="tag">%&gt;</span>
+  <span class="tag">&lt;form</span> <span class="attr">d-pulse</span>=<span class="string">"commit"</span> <span class="attr">d-target</span>=<span class="string">"#server-time"</span><span class="tag">&gt;</span>...<span class="tag">&lt;/form&gt;</span>
+<span class="tag">&lt;/div&gt;</span></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Stats Summary -->
+    <div class="api-stats" style="margin: 4rem auto 2rem;">
+        <div class="stat-pill">10 Attributes</div>
+        <div class="stat-pill">9 Methods</div>
+        <div class="stat-pill">0 Build Steps</div>
+    </div>
+
+    <!-- API Details Grid -->
+    <section class="api-details" style="padding-top: 2rem; margin-top: 0; border-top: none;">
+        <div class="api-grid">
+            <div class="api-category">
+                <h3>10 Attributes</h3>
+
+                <h4
+                    style="color: var(--cyan); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Server-Driven</h4>
+                <div class="api-list" style="margin-bottom: 2rem;">
+                    <div class="api-item">
+                        <code>d-swap</code>
+                        <span>Controls update strategy (inner, append, prepend)</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-pulse</code>
+                        <span>binds user events to server requests</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-target</code>
+                        <span>Decouples trigger from update target</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-action</code>
+                        <span>Overrides default URL for interaction</span>
+                    </div>
+                </div>
+
+                <h4
+                    style="color: var(--cyan); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                    Local Reactivity</h4>
+                <div class="api-list">
+                    <div class="api-item">
+                        <code>d-cell</code>
+                        <span>Creates local reactive state (can take initial value)</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-id</code>
+                        <span>Explicit identity for state preservation</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-signal</code>
+                        <span>Triggers local state mutations</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-text</code>
+                        <span>Binds element text to local state</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-show</code>
+                        <span>Toggles visibility based on state</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-attr</code>
+                        <span>Binds attributes or classes to state</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-category">
+                <h3>9 Methods</h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <code>Surf.go()</code>
+                        <span>Navigate to URL / update target</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.refresh()</code>
+                        <span>Reload specific surface</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.on()</code>
+                        <span>Listen to lifecycle events</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.off()</code>
+                        <span>Remove event listeners</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.getState()</code>
+                        <span>Read local cell state</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.setState()</code>
+                        <span>Write local cell state</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.applyPatch()</code>
+                        <span>Apply raw HTML patches</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.use()</code>
+                        <span>Register a plugin</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.register()</code>
+                        <span>Register custom signal modules</span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem">0 Build Steps</h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <span>No Webpack</span>
+                        <span class="check">✓</span>
+                    </div>
+                    <div class="api-item">
+                        <span>No Babel</span>
+                        <span class="check">✓</span>
+                    </div>
+                    <div class="api-item">
+                        <span>No hydration mismatched</span>
+                        <span class="check">✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why SURF -->
+    <section class="why-section">
+        <h2>The Best of Both Worlds</h2>
+        <p class="subtitle">
+            Most frameworks force you to choose between <strong>server simplicity</strong> and <strong>client
+                speed</strong>.<br>
+            SURF gives you both.
+        </p>
+
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="icon">🔋</div>
+                <h3>Local Reactivity</h3>
+                <p>
+                    Instant UI updates without server round-trips.
+                    Toggle modals, validate forms, animate counters
+                    all with <code>d-cell</code> and <code>d-signal</code>.
+                </p>
+            </div>
+
+            <div class="why-card">
+                <div class="icon">🌊</div>
+                <h3>Server-Driven</h3>
+                <p>
+                    HTML is your data. Server renders, client displays.
+                    Partial updates via <code>d-target</code> — no JSON,
+                    no state management, no build step.
+                </p>
+            </div>
+
+            <div class="why-card highlight-card">
+                <div class="icon">⚡</div>
+                <h3>The Best of Both</h3>
+                <p>
+                    <strong>Cell</strong> survives when <strong>Surface</strong> updates.
+                    Keep local state (form inputs, toggles) while server
+                    patches content around it.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature">
+            <div class="icon">🌊</div>
+            <h4>Surface</h4>
+            <p>Server HTML patches</p>
+        </div>
+        <div class="feature">
+            <div class="icon">🔋</div>
+            <h4>Cell</h4>
+            <p>Local reactive state</p>
+        </div>
+        <div class="feature">
+            <div class="icon">💫</div>
+            <h4>Pulse</h4>
+            <p>Server actions</p>
+        </div>
+        <div class="feature">
+            <div class="icon">🔁</div>
+            <h4>Echo</h4>
+            <p>State survival</p>
+        </div>
+        <div class="feature">
+            <div class="icon">⚡</div>
+            <h4>&lt;10KB</h4>
+            <p>Tiny bundle</p>
+        </div>
+    </section>
+
+    <script src="/dist/surf.min.js"></script>
+    <script src="/dist/plugins/clipboard.js"></script>
+    <script src="/dist/plugins/top-loader.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Surf) {
+                if (window.SurfClipboard) Surf.use(SurfClipboard);
+                if (window.SurfTopLoader) {
+                    Surf.use(SurfTopLoader, {
+                        color: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
+                        height: '3px'
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

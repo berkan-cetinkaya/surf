@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #eee;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #00d4ff;
+        }
+
+        .open-btn {
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(124, 58, 237, 0.5);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2d2d5a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal p {
+            color: #999;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .modal .cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+        }
+
+        .modal .confirm {
+            background: linear-gradient(90deg, #7c3aed, #00d4ff);
+            color: white;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        code {
+            display: block;
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #888;
+            text-align: left;
+            max-width: 450px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/showcase/01-interaction" class="back">← Back</a>
+
+    <div class="container" d-cell="{ open: false }" d-id="toggle-container">
+        <h1>Modal Example</h1>
+
+        <button class="open-btn" d-signal="click: open = true">
+            Open Modal
+        </button>
+
+        <!-- Modal with d-show -->
+        <div class="modal-overlay" d-show="open">
+            <div class="modal">
+                <h2>Confirm Action</h2>
+                <p>This modal is controlled by local Cell state. No server request needed to show/hide it.</p>
+
+                <div class="modal-actions">
+                    <button class="cancel" d-signal="click: open = false">Cancel</button>
+                    <button class="confirm" d-signal="click: open = false">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <code>
+&lt;div d-cell="{ open: false }"&gt;
+  &lt;button d-signal="click: open = true"&gt;Open&lt;/button&gt;
+  
+  &lt;div class="modal" d-show="open"&gt;
+    &lt;button d-signal="click: open = false"&gt;Close&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+    </code>
+    </div>
+
+    <%- include('../../partials/core-scripts') %>
+</body>
+
+</html>

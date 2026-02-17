@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surf Board - Backlog & Planning</title>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <%- include('partials/sidebar.ejs') %>
+
+            <div class="dashboard-main">
+                <%- include('partials/header.ejs') %>
+
+                    <div class="dashboard-content">
+                        <div class="board-container">
+
+                            <div class="nav-header">
+                                <a href="/showcase/kanban" class="nav-link" d-pulse="navigate" d-target="body">Active
+                                    Board</a>
+                                <a href="/showcase/kanban/backlog" class="nav-link active" d-pulse="navigate"
+                                    d-target="body">Backlog & Planning</a>
+                            </div>
+
+                            <%- include('partials/backlog.ejs', { backlogBuckets: backlogBuckets }) %>
+                        </div>
+                    </div>
+            </div>
+    </div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-body: #0f172a;
+            --bg-sidebar: rgba(15, 23, 42, 0.95);
+            --bg-column: rgba(30, 41, 59, 0.4);
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(56, 189, 248, 0.5);
+
+            --brand-primary: #38bdf8;
+            --brand-secondary: #818cf8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            overflow: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .board-container {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--brand-primary);
+            background: rgba(56, 189, 248, 0.1);
+        }
+    </style>
+    <%- include('partials/scripts.ejs') %>
+</body>
+
+</html>

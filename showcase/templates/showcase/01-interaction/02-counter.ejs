@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter - SURF Example</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #eee;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #00d4ff;
+        }
+
+        .counter {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .count {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .dec {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .inc {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .reset {
+            background: rgba(255, 255, 255, 0.1);
+            color: #888;
+            font-size: 0.8rem;
+            width: auto;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .back {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back:hover {
+            color: #fff;
+        }
+
+        code {
+            display: block;
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #888;
+            text-align: left;
+            max-width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/showcase/01-interaction" class="back">← Back</a>
+
+    <div class="container">
+        <h1>Counter Example</h1>
+
+        <!-- Cell with local state -->
+        <div class="counter" d-cell="{ count: 0 }" d-id="counter-demo">
+            <div class="count" d-text="count">0</div>
+
+            <div class="buttons">
+                <button class="dec" d-signal="click: count = count - 1">−</button>
+                <button class="inc" d-signal="click: count = count + 1">+</button>
+            </div>
+
+            <button class="reset" d-signal="click: count = 0">Reset</button>
+        </div>
+
+        <code>
+&lt;div d-cell="{ count: 0 }"&gt;
+  &lt;span d-text="count"&gt;&lt;/span&gt;
+  &lt;button d-signal="click: count = count + 1"&gt;+&lt;/button&gt;
+&lt;/div&gt;
+    </code>
+    </div>
+
+    <%- include('../../partials/core-scripts') %>
+</body>
+
+</html>

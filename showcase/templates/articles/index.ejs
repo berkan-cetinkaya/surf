@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles - SURF</title>
+    <meta name="description"
+        content="Articles, deep dives, and insights about SURF - the HTML-first, server-driven UI framework.">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #eee;
+            --text-secondary: #888;
+            --text-muted: #666;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #7c3aed;
+            --accent-purple-light: #a78bfa;
+            --gradient-primary: linear-gradient(90deg, #7c3aed, #00d4ff);
+            --gradient-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            grid-template-rows: 56px 1fr;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .app-header h1 {
+            font-size: 0;
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .app-logo {
+            height: 32px;
+            width: auto;
+            display: block;
+        }
+
+        .app-header .breadcrumb {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .app-header .breadcrumb a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .app-main {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        /* Sidebar */
+        .app-sidebar {
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--border-color);
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-purple-light);
+        }
+
+        .sidebar-nav .category-icon {
+            margin-right: 0.5rem;
+        }
+
+        .sidebar-nav .item-count {
+            float: right;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 10px;
+        }
+
+        /* Blog listing */
+        .blog-intro {
+            margin-bottom: 2.5rem;
+        }
+
+        .blog-intro h2 {
+            font-size: 1.6rem;
+            margin-bottom: 0.4rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .blog-intro p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .blog-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .blog-card {
+            display: block;
+            text-decoration: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .blog-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 212, 255, 0.04);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .blog-card-inner {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 200px;
+        }
+
+        .blog-card-image {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .blog-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .blog-card-image .fallback-icon {
+            font-size: 4rem;
+        }
+
+        .blog-card-body {
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .blog-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.78rem;
+        }
+
+        .blog-card-category {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-purple-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .blog-card-date,
+        .blog-card-read-time {
+            color: var(--text-muted);
+        }
+
+        .blog-card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .blog-card:hover .blog-card-title {
+            color: var(--accent-cyan);
+        }
+
+        .blog-card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .blog-card-cta {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .blog-card:hover .blog-card-cta {
+            gap: 0.6rem;
+        }
+
+        .blog-card-cta .arrow {
+            transition: transform 0.2s;
+        }
+
+        .blog-card:hover .blog-card-cta .arrow {
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 900px) {
+            .blog-card-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-card-image {
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+
+            .app-main {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <header class="app-header">
+            <h1><a href="/" d-pulse="navigate"><img src="/brand/surf-logo.png" alt="SURF" class="app-logo"></a></h1>
+            <nav class="breadcrumb">
+                <span>Articles</span>
+            </nav>
+        </header>
+
+        <%- include('../partials/sidebar', { activeCategory: null, activeExample: null }) %>
+
+            <main class="app-main">
+                <div class="blog-intro">
+                    <h2>Articles</h2>
+                    <p>Articles, deep dives, and insights about building for the web with SURF.</p>
+                </div>
+
+                <div class="blog-list">
+                    <% posts.forEach(post=> { %>
+                        <a href="/articles/<%= post.slug %>" class="blog-card">
+                            <div class="blog-card-inner">
+                                <div class="blog-card-image">
+                                    <% if (post.heroImage) { %>
+                                        <img src="<%= post.heroImage %>" alt="<%= post.title %>">
+                                        <% } else { %>
+                                            <span class="fallback-icon">
+                                                <%= post.icon %>
+                                            </span>
+                                            <% } %>
+                                </div>
+                                <div class="blog-card-body">
+                                    <div class="blog-card-meta">
+                                        <span class="blog-card-category">
+                                            <%= post.category %>
+                                        </span>
+                                        <span class="blog-card-date">
+                                            <%= post.date %>
+                                        </span>
+                                        <span class="blog-card-read-time">
+                                            <%= post.readTime %>
+                                        </span>
+                                    </div>
+                                    <h3 class="blog-card-title">
+                                        <%= post.title %>
+                                    </h3>
+                                    <p class="blog-card-description">
+                                        <%= post.description %>
+                                    </p>
+                                    <span class="blog-card-cta">Read article <span class="arrow">→</span></span>
+                                </div>
+                            </div>
+                        </a>
+                        <% }) %>
+                </div>
+            </main>
+    </div>
+
+    <%- include('../partials/core-scripts') %>
+</body>
+
+</html>

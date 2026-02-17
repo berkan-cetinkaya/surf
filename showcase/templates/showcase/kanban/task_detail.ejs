@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= task.title %> - Surf Board
+    </title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-body: #0f172a;
+            --bg-sidebar: rgba(15, 23, 42, 0.95);
+            --bg-column: rgba(30, 41, 59, 0.4);
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(56, 189, 248, 0.5);
+
+            --brand-primary: #38bdf8;
+            --brand-secondary: #818cf8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            overflow: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Task Detail Specific Styles */
+        .detail-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .detail-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .detail-title-group h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--brand-primary);
+        }
+
+        .detail-body {
+            padding: 2rem;
+        }
+
+        .type-badge {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: 0.05em;
+        }
+
+        .type-badge.feature {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        .type-badge.bug {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .type-badge.design {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+        }
+
+        .type-badge.docs {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .meta-item label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-pill.todo {
+            color: var(--text-muted);
+            border: 1px solid var(--text-muted);
+        }
+
+        .status-pill.doing {
+            color: var(--brand-primary);
+            border: 1px solid var(--brand-primary);
+        }
+
+        .status-pill.done {
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .priority-text {
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: capitalize;
+        }
+
+        .priority-text.critical {
+            color: var(--danger);
+        }
+
+        .priority-text.high {
+            color: var(--warning);
+        }
+
+        .priority-text.medium {
+            color: var(--brand-primary);
+        }
+
+        .priority-text.low {
+            color: var(--text-muted);
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+        }
+
+        .content-section label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .task-description {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-main);
+            white-space: pre-wrap;
+        }
+
+        .tags-list {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .assignee-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-subtle);
+        }
+
+        /* Form Styles */
+        .title-input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: 700;
+            width: 100%;
+            outline: none;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .title-input:focus {
+            border-bottom-color: var(--brand-primary);
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .form-select,
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 8px 12px;
+            width: 100%;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-select:focus,
+        .form-input:focus,
+        .content-textarea:focus {
+            border-color: var(--brand-primary);
+        }
+
+        .content-textarea {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 1rem;
+            width: 100%;
+            min-height: 200px;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            text-align: left;
+        }
+
+        .task-description {
+            text-align: left;
+            white-space: pre-wrap;
+            width: 100%;
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+
+        #edit-content .display-view {
+            width: 100%;
+        }
+
+        #edit-content .display-view {
+            padding: 1rem;
+            border: 1px solid transparent;
+            border-radius: 8px;
+        }
+
+        #edit-content .display-view:hover {
+            border-color: var(--border-subtle);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .save-btn {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .save-btn:hover {
+            background: #0ea5e9;
+        }
+
+        .type-select {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            width: auto;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .display-view {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .save-btn.small {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cancel-btn:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        .display-view:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-subtle);
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .comments-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .comment-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            width: 100%;
+        }
+
+        .comment-input:focus {
+            border-color: var(--brand-primary);
+            outline: none;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .comment-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease-out;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .comment-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-subtle);
+        }
+
+        .comment-item:empty {
+            display: none;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+            margin-left: auto;
+        }
+
+        .comment-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            color: #ef4444;
+        }
+
+        .comment-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .comment-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .comment-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-layout">
+        <%- include('partials/sidebar.ejs') %>
+
+            <div class="dashboard-main">
+                <%- include('partials/header.ejs') %>
+
+                    <div class="dashboard-content">
+                        <a href="/showcase/kanban" class="back-link">
+                            ← Back to Board
+                        </a>
+
+                        <div class="detail-container">
+                            <div class="detail-header">
+                                <div class="detail-title-group" style="width: 100%;">
+                                    <div class="editable-field" d-cell="{ editing: false }" d-id="task-type-field">
+                                        <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                            <span class="type-badge <%= task.type %>">
+                                                <%= task.type %>
+                                            </span>
+                                        </div>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <select name="type" class="form-select type-select" autofocus
+                                                d-signal="change: submit; blur: editing = false">
+                                                <option value="feature" <%=task.type==='feature' ? 'selected' : '' %>
+                                                    >Feature</option>
+                                                <option value="bug" <%=task.type==='bug' ? 'selected' : '' %>>Bug
+                                                </option>
+                                                <option value="design" <%=task.type==='design' ? 'selected' : '' %>
+                                                    >Design</option>
+                                                <option value="docs" <%=task.type==='docs' ? 'selected' : '' %>>Docs
+                                                </option>
+                                            </select>
+                                        </form>
+                                    </div>
+
+                                    <div class="editable-field" d-cell="{ editing: false }" d-id="task-title-field">
+                                        <h2 class="display-view" d-show="!editing" d-signal="click: editing = true"
+                                            title="<%= task.title %>">
+                                            <%= task.title %>
+                                        </h2>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <input type="text" name="title" value="<%= task.title %>" autofocus
+                                                class="form-input title-input"
+                                                d-signal="blur: submit; keydown: if(event.key === 'Enter') submit">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-body">
+                                <div class="meta-grid">
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-status-field">
+                                        <label>Status</label>
+                                        <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                            <span class="status-pill <%= task.columnId %>">
+                                                <%= task.columnId.toUpperCase() %>
+                                            </span>
+                                        </div>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <select name="status" class="form-select"
+                                                d-signal="change: submit; blur: editing = false" autofocus>
+                                                <option value="backlog" <%=task.columnId==='backlog' ? 'selected' : ''
+                                                    %>>Backlog</option>
+                                                <option value="todo" <%=task.columnId==='todo' ? 'selected' : '' %>>To
+                                                    Do</option>
+                                                <option value="doing" <%=task.columnId==='doing' ? 'selected' : '' %>
+                                                    >Doing</option>
+                                                <option value="done" <%=task.columnId==='done' ? 'selected' : '' %>>Done
+                                                </option>
+                                            </select>
+                                        </form>
+                                    </div>
+
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-sprint-field">
+                                        <label>Sprint</label>
+                                        <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                            <% const sprint=sprints ? sprints.find(s=> s.id === task.sprintId) : null;
+                                                %>
+                                                <% const sprintTitle=sprint ? sprint.title : 'General Backlog' ; %>
+                                                    <span>
+                                                        <%= sprintTitle %>
+                                                    </span>
+                                        </div>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <select name="sprintId" class="form-select"
+                                                d-signal="change: submit; blur: editing = false" autofocus>
+                                                <option value="" <%=!task.sprintId ? 'selected' : '' %>>General Backlog
+                                                </option>
+                                                <% if (sprints) { sprints.forEach(s=> { %>
+                                                    <option value="<%= s.id %>" <%=task.sprintId===s.id ? 'selected'
+                                                        : '' %>>
+                                                        <%= s.title %>
+                                                    </option>
+                                                    <% }); } %>
+                                            </select>
+                                        </form>
+                                    </div>
+
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-priority-field">
+                                        <label>Priority</label>
+                                        <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                            <span class="priority-text <%= task.priority %>">
+                                                <%= task.priority %>
+                                            </span>
+                                        </div>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <select name="priority" class="form-select"
+                                                d-signal="change: submit; blur: editing = false" autofocus>
+                                                <option value="low" <%=task.priority==='low' ? 'selected' : '' %>>Low
+                                                </option>
+                                                <option value="medium" <%=task.priority==='medium' ? 'selected' : '' %>
+                                                    >Medium</option>
+                                                <option value="high" <%=task.priority==='high' ? 'selected' : '' %>>High
+                                                </option>
+                                                <option value="critical" <%=task.priority==='critical' ? 'selected' : ''
+                                                    %>>Critical</option>
+                                            </select>
+                                        </form>
+                                    </div>
+
+                                    <div class="meta-item editable-field" d-cell="{ editing: false }"
+                                        d-id="task-assignee-field">
+                                        <label>Assignee</label>
+                                        <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                            <div class="assignee-info">
+                                                <% if (task.assignee_avatar) { %>
+                                                    <img src="<%= task.assignee_avatar %>" class="user-avatar">
+                                                    <% } else { %>
+                                                        <div class="user-avatar"
+                                                            style="background: rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center;">
+                                                            ?</div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+                                        <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>"
+                                            method="POST" style="display:none" d-show="editing" d-pulse="commit"
+                                            d-target="body" d-signal="submit: editing = false">
+                                            <select name="assignee_avatar" class="form-select" autofocus
+                                                d-signal="change: submit; blur: editing = false">
+                                                <option value="">Unassigned</option>
+                                                <option value="https://i.pravatar.cc/150?u=1"
+                                                    <%=task.assignee_avatar==='https://i.pravatar.cc/150?u=1'
+                                                    ? 'selected' : '' %>>User 1</option>
+                                                <option value="https://i.pravatar.cc/150?u=2"
+                                                    <%=task.assignee_avatar==='https://i.pravatar.cc/150?u=2'
+                                                    ? 'selected' : '' %>>User 2</option>
+                                                <option value="https://i.pravatar.cc/150?u=3"
+                                                    <%=task.assignee_avatar==='https://i.pravatar.cc/150?u=3'
+                                                    ? 'selected' : '' %>>User 3</option>
+                                            </select>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="content-section editable-field" d-cell="{ editing: false }"
+                                    d-id="task-description-field">
+                                    <label>Description</label>
+                                    <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                        <p class="task-description">
+                                            <%= task.content || 'Click to add description...' %>
+                                        </p>
+                                    </div>
+                                    <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>" method="POST"
+                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body"
+                                        d-signal="submit: editing = false">
+                                        <textarea name="content" class="content-textarea" rows="8" autofocus
+                                            d-signal="keydown: if(event.key === 'Escape') editing = false"><%= task.content ? task.content.trim() : '' %></textarea>
+                                        <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                                            <button type="submit" class="save-btn small">Save</button>
+                                            <button type="button" class="cancel-btn"
+                                                d-signal="click: editing = false">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="editable-field" d-cell="{ editing: false }" d-id="task-tags-field">
+                                    <label>Tags</label>
+                                    <div class="display-view" d-show="!editing" d-signal="click: editing = true">
+                                        <div class="tags-list">
+                                            <% if (task.tags && task.tags.length> 0) { %>
+                                                <% task.tags.forEach(tag=> { %>
+                                                    <span class="tag">#<%= tag %></span>
+                                                    <% }); %>
+                                                        <% } else { %>
+                                                            <span class="tag"
+                                                                style="opacity: 0.5; border-style: dashed;">+ Add
+                                                                Tags</span>
+                                                            <% } %>
+                                        </div>
+                                    </div>
+                                    <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>" method="POST"
+                                        style="display:none" d-show="editing" d-pulse="commit" d-target="body"
+                                        d-signal="submit: editing = false">
+                                        <input type="text" name="tags" class="form-input" autofocus
+                                            value="<%= (task.tags || []).join(', ') %>"
+                                            placeholder="e.g. frontend, design, urgency"
+                                            d-signal="keydown: if(event.key === 'Enter') { event.preventDefault(); submit; }">
+                                    </form>
+                                </div>
+
+                                <div class="comments-section">
+                                    <div class="comments-header">
+                                        Comments <span id="comments-count" class="count-badge"
+                                            style="background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">
+                                            <%= task.comments_count || 0 %>
+                                        </span>
+                                    </div>
+
+                                    <form class="comment-form" action="/showcase/kanban/task/<%= task.id %>/comments"
+                                        method="POST" d-pulse="commit" d-target="#comments-list" d-swap="prepend"
+                                        d-signal="submit: reset">
+                                        <div class="user-avatar"
+                                            style="width: 32px; height: 32px; background: url('https://i.pravatar.cc/150?u=me') center/cover; border-radius: 50%;">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <textarea name="content" class="comment-input"
+                                                placeholder="Write a comment..." required></textarea>
+                                            <div style="margin-top: 0.5rem; text-align: right;">
+                                                <button type="submit" class="save-btn small">Post Comment</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <div id="comments-list" class="comment-list">
+                                        <% if (task.comments && task.comments.length> 0) { %>
+                                            <% task.comments.forEach(comment=> { %>
+                                                <%- include('partials/comment.ejs', { comment }) %>
+                                                    <% }); %>
+                                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+    </div>
+
+    <%- include('partials/scripts.ejs') %>
+
+</body>
+
+</html>
