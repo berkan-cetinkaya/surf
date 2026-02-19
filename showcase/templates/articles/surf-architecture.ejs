@@ -1047,9 +1047,11 @@ Surf.<span class="fn">use</span>(MyPlugin, { <span class="comment">/* options */
                                 <h3>Official Plugins</h3>
                                 <ul>
                                     <li><strong>Clipboard:</strong> Copying + "Copied!" feedback + timeout reset</li>
-                                    <li><strong>Auto-Refresh:</strong> Refreshing surfaces with polling at specific
-                                        intervals</li>
-                                    <li><strong>Drag & Drop:</strong> Server interaction via drag & drop</li>
+                                    <li><strong>Auto-Refresh:</strong> Survives DOM patches via
+                                        <code>MutationObserver</code>. Refreshes surfaces with polling.</li>
+                                    <li><strong>Drag & Drop:</strong> Also uses <code>MutationObserver</code>.
+                                        Automatically attaches drag events to newly patched DOM elements without manual
+                                        re-initialization.</li>
                                 </ul>
 
                                 <p>The power of plugins comes from being connected to Signal via
