@@ -82,11 +82,67 @@
         }
 
         /* Sidebar */
+        /* Sidebar */
         .app-sidebar {
             background: rgba(0, 0, 0, 0.2);
             border-right: 1px solid var(--border-color);
             padding: 1rem;
             overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: var(--bg-secondary);
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+            }
+
+            .app-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(2px);
+            }
+
+            .sidebar-overlay.open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .app-main {
+                padding: 1.5rem 1rem;
+            }
+
+            .blog-card-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-card-image {
+                min-height: 200px;
+            }
         }
 
         .sidebar-section {
@@ -293,6 +349,25 @@
                 display: none;
             }
 
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(2px);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .mobile-overlay.open {
+                opacity: 1;
+                visibility: visible;
+            }
+
             .app-main {
                 padding: 1.5rem;
             }
@@ -300,61 +375,58 @@
     </style>
 </head>
 
-<body>
-    <div class="app-layout">
-        <header class="app-header">
-            <h1><a href="/" d-pulse="navigate"><img src="/brand/surf-logo.png" alt="SURF" class="app-logo"></a></h1>
-            <nav class="breadcrumb">
-                <span>Articles</span>
-            </nav>
-        </header>
+<body d-cell="{ sidebarOpen: false }">
+    <div class="mobile-overlay" d-attr="class.open: sidebarOpen" d-signal="click: sidebarOpen = false"></div>
+    <div class="app-layout" d-id="layout">
+        <%- include('../partials/header', { breadcrumbs: [{ label: 'Showcase' , href: '/showcase' }, { label: 'Articles'
+            }] }) %>
 
-        <%- include('../partials/sidebar', { activeCategory: null, activeExample: null }) %>
+            <%- include('../partials/sidebar', { activeCategory: null, activeExample: null }) %>
 
-            <main class="app-main">
-                <div class="blog-intro">
-                    <h2>Articles</h2>
-                    <p>Articles, deep dives, and insights about building for the web with SURF.</p>
-                </div>
+                <main class="app-main">
+                    <div class="blog-intro">
+                        <h2>Articles</h2>
+                        <p>Articles, deep dives, and insights about building for the web with SURF.</p>
+                    </div>
 
-                <div class="blog-list">
-                    <% posts.forEach(post=> { %>
-                        <a href="/articles/<%= post.slug %>" class="blog-card">
-                            <div class="blog-card-inner">
-                                <div class="blog-card-image">
-                                    <% if (post.heroImage) { %>
-                                        <img src="<%= post.heroImage %>" alt="<%= post.title %>">
-                                        <% } else { %>
-                                            <span class="fallback-icon">
-                                                <%= post.icon %>
-                                            </span>
-                                            <% } %>
-                                </div>
-                                <div class="blog-card-body">
-                                    <div class="blog-card-meta">
-                                        <span class="blog-card-category">
-                                            <%= post.category %>
-                                        </span>
-                                        <span class="blog-card-date">
-                                            <%= post.date %>
-                                        </span>
-                                        <span class="blog-card-read-time">
-                                            <%= post.readTime %>
-                                        </span>
+                    <div class="blog-list">
+                        <% posts.forEach(post=> { %>
+                            <a href="/articles/<%= post.slug %>" class="blog-card">
+                                <div class="blog-card-inner">
+                                    <div class="blog-card-image">
+                                        <% if (post.heroImage) { %>
+                                            <img src="<%= post.heroImage %>" alt="<%= post.title %>">
+                                            <% } else { %>
+                                                <span class="fallback-icon">
+                                                    <%= post.icon %>
+                                                </span>
+                                                <% } %>
                                     </div>
-                                    <h3 class="blog-card-title">
-                                        <%= post.title %>
-                                    </h3>
-                                    <p class="blog-card-description">
-                                        <%= post.description %>
-                                    </p>
-                                    <span class="blog-card-cta">Read article <span class="arrow">→</span></span>
+                                    <div class="blog-card-body">
+                                        <div class="blog-card-meta">
+                                            <span class="blog-card-category">
+                                                <%= post.category %>
+                                            </span>
+                                            <span class="blog-card-date">
+                                                <%= post.date %>
+                                            </span>
+                                            <span class="blog-card-read-time">
+                                                <%= post.readTime %>
+                                            </span>
+                                        </div>
+                                        <h3 class="blog-card-title">
+                                            <%= post.title %>
+                                        </h3>
+                                        <p class="blog-card-description">
+                                            <%= post.description %>
+                                        </p>
+                                        <span class="blog-card-cta">Read article <span class="arrow">→</span></span>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                        <% }) %>
-                </div>
-            </main>
+                            </a>
+                            <% }) %>
+                    </div>
+                </main>
     </div>
 
     <%- include('../partials/core-scripts') %>

@@ -5,23 +5,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surf Board - Project Management</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-body: #0f172a;
+            --bg-sidebar: rgba(15, 23, 42, 0.95);
+            --bg-column: rgba(30, 41, 59, 0.4);
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --brand-primary: #38bdf8;
+            --brand-secondary: #818cf8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .dashboard-layout {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ensure sidebar fits in flex layout */
+        .dashboard-sidebar {
+            flex-shrink: 0;
+            width: 260px;
+            position: relative !important;
+            /* Force overrides */
+        }
+
+        .dashboard-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            overflow: auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Mobile Adjustments */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-overlay.open {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr !important;
+            }
+
+            .dashboard-sidebar {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px !important;
+                z-index: 1001;
+                transform: translateX(-100%);
+                transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+                background: var(--bg-sidebar) !important;
+                display: flex !important;
+            }
+
+            .dashboard-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 
-<body>
-    <div class="dashboard-layout">
+<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }">
+    <div class="mobile-overlay" d-attr="class.open: sidebarOpen" d-signal="click: sidebarOpen = false"></div>
+    <div class="dashboard-layout" d-id="kanban-layout">
         <%- include('partials/sidebar.ejs') %>
 
             <div class="dashboard-main">
                 <%- include('partials/header.ejs') %>
 
-                    <div style="padding: 0 2rem; margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
+                    <div class="board-toolbar">
                         <form action="/showcase/kanban" method="GET" d-pulse="commit" d-target="body"
-                            style="display: flex; gap: 0.5rem; align-items: center;">
-                            <label for="sprint-select"
-                                style="font-weight: 500; font-size: 0.9rem; color: var(--text-muted);">Active
-                                Sprint:</label>
-                            <select id="sprint-select" name="sprintId" d-signal="change: submit"
-                                style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 0.5rem; border-radius: 6px; min-width: 150px;">
+                            class="toolbar-form">
+                            <label for="sprint-select" class="toolbar-label">Active Sprint:</label>
+                            <select id="sprint-select" name="sprintId" d-signal="change: submit" class="toolbar-select">
                                 <option value="" disabled <%=!activeSprintId ? 'selected' : '' %>>Select Sprint</option>
                                 <% sprints.forEach(function(sprint) { %>
                                     <option value="<%= sprint.id %>" <%=activeSprintId===sprint.id ? 'selected' : '' %>>
@@ -32,8 +136,7 @@
                         </form>
 
                         <% if (activeSprintId) { %>
-                            <div
-                                style="font-size: 0.8rem; color: var(--brand-secondary); background: rgba(129, 140, 248, 0.1); padding: 4px 8px; border-radius: 4px;">
+                            <div class="status-badge">
                                 <%= sprints.find(s=> s.id === activeSprintId)?.status || 'Active' %>
                             </div>
                             <% } %>
@@ -55,84 +158,67 @@
     </dialog>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --bg-body: #0f172a;
-            --bg-sidebar: rgba(15, 23, 42, 0.95);
-            --bg-column: rgba(30, 41, 59, 0.4);
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-focus: rgba(56, 189, 248, 0.5);
-
-            --brand-primary: #38bdf8;
-            /* Sky Blue */
-            --brand-secondary: #818cf8;
-            /* Indigo */
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-
-            /* Branding Colors */
-            --cyan: #00b4d8;
-            --purple: #a78bfa;
-            --muted: #a1a1aa;
-
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
-            background-attachment: fixed;
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Dashboard Layout */
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .dashboard-main {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .dashboard-content {
-            flex: 1;
-            overflow: auto;
-            /* Enable both scrollbars */
-            padding: 2rem;
-            position: relative;
-        }
-
         .board-container {
             min-width: 100%;
             display: flex;
             flex-direction: column;
             gap: 2rem;
+        }
+
+        /* Toolbar Styles */
+        .board-toolbar {
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: transparent;
+        }
+
+        .toolbar-form {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toolbar-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .toolbar-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            min-width: 180px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .toolbar-select:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--brand-secondary);
+            background: rgba(129, 140, 248, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(129, 140, 248, 0.2);
         }
 
         /* Board Specifics */

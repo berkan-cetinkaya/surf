@@ -1,23 +1,32 @@
-<aside class="dashboard-sidebar">
-    <a href="/" d-pulse="navigate" class="nav-logo"
-        style="display: flex; align-items: center; text-decoration: none; color: var(--cyan); font-weight: 700; font-size: 1.25rem;">
-        <img src="/brand/surf-logo.png" alt="SURF" height="56" width="56"
-            style="height: 56px; width: 56px; display: block;">
-        <span style="margin-left: 0.75rem;">Surf</span>
-        <span
-            style="font-size: 0.6rem; background: var(--purple); color: #282a36; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; vertical-align: middle; line-height: 1;">Beta</span>
-        <span
-            style="font-size: 0.65rem; color: var(--text-muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.2.0</span>
+<aside class="dashboard-sidebar" d-attr="class.open: sidebarOpen">
+    <div class="sidebar-header-mobile">
+        <span class="logo-text">Surf Board</span>
+        <button class="close-sidebar" d-signal="click: sidebarOpen = false" aria-label="Close Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <a href="/" d-pulse="navigate" class="nav-logo" d-signal="click: sidebarOpen = false">
+        <img src="/brand/surf-logo.png" alt="SURF">
+        <span class="logo-text">Surf</span>
+        <span class="beta-tag">Beta</span>
+        <span class="version-tag">v0.2.0</span>
     </a>
 
     <div class="sidebar-group">
         <h3 class="group-title">Workspace</h3>
         <nav class="nav-menu">
-            <a href="/showcase/kanban" class="nav-item" d-pulse="navigate" d-target="body">
+            <a href="/showcase/kanban" class="nav-item" d-pulse="navigate" d-target="body"
+                d-signal="click: sidebarOpen = false">
                 <span class="icon">⊞</span>
                 Board
             </a>
-            <a href="/showcase/kanban/backlog" class="nav-item" d-pulse="navigate" d-target="body">
+            <a href="/showcase/kanban/backlog" class="nav-item" d-pulse="navigate" d-target="body"
+                d-signal="click: sidebarOpen = false">
                 <span class="icon">≣</span>
                 Planning
             </a>
@@ -40,18 +49,30 @@
     /* Sidebar Styles */
     .dashboard-sidebar {
         width: 260px;
-        background: rgba(15, 23, 42, 0.6);
+        background: rgba(15, 23, 42, 0.4);
         border-right: 1px solid var(--border-subtle);
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         display: flex;
         flex-direction: column;
-        padding: 1.5rem;
-        gap: 2rem;
+        padding: 1.25rem 1.75rem;
+        /* Matches Header padding-top */
+        gap: 1.5rem;
         height: 100vh;
-        /* Fixed height for sticky sidebar */
+        position: sticky;
+        top: 0;
+    }
+
+    .sidebar-header-mobile {
+        display: none;
+        /* Hidden on desktop */
     }
 
     .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
         transition: opacity 0.2s;
         margin-bottom: 2rem;
     }
@@ -95,8 +116,9 @@
     }
 
     .nav-item.active {
-        background: rgba(56, 189, 248, 0.1);
+        background: rgba(56, 189, 248, 0.12);
         color: var(--brand-primary);
+        box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.05);
     }
 
     .nav-item .icon {
@@ -126,6 +148,66 @@
         box-shadow: 0 0 8px var(--danger);
     }
 
+    .sidebar-header-mobile {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .logo-text {
+        font-weight: 800;
+        font-size: 1.25rem;
+        background: linear-gradient(135deg, #fff, var(--brand-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-header-mobile {
+            display: flex;
+        }
+
+        .nav-logo {
+            display: none !important;
+        }
+    }
+
+    /* Duplicate nav-logo removed */
+
+    .nav-logo img {
+        height: 28px;
+        width: 28px;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .nav-logo .logo-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+    }
+
+    .nav-logo .beta-tag {
+        font-size: 0.6rem;
+        background: var(--brand-secondary);
+        color: #fff;
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+    }
+
+    .nav-logo .version-tag {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        font-family: monospace;
+        opacity: 0.7;
+    }
+
     /* Sidebar Footer */
     .sidebar-footer {
         margin-top: auto;
@@ -152,6 +234,10 @@
     .engine-title {
         font-weight: 700;
         font-size: 0.85rem;
+        background: linear-gradient(135deg, #fff, var(--brand-primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .engine-status {

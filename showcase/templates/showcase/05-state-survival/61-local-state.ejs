@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seat Booking - SURF Example</title>
     <style>
+        :root {
+            --glass-bg: rgba(30, 41, 59, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,251 +25,319 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #eee;
-            padding: 2rem;
+            color: var(--text-main);
+            padding: 4rem 1.5rem;
         }
 
         .container {
-            max-width: 500px;
+            max-width: 550px;
             margin: 0 auto;
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
             margin-bottom: 0.5rem;
-            color: #00d4ff;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.04em;
             text-align: center;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
             text-align: center;
+            font-weight: 500;
         }
 
         .explanation {
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid rgba(124, 58, 237, 0.3);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: #a78bfa;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
         }
 
         .explanation strong {
-            color: #00d4ff;
+            color: var(--accent-primary);
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         .event-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .event-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(129, 140, 248, 0.1);
+            border: 1px solid rgba(129, 140, 248, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 2.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .event-info h2 {
-            font-size: 1.2rem;
-            color: #fff;
-            margin-bottom: 0.25rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.02em;
         }
 
         .event-info p {
-            font-size: 0.85rem;
-            color: #888;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: 500;
         }
 
         .availability {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 0.5rem;
         }
 
         .availability-label {
-            color: #888;
-            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
         }
 
         .availability-count {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--text-main);
         }
 
         .availability-count.high {
-            color: #22c55e;
+            color: var(--success);
         }
 
         .availability-count.medium {
-            color: #eab308;
+            color: var(--warning);
         }
 
         .availability-count.low {
-            color: #ef4444;
+            color: var(--danger);
         }
 
         .update-indicator {
             font-size: 0.7rem;
-            color: #666;
+            color: var(--text-dim);
             text-align: right;
-            margin-top: 0.25rem;
+            font-weight: 600;
+            padding: 0.5rem;
         }
 
         /* Selector Card */
         .selector-card {
             text-align: center;
+            border-top: 4px solid var(--accent-primary);
         }
 
         .selector-label {
-            color: #888;
+            color: var(--text-dim);
             font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
         }
 
         .seat-counter {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .counter-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            background: rgba(0, 212, 255, 0.1);
-            color: #00d4ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
             font-size: 1.5rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .counter-btn:hover:not(:disabled) {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-2px);
         }
 
         .counter-btn:disabled {
-            opacity: 0.3;
+            opacity: 0.2;
             cursor: not-allowed;
         }
 
         .counter-value {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #fff;
-            min-width: 80px;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--text-main);
+            min-width: 100px;
+            letter-spacing: -0.05em;
         }
 
         .total-price {
-            font-size: 1.25rem;
-            color: #a78bfa;
-            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-dim);
         }
 
         .total-price span {
-            font-weight: 700;
-            color: #00d4ff;
+            color: var(--accent-primary);
+            font-weight: 900;
         }
 
         .book-btn {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(90deg, #7c3aed, #00d4ff);
-            color: white;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            color: #0f172a;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
         }
 
         .book-btn:hover:not(:disabled) {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 15px 30px -10px rgba(56, 189, 248, 0.6);
         }
 
         .book-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+            filter: grayscale(1);
         }
 
         .state-display {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            font-family: monospace;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 24px;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
+            text-align: left;
+            border: 1px solid var(--glass-border);
         }
 
         .state-display .label {
-            color: #888;
-            margin-bottom: 0.5rem;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .state-display .local {
-            color: #22c55e;
+            color: var(--success);
+            font-weight: 700;
         }
 
         .state-display .server {
-            color: #00d4ff;
+            color: var(--accent-primary);
+            font-weight: 700;
         }
 
         .back {
             position: fixed;
-            top: 1rem;
-            left: 1rem;
-            color: #888;
+            top: 2rem;
+            left: 2rem;
+            color: var(--text-dim);
             text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            z-index: 10;
         }
 
         .back:hover {
-            color: #fff;
+            color: var(--accent-primary);
+            transform: translateX(-5px);
         }
 
-        .warning {
-            color: #ef4444;
-            font-size: 0.85rem;
-            text-align: center;
-            margin-top: 0.5rem;
+        .success-overlay {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
         }
     </style>
 </head>
 
 <body>
-    <a href="/showcase/05-state-survival" class="back">← Back</a>
+    <a href="/showcase/05-state-survival" class="back" d-pulse="navigate">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+    </a>
 
     <div class="container">
-        <h1>🎫 Echo Rule: Mixed State</h1>
-        <p class="subtitle">Local selection survives server updates</p>
+        <h1>Echo Protocol</h1>
+        <p class="subtitle">Distributed State Synchronization</p>
 
         <div class="explanation">
-            <strong>💡 Key Concept:</strong> Your seat selection is <em>local Cell state</em>.
-            Available seats come from the <em>server</em> and update automatically.
-            <br><br>
-            Watch how your selection persists even as the server updates availability!
+            <strong>🔑 The "Mixed State" Pattern:</strong>
+            <br>
+            Your seat selection is <strong>Local Cell State</strong>, while availability is <strong>Server
+                State</strong>. Watch how your local choice survives even as the server surface refreshes every 3
+            seconds.
         </div>
 
         <!-- Event Info Card -->
@@ -265,53 +345,53 @@
             <div class="event-header">
                 <div class="event-icon">🎸</div>
                 <div class="event-info">
-                    <h2>Rock Concert 2026</h2>
-                    <p>March 15, 2026 • 20:00 • Arena Stadium</p>
+                    <h2>SURF Live 2026</h2>
+                    <p>Grand Arena • 20:00 • Standard Seating</p>
                 </div>
             </div>
 
-            <!-- Server-updated availability (auto-refreshes every 3 seconds) -->
+            <!-- Server-updated availability -->
             <div id="availability-surface" d-auto-refresh="3000" d-auto-refresh-url="/api/seats">
                 <div class="availability">
                     <div>
-                        <div class="availability-label">Available Seats</div>
+                        <div class="availability-label">Available</div>
                         <div class="availability-count high" id="seat-count">--</div>
                     </div>
                     <div style="text-align: right;">
-                        <div class="availability-label">Price per seat</div>
-                        <div style="color: #fff; font-size: 1.2rem;">$75</div>
+                        <div class="availability-label">Pricing</div>
+                        <div style="color: #fff; font-size: 1.5rem; font-weight: 800;">$75</div>
                     </div>
                 </div>
-                <div class="update-indicator">Loading...</div>
+                <div class="update-indicator">Syncing...</div>
             </div>
         </div>
 
-        <!-- User Selection Card (Cell state) -->
+        <!-- User Selection Card -->
         <div class="card selector-card" d-cell="{count: 1}" d-id="booking">
-            <div class="selector-label">How many seats?</div>
-
-            <div class="seat-counter">
-                <button class="counter-btn" d-signal="click: count = Math.max(count - 1, 1)">−</button>
-                <div class="counter-value" d-text="count">1</div>
-                <button class="counter-btn" d-signal="click: count = Math.min(count + 1, 10)">+</button>
-            </div>
-
-            <div class="total-price">
-                Total: <span>$</span><span d-text="count * 75">75</span>
-            </div>
-
-            <button class="book-btn" d-pulse="action" d-action="/api/book-seats">
-                🎟️ Book Now
-            </button>
-
-            <!-- State Visualization (inside Cell — powered by d-text, zero JS) -->
-            <div class="state-display">
-                <div class="label">Current State:</div>
-                <div><span class="local">📱 Local (Cell):</span> count: <span d-text="count">1</span></div>
-                <div><span class="server">🌐 Server:</span> available: <span id="debug-available">--</span></div>
-            </div>
+            <%- include('../../partials/seat_selector') %>
         </div>
     </div>
+
+    <script>
+        // Sync debug panel with auto-refreshed availability surface
+        function syncDebugAvailable() {
+            const seatCount = document.getElementById('seat-count');
+            const debugAvailable = document.getElementById('debug-available');
+            if (seatCount && debugAvailable) {
+                debugAvailable.textContent = seatCount.textContent.trim();
+            }
+        }
+
+        // Observe availability surface changes
+        document.addEventListener('DOMContentLoaded', () => {
+            const surface = document.getElementById('availability-surface');
+            if (surface) {
+                const observer = new MutationObserver(syncDebugAvailable);
+                observer.observe(surface, { childList: true, subtree: true, characterData: true });
+                syncDebugAvailable();
+            }
+        });
+    </script>
 
     <%- include('../../partials/core-scripts') %>
 </body>

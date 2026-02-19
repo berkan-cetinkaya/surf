@@ -101,8 +101,11 @@ export async function createServer() {
     console.error('Failed to load CSS for inlining:', e);
   }
 
-  // Inject CSS into all views
+  // Global Content-Type and CSS Injection
   fastify.addHook('preHandler', (req, reply, done) => {
+    // Default to HTML for this showcase app
+    reply.type('text/html; charset=utf-8');
+
     reply.locals = {
       css: cssContent,
       ...reply.locals,
@@ -166,14 +169,14 @@ export async function createServer() {
   });
 
   // Showcase Index
-  const renderExamples = async (req, reply) => {
+  const handleShowcase = async (req, reply) => {
     return reply.view('templates/showcase/index.ejs', {
       title: 'SURF Showcase Gallery',
       articles: ARTICLES,
     });
   };
-  fastify.get('/showcase', renderExamples);
-  fastify.get('/showcase/', renderExamples);
+  fastify.get('/showcase', handleShowcase);
+  fastify.get('/showcase/', handleShowcase);
 
   // Kanban Board Example
   fastify.get('/showcase/kanban', handlers.handleKanbanBoard);
@@ -208,6 +211,51 @@ export async function createServer() {
       items: getCategoryExamples(category),
     };
     return reply.view('templates/showcase/category.ejs', data);
+  });
+
+  // Pagination Example (dedicated route with actual pagination logic)
+  const PAGINATION_ITEMS = Array.from({ length: 12 }, (_, i) => {
+    const titles = [
+      'Interactive Surface Routing', 'State Persistence Protocol', 'Reactive DOM Patching',
+      'Cell Isolation Patterns', 'Server-Side Rendering', 'Signal Propagation',
+      'Navigation Architecture', 'Error Boundary Design', 'Lazy Surface Loading',
+      'Incremental Hydration', 'Edge-Side Composition', 'Streaming HTML Delivery',
+    ];
+    const descs = [
+      'Demonstrating precise DOM updates across navigation nodes.',
+      'Ensuring local cell data survives cross-page transitions.',
+      'Efficient tree-diffing for minimal repaints.',
+      'Preventing state leaks between sibling components.',
+      'Pre-rendering HTML on the server for instant first paint.',
+      'Unidirectional data flow through the component tree.',
+      'Deep linking and URL-driven state management.',
+      'Graceful degradation when components fail.',
+      'Loading surfaces on-demand for better performance.',
+      'Progressively adding interactivity to static HTML.',
+      'Composing pages at the CDN edge layer.',
+      'Sending HTML chunks as they become ready.',
+    ];
+    return { number: String(i + 1).padStart(2, '0'), title: titles[i], desc: descs[i] };
+  });
+  const ITEMS_PER_PAGE = 4;
+  const TOTAL_PAGES = Math.ceil(PAGINATION_ITEMS.length / ITEMS_PER_PAGE);
+
+  fastify.get('/showcase/03-navigation/36-pagination', async (req, reply) => {
+    const page = Math.max(1, Math.min(TOTAL_PAGES, parseInt(req.query.page) || 1));
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    const items = PAGINATION_ITEMS.slice(start, start + ITEMS_PER_PAGE);
+
+    const data = {
+      title: 'Pagination With Urls',
+      activeCategory: '03-navigation',
+      activeExample: '36-pagination',
+      now: new Date().toLocaleTimeString(),
+      currentPage: page,
+      totalPages: TOTAL_PAGES,
+      items,
+    };
+
+    return reply.view('templates/showcase/03-navigation/36-pagination.ejs', data);
   });
 
   // Individual Example (e.g., /showcase/01-interaction/02-counter)
@@ -294,6 +342,7 @@ export async function createServer() {
 
   fastify.get('/api/seats', handlers.handleSeats);
   fastify.post('/api/book-seats', handlers.handleBookSeats);
+  fastify.get('/api/seat-selector', handlers.handleSeatSelector);
 
   fastify.post('/api/form', handlers.handleForm);
 

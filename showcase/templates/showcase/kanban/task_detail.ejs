@@ -56,6 +56,7 @@
             grid-template-columns: 260px 1fr;
             height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
         .dashboard-main {
@@ -70,6 +71,89 @@
             overflow: auto;
             padding: 2rem;
             position: relative;
+        }
+
+        /* Mobile Adjustments */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-overlay.open {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr !important;
+            }
+
+            .dashboard-sidebar {
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px !important;
+                z-index: 1001;
+                transform: translateX(-100%);
+                transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+                background: var(--bg-sidebar) !important;
+                display: flex !important;
+            }
+
+            .dashboard-sidebar.open {
+                transform: translateX(0);
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .detail-container {
+                border-radius: 0;
+                border: none;
+                background: transparent;
+                box-shadow: none;
+            }
+
+            .detail-header {
+                padding: 1rem 0;
+            }
+
+            .detail-body {
+                padding: 1rem 0;
+            }
+
+            .meta-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+
+            .detail-title-group h2 {
+                font-size: 1.25rem;
+            }
+
+            .comment-form {
+                flex-direction: column;
+            }
+
+            .comment-form .user-avatar {
+                display: none;
+            }
         }
 
         /* Task Detail Specific Styles */
@@ -230,6 +314,7 @@
             font-size: 1rem;
             line-height: 1.7;
             color: var(--text-main);
+            word-break: break-word;
             white-space: pre-wrap;
         }
 
@@ -323,7 +408,6 @@
 
         .task-description {
             text-align: left;
-            white-space: pre-wrap;
             width: 100%;
             display: block;
             margin: 0;
@@ -527,15 +611,16 @@
     </style>
 </head>
 
-<body>
-    <div class="dashboard-layout">
+<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }">
+    <div class="mobile-overlay" d-attr="class.open: sidebarOpen" d-signal="click: sidebarOpen = false"></div>
+    <div class="dashboard-layout" d-id="task-detail-layout">
         <%- include('partials/sidebar.ejs') %>
 
             <div class="dashboard-main">
                 <%- include('partials/header.ejs') %>
 
                     <div class="dashboard-content">
-                        <a href="/showcase/kanban" class="back-link">
+                        <a href="/showcase/kanban" class="back-link" d-pulse="navigate" d-target="body">
                             ← Back to Board
                         </a>
 
@@ -695,19 +780,17 @@
                                     </div>
                                 </div>
 
-                                <div class="content-section editable-field" d-cell="{ editing: false }"
-                                    d-id="task-description-field">
+                                <div class="content-section editable-field"
+                                    d-cell="{ editing: false, content: `<%= task.content || 'Click to add description...' %>` }">
                                     <label>Description</label>
                                     <div class="display-view" d-show="!editing" d-signal="click: editing = true">
-                                        <p class="task-description">
-                                            <%= task.content || 'Click to add description...' %>
-                                        </p>
+                                        <div class="task-description" d-text="content"></div>
                                     </div>
                                     <form class="edit-view" action="/showcase/kanban/task/<%= task.id %>" method="POST"
                                         style="display:none" d-show="editing" d-pulse="commit" d-target="body"
                                         d-signal="submit: editing = false">
                                         <textarea name="content" class="content-textarea" rows="8" autofocus
-                                            d-signal="keydown: if(event.key === 'Escape') editing = false"><%= task.content ? task.content.trim() : '' %></textarea>
+                                            d-signal="input: content = event.target.value; keydown: if(event.key === 'Escape') editing = false"><%= task.content ? task.content.trim() : '' %></textarea>
                                         <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
                                             <button type="submit" class="save-btn small">Save</button>
                                             <button type="button" class="cancel-btn"

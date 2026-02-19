@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation - SURF Example</title>
     <style>
+        :root {
+            --glass-bg: rgba(30, 41, 59, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,10 +22,11 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #eee;
+            color: var(--text-main);
         }
 
         .layout {
@@ -25,108 +35,178 @@
         }
 
         nav {
-            width: 200px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1rem;
+            width: 280px;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 2.5rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 1rem;
+            flex-shrink: 0;
         }
 
         nav .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #00d4ff;
-            margin-bottom: 1rem;
-            padding: 0.5rem;
+            font-size: 1.75rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2.5rem;
+            padding: 0 0.75rem;
+            letter-spacing: -0.05em;
         }
 
         nav a {
-            color: #888;
+            color: var(--text-dim);
             text-decoration: none;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         nav a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(4px);
         }
 
         nav a.active {
-            background: linear-gradient(90deg, rgba(124, 58, 237, 0.3), rgba(0, 212, 255, 0.3));
-            color: #00d4ff;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(129, 140, 248, 0.15));
+            color: var(--accent-primary);
+            box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2);
         }
 
         main {
             flex: 1;
-            padding: 2rem;
+            padding: 4rem;
+            overflow-y: auto;
         }
 
         .content {
-            max-width: 600px;
+            max-width: 700px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .content h1 {
-            color: #00d4ff;
-            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.04em;
         }
 
         .content p {
-            line-height: 1.8;
-            margin-bottom: 1rem;
-            color: #aaa;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: var(--text-dim);
         }
 
         .back {
             position: fixed;
-            top: 1rem;
-            right: 1rem;
-            color: #888;
+            top: 2rem;
+            right: 2rem;
+            color: var(--text-dim);
             text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            z-index: 10;
         }
 
         .back:hover {
-            color: #fff;
+            color: var(--accent-primary);
+            transform: translateX(-5px);
         }
 
         .note {
-            margin-top: 2rem;
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid rgba(124, 58, 237, 0.2);
-            padding: 1rem;
-            border-radius: 8px;
-            color: #a78bfa;
-            font-size: 0.85rem;
+            margin-top: 3rem;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 20px;
+            color: var(--accent-primary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .note code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            nav {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--glass-border);
+                padding: 1.5rem;
+            }
+
+            main {
+                padding: 2rem;
+            }
         }
     </style>
 </head>
 
 <body>
-    <a href="/showcase/03-navigation" class="back">← Back</a>
+    <a href="/showcase/03-navigation" class="back" d-pulse="navigate">
+        Back
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+    </a>
 
     <!-- Nav is a Cell with currentPage state -->
     <div class="layout" d-cell="{currentPage: 'home'}" d-id="nav">
         <nav>
             <div class="logo">SURF</div>
 
-            <!-- Navigation with d-pulse, d-signal and d-attr for active state -->
             <a href="/page/home" d-pulse="navigate" d-target="#main" d-signal="click: currentPage = 'home'"
                 d-attr="class.active: currentPage === 'home'">
-                🏠 Home
+                <span>🏠</span> Home
             </a>
             <a href="/page/about" d-pulse="navigate" d-target="#main" d-signal="click: currentPage = 'about'"
                 d-attr="class.active: currentPage === 'about'">
-                ℹ️ About
+                <span>ℹ️</span> About
             </a>
             <a href="/page/products" d-pulse="navigate" d-target="#main" d-signal="click: currentPage = 'products'"
                 d-attr="class.active: currentPage === 'products'">
-                📦 Products
+                <span>📦</span> Products
             </a>
             <a href="/page/contact" d-pulse="navigate" d-target="#main" d-signal="click: currentPage = 'contact'"
                 d-attr="class.active: currentPage === 'contact'">
-                ✉️ Contact
+                <span>✉️</span> Contact
             </a>
         </nav>
 
@@ -135,17 +215,19 @@
             <div class="content">
                 <h1>🏠 Home</h1>
                 <p>
-                    Welcome to the SURF navigation item. Click the links in the sidebar
-                    to see how content updates without a full page reload.
+                    Welcome to the SURF navigation demo. This experience showcases how content updates fluidly without a
+                    full page reload.
                 </p>
                 <p>
-                    Each link fetches real HTML from the server and replaces this content area.
-                    The browser history is also updated, so back/forward buttons work correctly.
+                    Each interaction fetches semantic HTML from the server and precisely updates the main surface.
+                    Browser history is automatically managed, ensuring the back and forward buttons behave exactly as
+                    expected.
                 </p>
 
                 <div class="note">
-                    <strong>Zero JavaScript!</strong> Active nav state is handled declaratively with
-                    <code>d-signal</code> and <code>d-class</code>.
+                    <strong>Zero Client-Side JavaScript!</strong> The active navigation state is handled declaratively
+                    using
+                    <code>d-signal</code> and <code>d-attr</code> attributes.
                 </div>
             </div>
         </main>

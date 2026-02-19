@@ -1,0 +1,22 @@
+<div class="selector-label">Select Ticket Quantity</div>
+
+<div class="seat-counter">
+    <button class="counter-btn" d-signal="click: count = Math.max(count - 1, 1)">−</button>
+    <div class="counter-value" d-text="count">1</div>
+    <button class="counter-btn" d-signal="click: count = Math.min(count + 1, 10)">+</button>
+</div>
+
+<div class="total-price">
+    Investment: <span>$</span><span d-text="count * 75">75</span>
+</div>
+
+<button class="book-btn" d-pulse="action" d-action="/api/book-seats" d-target=".selector-card">
+    Complete Booking
+</button>
+
+<!-- State Visualization -->
+<div class="state-display">
+    <div class="label">System State Manifest</div>
+    <div><span class="local">📱 Cell:</span> count = <span d-text="count">1</span></div>
+    <div><span class="server">🌐 Surface:</span> available = <span id="debug-available">--</span></div>
+</div>

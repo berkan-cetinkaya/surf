@@ -1,68 +1,278 @@
 <% if (tasks && tasks.length> 0) { %>
     <% tasks.forEach(task=> { %>
-        <tr class="backlog-row" d-draggable="true"
+        <div class="task-card" d-draggable="true"
             d-drag-data='{"taskId": "<%= task.id %>", "fromCol": "backlog", "fromSprintId": "<%= typeof sprintId !== "undefined" ? sprintId : "" %>"}'
             d-cell="{ expanded: false }" d-id="task-<%= task.id %>">
 
-            <td class="col-priority">
-                <% if (task.urgent) { %>
-                    <span class="priority-indicator critical">!</span>
-                    <% } else { %>
-                        <span class="priority-dot <%= task.priority %>"></span>
-                        <% } %>
-            </td>
+            <div class="task-card-main">
+                <div class="priority-strip <%= task.urgent ? 'critical' : task.priority %>"></div>
 
-            <td class="col-title" d-signal="click: expanded = !expanded" d-no-drag>
-                <div class="task-title">
-                    <%= task.title %>
-                </div>
-                <div class="task-meta">
-                    <span class="type-badge <%= task.type %>">
-                        <%= task.type %>
-                    </span>
-                    <% if (typeof task.columnId !=='undefined' && task.columnId !=='backlog' ) { %>
-                        <span class="status-badge <%= task.columnId %>"
-                            style="text-transform: capitalize; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-left: 4px;">
-                            <%= task.columnId %>
+                <div class="task-info" d-signal="click: expanded = !expanded" d-no-drag>
+                    <div class="task-top-row">
+                        <span class="type-badge <%= task.type %>">
+                            <%= task.type %>
                         </span>
-                        <% } %>
+                        <div class="assignee-box" style="display: flex; gap: 0.75rem; align-items: center;">
+                            <a href="/showcase/kanban/task/<%= task.id %>" d-pulse="navigate" class="detail-link-mini"
+                                d-signal="click: event.stopPropagation()" title="Open Dedicated Page">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                            </a>
+                            <% if (task.assignee_avatar) { %>
+                                <img src="<%= task.assignee_avatar %>" class="mini-avatar">
+                                <% } else { %>
+                                    <span class="mini-avatar-placeholder">U</span>
+                                    <% } %>
+                        </div>
+                    </div>
+
+                    <h4 class="task-title">
+                        <%= task.title %>
+                    </h4>
+
+                    <div class="task-meta">
+                        <div class="tags">
                             <% (task.tags || []).forEach(tag=> { %>
-                                <span class="tag">#<%= tag %></span>
+                                <span class="hash-tag">#<%= tag %></span>
                                 <% }); %>
+                        </div>
+                        <span class="created-date">
+                            <%= new Date(task.created_at).toLocaleDateString([], { month: 'short' , day: 'numeric' }) %>
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Expanded Quick Actions -->
-                <div class="quick-actions" d-show="expanded" style="display: none;">
-                    <form d-pulse="commit" method="POST" action="/showcase/kanban/delete" style="display: inline;">
+                <div class="task-actions" d-show="expanded" style="display: none;">
+                    <form d-pulse="commit" method="POST" action="/showcase/kanban/delete" style="margin: 0;">
                         <input type="hidden" name="taskId" value="<%= task.id %>">
                         <input type="hidden" name="columnId" value="backlog">
                         <% if (typeof sprintId !=="undefined" && sprintId) { %>
                             <input type="hidden" name="sprintId" value="<%= sprintId %>">
                             <% } %>
-                                <button type="submit" class="btn-delete-task" title="Delete Task">
-                                    <span class="icon">×</span> Delete
+                                <button type="submit" class="btn-delete-card">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
                                 </button>
                     </form>
                 </div>
-            </td>
-
-            <td class="col-assignee">
-                <% if (task.assignee_avatar) { %>
-                    <img src="<%= task.assignee_avatar %>" class="assignee-avatar small">
-                    <% } else { %>
-                        <span class="avatar-placeholder">?</span>
-                        <% } %>
-            </td>
-
-            <td class="col-date">
-                <%= new Date(task.created_at).toLocaleDateString() %>
-            </td>
-        </tr>
+            </div>
+        </div>
         <% }); %>
             <% } else { %>
-                <tr class="empty-backlog-row">
-                    <td colspan="4">
-                        <div class="empty-state">No tasks here</div>
-                    </td>
-                </tr>
+                <div class="empty-state-card">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="opacity: 0.3; margin-bottom: 0.5rem;">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span>No tasks in this bucket</span>
+                </div>
                 <% } %>
+
+                    <style>
+                        .task-card {
+                            background: rgba(255, 255, 255, 0.03);
+                            border: 1px solid var(--border-subtle);
+                            border-radius: 12px;
+                            position: relative;
+                            overflow: hidden;
+                            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                            cursor: grab;
+                        }
+
+                        .task-card:hover {
+                            background: rgba(255, 255, 255, 0.06);
+                            border-color: rgba(255, 255, 255, 0.15);
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        }
+
+                        .task-card-main {
+                            display: flex;
+                            padding-left: 4px;
+                        }
+
+                        .priority-strip {
+                            width: 4px;
+                            min-height: 100%;
+                            background: var(--text-muted);
+                            opacity: 0.5;
+                        }
+
+                        .priority-strip.critical {
+                            background: #ef4444;
+                            opacity: 1;
+                            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+                        }
+
+                        .priority-strip.high {
+                            background: #f59e0b;
+                            opacity: 1;
+                        }
+
+                        .priority-strip.medium {
+                            background: #38bdf8;
+                            opacity: 0.8;
+                        }
+
+                        .task-info {
+                            flex: 1;
+                            padding: 1rem;
+                        }
+
+                        .task-top-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 0.75rem;
+                        }
+
+                        .type-badge {
+                            font-size: 0.65rem;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                            padding: 2px 8px;
+                            border-radius: 100px;
+                            background: rgba(255, 255, 255, 0.1);
+                            color: var(--text-muted);
+                        }
+
+                        .type-badge.feature {
+                            color: #818cf8;
+                            background: rgba(129, 140, 248, 0.1);
+                        }
+
+                        .type-badge.bug {
+                            color: #ef4444;
+                            background: rgba(239, 68, 68, 0.1);
+                        }
+
+                        .type-badge.task {
+                            color: #10b981;
+                            background: rgba(16, 185, 129, 0.1);
+                        }
+
+                        .mini-avatar,
+                        .mini-avatar-placeholder {
+                            width: 22px;
+                            height: 22px;
+                            border-radius: 50%;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                        }
+
+                        .mini-avatar-placeholder {
+                            background: rgba(255, 255, 255, 0.05);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.6rem;
+                            color: var(--text-muted);
+                        }
+
+                        .task-title {
+                            font-size: 0.95rem;
+                            font-weight: 600;
+                            color: var(--text-main);
+                            margin-bottom: 0.75rem;
+                            line-height: 1.4;
+                        }
+
+                        .task-meta {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            gap: 1rem;
+                        }
+
+                        .tags {
+                            display: flex;
+                            gap: 0.5rem;
+                            flex-wrap: wrap;
+                        }
+
+                        .hash-tag {
+                            font-size: 0.75rem;
+                            color: var(--brand-primary);
+                            opacity: 0.8;
+                        }
+
+                        .created-date {
+                            font-size: 0.7rem;
+                            color: var(--text-muted);
+                            white-space: nowrap;
+                        }
+
+                        .task-actions {
+                            padding: 0.75rem;
+                            display: flex;
+                            align-items: center;
+                            border-left: 1px solid rgba(255, 255, 255, 0.05);
+                        }
+
+                        .btn-delete-card {
+                            background: rgba(239, 68, 68, 0.1);
+                            border: 1px solid rgba(239, 68, 68, 0.2);
+                            color: #ef4444;
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.2s;
+                        }
+
+                        .btn-delete-card:hover {
+                            background: #ef4444;
+                            color: #fff;
+                        }
+
+                        .empty-state-card {
+                            padding: 2rem;
+                            text-align: center;
+                            color: var(--text-muted);
+                            font-size: 0.9rem;
+                            background: rgba(255, 255, 255, 0.02);
+                            border: 1px dashed var(--border-subtle);
+                            border-radius: 12px;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        }
+
+                        .task-card.dragging {
+                            opacity: 0.4;
+                            transform: scale(0.95);
+                            border-color: var(--brand-primary);
+                        }
+
+                        .detail-link-mini {
+                            color: var(--text-muted);
+                            opacity: 0;
+                            transition: all 0.2s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 4px;
+                            border-radius: 4px;
+                        }
+
+                        .task-card:hover .detail-link-mini {
+                            opacity: 1;
+                        }
+
+                        .detail-link-mini:hover {
+                            background: rgba(255, 255, 255, 0.1);
+                            color: var(--brand-primary);
+                        }
+                    </style>

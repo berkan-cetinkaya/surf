@@ -5,12 +5,12 @@
   </div>
 
   <% if (hasBreaking) { %>
-    <article class="news-item breaking" d-cell="{read: false}" d-id="news-breaking">
+    <article class="news-item breaking" d-cell="{read: false}" d-id="news-breaking" d-attr="data-read: read">
       <div class="news-header">
         <span class="category breaking">BREAKING</span>
         <span class="time">just now</span>
       </div>
-      <h3 class="news-title" d-pulse="action" d-action="/api/news/breaking/read" data-id="breaking">
+      <h3 class="news-title" d-pulse="action" d-action="/api/news/breaking/read" d-signal="click: read = true">
         🔴 New Story Just In!
       </h3>
       <div class="read-indicator" d-show="read">✓ Read</div>
@@ -18,7 +18,7 @@
     <% } %>
 
       <% items.forEach(function(item) { %>
-        <article class="news-item" d-cell="{read: false}" d-id="news-<%= item.id %>">
+        <article class="news-item" d-cell="{read: false}" d-id="news-<%= item.id %>" d-attr="data-read: read">
           <div class="news-header">
             <span class="category">
               <%= item.category %>
@@ -27,7 +27,8 @@
               <%= item.time %>
             </span>
           </div>
-          <h3 class="news-title" d-pulse="action" d-action="/api/news/<%= item.id %>/read" data-id="<%= item.id %>">
+          <h3 class="news-title" d-pulse="action" d-action="/api/news/<%= item.id %>/read"
+            d-signal="click: read = true">
             <%= item.title %>
           </h3>
           <div class="read-indicator" d-show="read">✓ Read</div>

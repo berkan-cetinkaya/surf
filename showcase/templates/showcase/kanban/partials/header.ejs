@@ -1,5 +1,14 @@
 <header class="dashboard-header">
     <div class="header-left">
+        <button id="kanban-sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Menu"
+            d-signal="click: sidebarOpen = !sidebarOpen">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
         <h2 class="breadcrumb">
             <span class="text-muted">Projects /</span>
             <span class="text-main">Surf Board</span>
@@ -7,21 +16,26 @@
     </div>
 
     <div class="header-center">
-        <div class="search-bar">
+        <form class="search-bar" action="/showcase/kanban/search" d-pulse="commit" d-target="#search-results">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <input type="text" placeholder="Search tasks..." class="search-input" d-input="/showcase/kanban/search"
-                d-debounce="300" name="q" d-target="#search-results" d-min-length="3" autocomplete="off">
+            <input type="text" id="desktop-search-input" placeholder="Search tasks..." class="search-input"
+                d-input="/showcase/kanban/search" d-pulse="commit" d-debounce="300" name="q" d-target="#search-results"
+                d-min-length="1" autocomplete="off">
             <div id="search-results"></div>
-        </div>
+        </form>
     </div>
 
     <div class="header-right">
-
-
-
+        <button class="mobile-search-toggle" d-signal="click: mobileSearchOpen = !mobileSearchOpen"
+            aria-label="Toggle Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </button>
 
         <div class="user-profile">
             <img src="https://i.pravatar.cc/150?u=me" alt="My Profile" class="avatar lg">
@@ -29,16 +43,69 @@
     </div>
 </header>
 
+<div class="mobile-search-bar" d-attr="class.open: mobileSearchOpen">
+    <div class="mobile-search-header">
+        <form class="search-bar" action="/showcase/kanban/search" d-pulse="commit" d-target="#mobile-search-results">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="Search tasks..." class="search-input" id="mobile-search-input"
+                d-input="/showcase/kanban/search" d-pulse="commit" d-debounce="300" name="q"
+                d-target="#mobile-search-results" d-min-length="1" autocomplete="off">
+        </form>
+        <button class="close-search" d-signal="click: mobileSearchOpen = false; click: Kanban.clearSearch">×</button>
+    </div>
+    <div id="mobile-search-results"></div>
+</div>
+
+<script>
+    if (window.Surf) {
+        Surf.register('Kanban', {
+            clearSearch() {
+                const mobileInput = document.getElementById('mobile-search-input');
+                if (mobileInput) mobileInput.value = '';
+
+                const mobileResults = document.getElementById('mobile-search-results');
+                if (mobileResults) mobileResults.innerHTML = '';
+
+                const desktopResults = document.getElementById('search-results');
+                if (desktopResults) desktopResults.innerHTML = '';
+
+                return {};
+            }
+        });
+    }
+</script>
+
 <style>
     /* Header Styles */
     .dashboard-header {
-        display: grid;
-        grid-template-columns: 250px 1fr auto;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 1rem 2rem;
+        padding: 1.25rem 2rem;
         background: transparent;
         border-bottom: 1px solid var(--border-subtle);
-        gap: 2rem;
+        gap: 1.5rem;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        min-width: 200px;
+    }
+
+    .header-center {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .header-right {
+        min-width: 200px;
+        display: flex;
+        justify-content: flex-end;
     }
 
     .breadcrumb {
@@ -64,7 +131,6 @@
         max-width: 400px;
         width: 100%;
         margin: 0 auto;
-        /* Center in grid cell */
     }
 
     .search-bar svg {
@@ -93,28 +159,10 @@
         box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
     }
 
-    .shortcut {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        color: var(--text-muted);
-    }
-
     .header-right {
         display: flex;
         align-items: center;
         gap: 1.5rem;
-    }
-
-    .user-avatars {
-        display: flex;
-        align-items: center;
-        margin-right: 1rem;
     }
 
     .avatar {
@@ -133,28 +181,9 @@
         cursor: pointer;
     }
 
-    .avatar:first-child {
-        margin-left: 0;
-    }
-
-    .avatar-count {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        border: 2px solid var(--bg-body);
-        margin-left: -10px;
-    }
-
     .btn-primary {
         background: var(--brand-primary);
         color: #fff;
-        /* Always white on primary */
         border: none;
         padding: 0.5rem 1rem;
         border-radius: 6px;
@@ -171,5 +200,196 @@
     .btn-primary:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+    }
+
+    .mobile-search-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: color 0.2s;
+    }
+
+    .mobile-search-toggle:hover {
+        color: var(--brand-primary);
+    }
+
+    /* Mobile Search Overlay - Full Screen Upgrade */
+    .mobile-search-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(20px);
+        z-index: 3000;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        visibility: hidden;
+    }
+
+    .mobile-search-bar.open {
+        transform: translateY(0);
+        visibility: visible;
+    }
+
+    .mobile-search-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mobile-search-header .search-bar {
+        flex: 1;
+        margin: 0;
+    }
+
+    .mobile-search-header .search-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-focus);
+        height: 48px;
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    #mobile-search-results {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        /* Ensure it's a positioning root if needed */
+    }
+
+    /* Override the dropdown behavior in mobile overlay */
+    #mobile-search-results .search-dropdown {
+        position: static;
+        margin-top: 0;
+        border: none;
+        box-shadow: none;
+        max-height: none;
+        background: transparent;
+        animation: none;
+        display: block !important;
+    }
+
+    #mobile-search-results .search-item {
+        background: rgba(255, 255, 255, 0.03);
+        margin: 0.75rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-subtle);
+        padding: 1.25rem;
+    }
+
+    #mobile-search-results .search-item:active {
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(0.98);
+        border-color: var(--brand-primary);
+    }
+
+    #mobile-search-results .search-title {
+        font-size: 1.1rem;
+    }
+
+    #mobile-search-results .search-empty-state {
+        padding: 3rem 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Search Result Card Polish */
+
+    .close-search {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-main);
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+
+    /* Sidebar Toggle (Hamburger) */
+    .sidebar-toggle {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-main);
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--border-focus);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            padding: 0.75rem 1rem;
+            height: 64px;
+        }
+
+        .header-center {
+            display: none;
+        }
+
+        .mobile-search-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-left {
+            min-width: auto;
+            flex: 1;
+            gap: 0.75rem;
+        }
+
+        .header-right {
+            min-width: auto;
+            gap: 0.5rem;
+        }
+
+        .sidebar-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .avatar.lg {
+            width: 32px;
+            height: 32px;
+        }
     }
 </style>

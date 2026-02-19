@@ -1,7 +1,7 @@
 <header class="app-header">
-    <h1><a href="/" d-pulse="navigate"><img src="/brand/surf-logo.png" alt="SURF" class="app-logo" height="40"
-                width="40" style="height: 40px; width: 40px;"><span class="app-title">Surf</span> <span
-                class="beta-badge">Beta</span> <span class="version-tag">v0.2.0</span></a></h1>
+    <h1><a href="/" d-pulse="navigate"><img src="/brand/surf-logo.png" alt="SURF" class="app-logo"><span
+                class="app-title">Surf</span><span class="beta-badge">Beta</span><span
+                class="version-tag">v0.2.0</span></a></h1>
     <nav class="breadcrumb">
         <% if (locals.breadcrumbs) { %>
             <% breadcrumbs.forEach((crumb, index)=> { %>
@@ -18,4 +18,37 @@
                                     <% }); %>
                                         <% } %>
     </nav>
+
+    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Menu"
+        d-signal="click: sidebarOpen = !sidebarOpen">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 </header>
+
+<style>
+    .sidebar-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-toggle {
+            display: flex;
+            margin-left: auto;
+            /* Push to right */
+        }
+
+        .app-header .breadcrumb {
+            display: none;
+        }
+    }
+</style>

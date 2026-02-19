@@ -1,8 +1,8 @@
 <form action="/api/form" method="POST" d-pulse="commit" d-target="#form-surface">
     <div class="field">
-        <label for="name">Name</label>
+        <label for="name">Full Name</label>
         <input type="text" id="name" name="name" value="<%= name || '' %>"
-            class="<%= getError('name') ? 'error' : '' %>" placeholder="Enter your name">
+            class="<%= getError('name') ? 'error' : '' %>" placeholder="John Doe">
         <% if (getError('name')) { %>
             <div class="error-message">
                 <%= getError('name').message %>
@@ -11,9 +11,9 @@
     </div>
 
     <div class="field">
-        <label for="email">Email</label>
+        <label for="email">Work Email</label>
         <input type="email" id="email" name="email" value="<%= email || '' %>"
-            class="<%= getError('email') ? 'error' : '' %>" placeholder="Enter your email">
+            class="<%= getError('email') ? 'error' : '' %>" placeholder="john@example.com">
         <% if (getError('email')) { %>
             <div class="error-message">
                 <%= getError('email').message %>
@@ -24,7 +24,7 @@
     <div class="field">
         <label for="password">Password</label>
         <input type="password" id="password" name="password" class="<%= getError('password') ? 'error' : '' %>"
-            placeholder="Min 8 characters">
+            placeholder="••••••••">
         <% if (getError('password')) { %>
             <div class="error-message">
                 <%= getError('password').message %>
@@ -32,5 +32,5 @@
             <% } %>
     </div>
 
-    <button type="submit">Submit</button>
+    <button type="submit">Complete Registration</button>
 </form>

@@ -1,9 +1,51 @@
-<aside class="app-sidebar">
+<aside class="app-sidebar" d-attr="class.open: sidebarOpen">
+    <div class="sidebar-header-mobile">
+        <span class="logo-text">Surf</span>
+        <button class="close-sidebar" d-signal="click: sidebarOpen = false" aria-label="Close Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+
+    <style>
+        .sidebar-header-mobile {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-right: -0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-header-mobile {
+                display: flex;
+            }
+        }
+    </style>
     <div class="sidebar-section">
         <h3>Showcase</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/showcase/kanban" d-pulse="navigate"
+                <a href="/showcase/kanban" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === 'kanban' ? 'active' : '' %>">
                     <span class="category-icon">📋</span>
                     Kanban Board
@@ -17,7 +59,7 @@
         <h3>Categories</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/showcase/01-interaction" d-pulse="navigate"
+                <a href="/showcase/01-interaction" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '01-interaction' ? 'active' : '' %>">
                     <span class="category-icon">🧱</span>
                     I. Interaction
@@ -25,7 +67,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/02-server-data" d-pulse="navigate"
+                <a href="/showcase/02-server-data" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '02-server-data' ? 'active' : '' %>">
                     <span class="category-icon">📡</span>
                     II. Server Data
@@ -33,7 +75,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/03-navigation" d-pulse="navigate"
+                <a href="/showcase/03-navigation" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '03-navigation' ? 'active' : '' %>">
                     <span class="category-icon">🧭</span>
                     III. Navigation
@@ -41,7 +83,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/04-forms" d-pulse="navigate"
+                <a href="/showcase/04-forms" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '04-forms' ? 'active' : '' %>">
                     <span class="category-icon">📝</span>
                     IV. Forms
@@ -49,7 +91,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/05-state-survival" d-pulse="navigate"
+                <a href="/showcase/05-state-survival" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '05-state-survival' ? 'active' : '' %>">
                     <span class="category-icon">💾</span>
                     V. State Survival
@@ -57,7 +99,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/06-layout" d-pulse="navigate"
+                <a href="/showcase/06-layout" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '06-layout' ? 'active' : '' %>">
                     <span class="category-icon">🖼️</span>
                     VI. Layout
@@ -65,7 +107,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/07-failure" d-pulse="navigate"
+                <a href="/showcase/07-failure" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '07-failure' ? 'active' : '' %>">
                     <span class="category-icon">⚠️</span>
                     VII. Failure
@@ -73,7 +115,7 @@
                 </a>
             </li>
             <li>
-                <a href="/showcase/08-performance" d-pulse="navigate"
+                <a href="/showcase/08-performance" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === '08-performance' ? 'active' : '' %>">
                     <span class="category-icon">⚡</span>
                     VIII. Performance
@@ -87,16 +129,16 @@
         <h3>Articles</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/articles/why-surf" d-pulse="navigate"
+                <a href="/articles/why-surf" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activePost === 'why-surf' ? 'active' : '' %>">
                     <span class="category-icon">🌊</span>
                     Why SURF?
                 </a>
             </li>
             <li>
-                <a href="/articles/surf-architecture" d-pulse="navigate"
+                <a href="/articles/surf-architecture" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activePost === 'surf-architecture' ? 'active' : '' %>">
-                    <span class="category-icon">🏗️</span>
+                    <span class="category-icon">🏗️️</span>
                     Architecture Guide
                 </a>
             </li>
@@ -107,7 +149,7 @@
         <h3>Project</h3>
         <ul class="sidebar-nav">
             <li>
-                <a href="/roadmap" d-pulse="navigate"
+                <a href="/roadmap" d-pulse="navigate" d-signal="click: sidebarOpen = false"
                     class="<%= locals.activeCategory === 'roadmap' ? 'active' : '' %>">
                     <span class="category-icon">🗺️</span>
                     Roadmap

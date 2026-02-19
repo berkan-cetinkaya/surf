@@ -6,6 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagination - SURF Example</title>
     <style>
+        :root {
+            --glass-bg: rgba(30, 41, 59, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,86 +22,113 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            background-attachment: fixed;
             min-height: 100vh;
-            color: #eee;
-            padding: 2rem;
+            color: var(--text-main);
+            padding: 4rem 1.5rem;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
             margin-bottom: 0.5rem;
-            color: #00d4ff;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.04em;
             text-align: center;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
             text-align: center;
+            font-weight: 500;
         }
 
         .explanation {
-            background: rgba(124, 58, 237, 0.1);
-            border: 1px solid rgba(124, 58, 237, 0.3);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: #a78bfa;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
         }
 
         .explanation strong {
-            color: #00d4ff;
+            color: var(--accent-primary);
         }
 
         .back {
             position: fixed;
-            top: 1rem;
-            left: 1rem;
-            color: #888;
+            top: 2rem;
+            left: 2rem;
+            color: var(--text-dim);
             text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            z-index: 10;
         }
 
         .back:hover {
-            color: #fff;
+            color: var(--accent-primary);
+            transform: translateX(-5px);
         }
 
         /* Items List */
         .items-list {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
         }
 
         .item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .item:hover {
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(56, 189, 248, 0.3);
         }
 
         .item-number {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #7c3aed, #00d4ff);
-            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: #0f172a;
+            flex-shrink: 0;
+            box-shadow: 0 8px 16px -4px rgba(56, 189, 248, 0.4);
         }
 
         .item-content {
@@ -100,90 +136,143 @@
         }
 
         .item-title {
-            font-weight: 500;
+            font-weight: 700;
             margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+            color: var(--text-main);
         }
 
         .item-desc {
-            font-size: 0.85rem;
-            color: #888;
+            font-size: 0.9rem;
+            color: var(--text-dim);
         }
 
         /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
+            margin-top: 3rem;
         }
 
         .page-link {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #888;
+            padding: 0.75rem 1.25rem;
+            border-radius: 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
             text-decoration: none;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            font-weight: 700;
+            min-width: 48px;
+            text-align: center;
         }
 
         .page-link:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .page-link.active {
-            background: linear-gradient(90deg, #7c3aed, #00d4ff);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #0f172a;
             border-color: transparent;
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
         }
 
         .page-link.disabled {
-            opacity: 0.5;
+            opacity: 0.3;
             pointer-events: none;
         }
 
         .page-info {
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 2rem;
             font-size: 0.85rem;
-            color: #666;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .loading {
             text-align: center;
-            padding: 2rem;
-            color: #666;
+            padding: 4rem 2rem;
+            color: var(--text-dim);
+            font-style: italic;
         }
     </style>
 </head>
 
 <body>
-    <a href="/showcase/03-navigation" class="back">← Back</a>
+    <a href="/showcase/03-navigation" class="back" d-pulse="navigate">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+    </a>
 
     <div class="container">
-        <h1>📄 Pagination Demo</h1>
-        <p class="subtitle">d-pulse="navigate" for page links</p>
+        <h1>Smart Pagination</h1>
+        <p class="subtitle">Bookmarked State & Seamless Updates</p>
 
         <div class="explanation">
-            <strong>🔑 Zero JavaScript Pagination:</strong>
-            <br><br>
-            <ul style="margin-left: 1rem; line-height: 1.8;">
-                <li><code>d-pulse="navigate"</code> on links</li>
-                <li><code>d-target</code> specifies which surface to update</li>
-                <li>Server returns HTML patch with new content</li>
-                <li>URL updates for bookmarkable pages</li>
+            <strong>🔑 Hybrid Architecture:</strong>
+            <br>
+            <ul style="margin-left: 1.25rem; margin-top: 0.75rem;">
+                <li><code>d-pulse="navigate"</code> enables instant updates without refresh.</li>
+                <li>The browser URL stays in sync for easy sharing.</li>
+                <li>Each transition requests a precise HTML patch.</li>
             </ul>
         </div>
 
-        <!-- Paginated content surface (Simulating SSR: Initial content pre-rendered) -->
+        <!-- Paginated content surface -->
         <div id="content-surface">
-            <%- locals.content || '<div class="loading">Loading initial data...</div>' %>
+            <div class="items-list">
+                <% items.forEach(item=> { %>
+                    <div class="item">
+                        <div class="item-number">
+                            <%= item.number %>
+                        </div>
+                        <div class="item-content">
+                            <h4 class="item-title">
+                                <%= item.title %>
+                            </h4>
+                            <p class="item-desc">
+                                <%= item.desc %>
+                            </p>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+            <div class="pagination">
+                <a href="/showcase/03-navigation/36-pagination?page=<%= currentPage - 1 %>"
+                    class="page-link<%= currentPage <= 1 ? ' disabled' : '' %>" d-pulse="navigate"
+                    d-target="#content-surface">Prev</a>
+
+                <% for (let p=1; p <=totalPages; p++) { %>
+                    <a href="/showcase/03-navigation/36-pagination?page=<%= p %>"
+                        class="page-link<%= p === currentPage ? ' active' : '' %>" d-pulse="navigate"
+                        d-target="#content-surface">
+                        <%= p %>
+                    </a>
+                    <% } %>
+
+                        <a href="/showcase/03-navigation/36-pagination?page=<%= currentPage + 1 %>"
+                            class="page-link<%= currentPage >= totalPages ? ' disabled' : '' %>" d-pulse="navigate"
+                            d-target="#content-surface">Next</a>
+            </div>
+            <div class="page-info">Viewing Page <%= currentPage %> of <%= totalPages %>
+            </div>
         </div>
     </div>
 
     <%- include('../../partials/core-scripts') %>
-        <!-- Zero custom JavaScript needed! -->
 </body>
 
 </html>
