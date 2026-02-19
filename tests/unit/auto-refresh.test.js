@@ -32,6 +32,8 @@ describe('Auto-Refresh Plugin', () => {
     });
 
     const mockSurf = {
+      on: vi.fn(),
+      emit: vi.fn(),
       _modules: {
         Surface: { replace: vi.fn() },
         Patch: { isPatch: vi.fn().mockReturnValue(false), parse: vi.fn() },
@@ -66,6 +68,8 @@ describe('Auto-Refresh Plugin', () => {
     global.fetch.mockResolvedValue({ ok: true, text: () => Promise.resolve('ok') });
 
     const mockSurf = {
+      on: vi.fn(),
+      emit: vi.fn(),
       _modules: {
         Surface: { replace: vi.fn() },
         Patch: { isPatch: vi.fn().mockReturnValue(false), parse: vi.fn() },
@@ -106,6 +110,9 @@ describe('Auto-Refresh Plugin', () => {
     });
 
     const mockSurf = {
+      on: vi.fn(),
+      emit: vi.fn(),
+      applyPatch: vi.fn(),
       _modules: {
         Surface: { replace: vi.fn() },
         Patch: {
@@ -123,8 +130,9 @@ describe('Auto-Refresh Plugin', () => {
 
     // Initial fetch happens immediately
     await vi.waitFor(() => {
-      expect(mockSurf._modules.Surface.replace).toHaveBeenCalledWith(target1, 'P1');
-      expect(mockSurf._modules.Surface.replace).toHaveBeenCalledWith(target2, 'P2');
+      expect(mockSurf.applyPatch).toHaveBeenCalledWith(
+        '<d-patch><surface target="#s1">P1</surface><surface target="#s2">P2</surface></d-patch>'
+      );
     });
   });
 
@@ -137,6 +145,8 @@ describe('Auto-Refresh Plugin', () => {
     global.fetch.mockRejectedValue(new Error('Fail'));
 
     const mockSurf = {
+      on: vi.fn(),
+      emit: vi.fn(),
       _modules: {
         Surface: { replace: vi.fn() },
         Patch: { isPatch: vi.fn() },

@@ -9,40 +9,26 @@ const AutoRefresh = {
   name: 'SurfAutoRefresh',
 
   install(Surf, options = {}) {
-    // Access internal modules provided by Surf
     const { Surface, Patch, Echo } = Surf._modules;
+    const initializedSurfaces = new WeakSet();
 
-    /**
-     * Refresh a specific surface from URL
-     */
     async function refreshSurface(surface, url) {
+      if (!surface.isConnected) return;
       try {
         const response = await fetch(url, {
-          headers: {
-            Accept: 'text/html',
-            'X-Surf-Request': 'true',
-          },
+          headers: { Accept: 'text/html', 'X-Surf-Request': 'true' },
         });
 
         if (!response.ok) return;
 
         const html = await response.text();
 
-        // Check if response is a patch
-        if (Patch.isPatch(html)) {
-          const patches = Patch.parse(html);
-          patches.forEach(({ target, content }) => {
-            const el = document.querySelector(target);
-            if (el) {
-              Echo.withPreservation(el, () => {
-                Surface.replace(el, content);
-              });
-            }
-          });
+        if (html.includes('<d-patch>')) {
+          Surf.applyPatch(html);
         } else {
-          // Apply directly to this surface
           Echo.withPreservation(surface, () => {
             Surface.replace(surface, html);
+            Surf.emit('pulse:end', { target: surface, body: html });
           });
         }
       } catch (e) {
@@ -50,29 +36,52 @@ const AutoRefresh = {
       }
     }
 
-    /**
-     * Initialize auto-refresh for surfaces
-     */
-    const surfaces = document.querySelectorAll('[d-auto-refresh]');
+    function initAutoRefresh(root = document) {
+      const surfaces = root.querySelectorAll ? root.querySelectorAll('[d-auto-refresh]') : [];
+      
+      surfaces.forEach((surface) => {
+        if (initializedSurfaces.has(surface)) return;
+        
+        const intervalStr = surface.getAttribute('d-auto-refresh');
+        const interval = parseInt(intervalStr) || 3000;
+        const url = surface.getAttribute('d-auto-refresh-url') || window.location.href;
 
-    surfaces.forEach((surface) => {
-      const intervalStr = surface.getAttribute('d-auto-refresh');
-      const interval = parseInt(intervalStr) || 3000;
-      const url = surface.getAttribute('d-auto-refresh-url') || window.location.href;
+        initializedSurfaces.add(surface);
 
-      // Option to skip initial fetch
-      if (options.skipInitial !== true) {
-        refreshSurface(surface, url);
-      }
-
-      // Set up interval
-      const intervalId = setInterval(() => {
-        if (!surface.isConnected) {
-          clearInterval(intervalId);
-          return;
+        if (options.skipInitial !== true) {
+          refreshSurface(surface, url);
         }
-        refreshSurface(surface, url);
-      }, interval);
+
+        const intervalId = setInterval(() => {
+          if (!surface.isConnected) {
+            clearInterval(intervalId);
+            return;
+          }
+          refreshSurface(surface, url);
+        }, interval);
+      });
+    }
+
+    // Initial setup
+    initAutoRefresh();
+
+    // Listen to changes for new auto-refresh components
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            if (node.hasAttribute('d-auto-refresh')) initAutoRefresh(node.parentElement || document);
+            else initAutoRefresh(node);
+          }
+        });
+      });
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    // Explicitly re-init after patches just in case
+    Surf.on('pulse:end', () => {
+      initAutoRefresh();
     });
 
     console.log('[Surf] Auto-refresh plugin installed');
