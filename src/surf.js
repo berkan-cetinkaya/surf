@@ -43,10 +43,23 @@ Object.assign(Surf, {
 
   /**
    * Refresh a surface's content from the server
-   * @param {string} selector - The surface selector to refresh
    */
   refresh(selector) {
     return Pulse.refresh(selector);
+  },
+
+  /**
+   * Submit a form (Pulse-aware)
+   */
+  submit(element) {
+    return Pulse.submit(element);
+  },
+
+  /**
+   * Commit form data (silent update)
+   */
+  commit(form, target) {
+    return Pulse.commit(form, target);
   },
 
   /**
@@ -56,6 +69,13 @@ Object.assign(Surf, {
    */
   on(event, callback) {
     Events.on(event, callback);
+  },
+
+  /**
+   * Emit a framework event
+   */
+  emit(event, detail) {
+    Events.emit(event, detail);
   },
 
   /**
@@ -106,6 +126,8 @@ Object.assign(Surf, {
         });
       }
     });
+
+    Events.emit('pulse:end', { body: patchHtml });
   },
 
   /**

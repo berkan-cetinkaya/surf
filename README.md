@@ -224,9 +224,9 @@ Surf.go('/page', { target: '#main' });
 Surf.refresh('#main');
 
 // Listen to events
-Surf.on('before:pulse', (e) => console.log('Loading...'));
-Surf.on('after:patch', (e) => console.log('Done!'));
-Surf.on('error:network', (e) => console.error(e.error));
+Surf.on('pulse:start', (e) => console.log('Loading...'));
+Surf.on('pulse:end', (e) => console.log('Done!'));
+Surf.on('pulse:error', (e) => console.error(e.error));
 
 // Manual state access
 Surf.getState('#my-cell');

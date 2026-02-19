@@ -7,6 +7,7 @@
 const listeners = new Map();
 
 export function emit(event, detail) {
+  // Emit standard event
   if (listeners.has(event)) {
     listeners.get(event).forEach((cb) => {
       try {

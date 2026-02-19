@@ -35,27 +35,8 @@ async function getCellModule() {
   return cellModule;
 }
 
-const EVENT_ALIASES = {
-  'before:pulse': 'pulse:start',
-  'after:patch': 'pulse:end',
-  'error:network': 'pulse:error',
-};
-
 export function emit(event, detail) {
-  // Emit standard event
   Events.emit(event, detail);
-
-  // Emit alias if exists
-  if (EVENT_ALIASES[event]) {
-    Events.emit(EVENT_ALIASES[event], detail);
-  }
-
-  // Handle reverse: if standard is emitted, also emit legacy alias
-  for (const [alias, standard] of Object.entries(EVENT_ALIASES)) {
-    if (event === standard) {
-      Events.emit(alias, detail);
-    }
-  }
 }
 
 export function on(event, callback) {

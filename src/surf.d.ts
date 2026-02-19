@@ -30,7 +30,7 @@ declare namespace Surf {
 
   /**
    * Subscribe to framework events
-   * @param event - Event name: 'before:pulse', 'after:patch', 'error:network'
+   * @param event - Event name: 'pulse:start', 'pulse:end', 'pulse:error', 'cell:change', 'signal:update', 'echo:before', 'echo:after'
    * @param callback - Event handler
    */
   function on(event: string, callback: (...args: any[]) => void): void;

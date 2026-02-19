@@ -69,17 +69,14 @@ describe('Pulse Module', () => {
       });
 
       const beforeSpy = vi.fn();
-      const afterSpy = vi.fn();
       const endSpy = vi.fn();
 
-      Pulse.on('before:pulse', beforeSpy);
-      Pulse.on('after:patch', afterSpy);
+      Pulse.on('pulse:start', beforeSpy);
       Pulse.on('pulse:end', endSpy);
 
       await Pulse.navigate('/test', '#main');
 
       expect(beforeSpy).toHaveBeenCalled();
-      expect(afterSpy).toHaveBeenCalled();
       expect(endSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           headers: expect.objectContaining({
@@ -89,8 +86,7 @@ describe('Pulse Module', () => {
         })
       );
 
-      Pulse.off('before:pulse', beforeSpy);
-      Pulse.off('after:patch', afterSpy);
+      Pulse.off('pulse:start', beforeSpy);
       Pulse.off('pulse:end', endSpy);
     });
 
@@ -98,7 +94,7 @@ describe('Pulse Module', () => {
       const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
       global.fetch.mockRejectedValue(new Error('Network Error'));
       const errorSpy = vi.fn();
-      Pulse.on('error:network', errorSpy);
+      Pulse.on('pulse:error', errorSpy);
 
       await expect(Pulse.navigate('/fail', '#main')).rejects.toThrow('Network Error');
 
@@ -522,24 +518,24 @@ describe('Pulse Module', () => {
       const brokenListener = () => {
         throw new Error('Boom');
       };
-      Pulse.on('before:pulse', brokenListener);
+      Pulse.on('pulse:start', brokenListener);
 
-      Pulse.emit('before:pulse', {});
+      Pulse.emit('pulse:start', {});
 
       expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('[Surf] Error in lifecycle listener [before:pulse]:'),
+        expect.stringContaining('[Surf] Error in lifecycle listener [pulse:start]:'),
         expect.any(Error)
       );
 
-      Pulse.off('before:pulse', brokenListener);
+      Pulse.off('pulse:start', brokenListener);
       spy.mockRestore();
     });
 
     it('should support removing listeners with off', () => {
       const cb = vi.fn();
-      Pulse.on('before:pulse', cb);
-      Pulse.off('before:pulse', cb);
-      Pulse.emit('before:pulse', {});
+      Pulse.on('pulse:start', cb);
+      Pulse.off('pulse:start', cb);
+      Pulse.emit('pulse:start', {});
       expect(cb).not.toHaveBeenCalled();
     });
   });
