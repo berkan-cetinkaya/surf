@@ -13,6 +13,7 @@ describe('Drag & Drop Plugin', () => {
       applyPatch: vi.fn(),
       on: vi.fn(),
       off: vi.fn(),
+      emit: vi.fn(),
       Pulse: {
         emit: vi.fn(),
       },
@@ -190,7 +191,7 @@ describe('Drag & Drop Plugin', () => {
     dropZone.dispatchEvent(dropEvent);
     // Wait for async handler
     await vi.waitFor(() =>
-      expect(mockSurf.Pulse.emit).toHaveBeenCalledWith('error:network', expect.anything())
+      expect(mockSurf.emit).toHaveBeenCalledWith('pulse:error', expect.anything())
     );
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
@@ -266,8 +267,8 @@ describe('Drag & Drop Plugin', () => {
     newNode.setAttribute('d-draggable', 'true');
     container.appendChild(newNode);
 
-    // Trigger Surf after:patch event
-    const patchCallback = mockSurf.on.mock.calls.find((c) => c[0] === 'after:patch')[1];
+    // Trigger Surf pulse:end event
+    const patchCallback = mockSurf.on.mock.calls.find((c) => c[0] === 'pulse:end')[1];
     patchCallback();
 
     expect(newNode.getAttribute('draggable')).toBe('true');

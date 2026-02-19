@@ -66,7 +66,8 @@
 }
 
 .surf-debug-panel.active~.surf-debug-fab {
-    transform: translateX(-344px) rotate(45deg);
+    transform: translateX(-272px) rotate(45deg);
+    /* Docked half-in, half-out */
     background: #ef4444;
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
@@ -87,6 +88,22 @@
     }
 }
 
+@media (max-width: 480px) {
+    :host {
+        --surf-debug-panel-width: 100%;
+    }
+
+    .surf-debug-panel.active~.surf-debug-fab {
+        transform: rotate(45deg);
+        /* No translateX, stay inside */
+        bottom: auto;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+    }
+}
+
 .surf-debug-header {
     padding: 16px;
     border-bottom: 1px solid var(--surf-debug-border);
@@ -101,6 +118,13 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--surf-debug-accent);
+}
+
+@media (max-width: 480px) {
+    .surf-debug-header {
+        padding: 20px 60px 20px 16px;
+        /* Room for FAB on right */
+    }
 }
 
 .surf-debug-content {

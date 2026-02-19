@@ -50,7 +50,7 @@ const DragAndDrop = {
     observer.observe(document.documentElement, { childList: true, subtree: true });
 
     // Explicitly re-init draggables after any patch
-    Surf.on('after:patch', (_detail) => {
+    Surf.on('pulse:end', (_detail) => {
       this._initDraggables();
     });
 
@@ -175,10 +175,8 @@ const DragAndDrop = {
     const url = dropZone.getAttribute('d-drop-url');
     if (!url) return;
 
-    const Pulse = this._Surf?.Pulse;
-
     // Notify start of network activity
-    if (Pulse) Pulse.emit('before:pulse', { url, target: dropZone });
+    this._Surf.emit('pulse:start', { url, target: dropZone });
 
     try {
       const rawData = e.dataTransfer.getData('text/plain');
@@ -209,12 +207,12 @@ const DragAndDrop = {
         }
 
         // Notify success
-        if (Pulse) Pulse.emit('after:patch', { url, target: dropZone });
+        this._Surf.emit('pulse:end', { url, target: dropZone });
       }
     } catch (err) {
       console.error('[Surf DnD] Drop error', err);
       // Notify error
-      if (Pulse) Pulse.emit('error:network', { url, error: err });
+      this._Surf.emit('pulse:error', { url, error: err });
     }
   },
 };

@@ -383,18 +383,21 @@ export const VisualDebugger = {
 
       let html = '';
 
-      // 1. Cells Section
+      const allCells = Array.from(document.querySelectorAll('[d-cell]'));
+      
       html += renderSection(
         'Active Cells',
         'cells',
-        states.size,
+        allCells.length,
         () => {
           let cellsHtml = '';
-          if (states.size === 0) {
+          if (allCells.length === 0) {
             cellsHtml =
-              '<div style="padding: 8px; font-size: 11px; opacity: 0.5;">No cells initialized.</div>';
+              '<div style="padding: 8px; font-size: 11px; opacity: 0.5;">No cells found in DOM.</div>';
           } else {
-            states.forEach((state, id) => {
+            allCells.forEach((el) => {
+              const id = el.getAttribute('d-id') || el.id || `anon-${el.tagName.toLowerCase()}`;
+              const state = Surf.getState(el);
               const isEditing = editingCells.has(id);
               cellsHtml += `
               <div class="cell-item ${isEditing ? 'editing' : ''}" data-cell-id="${id}">
@@ -642,11 +645,12 @@ export const VisualDebugger = {
     });
 
     Surf.on('cell:change', (detail) => {
-      addLog('cell:change', `Cell ${detail.cellId} updated`);
+      const cellId = detail.cellId || `<${detail.element.tagName.toLowerCase()}>`;
+      addLog('cell:change', `Cell ${cellId} updated`);
     });
 
     Surf.on('signal:update', (detail) => {
-      if (!detail.cellElement) return;
+      if (!isActive || !detail.cellElement) return;
       const targets = detail.cellElement.querySelectorAll(
         '[d-signal], [d-text], [d-show], [d-attr]'
       );

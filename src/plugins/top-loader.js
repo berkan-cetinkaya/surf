@@ -48,9 +48,9 @@ const TopLoader = {
     this.ensureDom();
 
     // Bind Surf events
-    Surf.on('before:pulse', this.start.bind(this));
-    Surf.on('after:patch', this.done.bind(this));
-    Surf.on('error:network', this.error.bind(this)); // Handle API errors too
+    Surf.on('pulse:start', this.start.bind(this));
+    Surf.on('pulse:end', this.done.bind(this));
+    Surf.on('pulse:error', this.error.bind(this)); // Handle API errors too
   },
 
   /**

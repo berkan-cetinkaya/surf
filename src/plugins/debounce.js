@@ -32,13 +32,17 @@ export default {
         // Check min length (unless empty, which might clear results)
         if (value.length > 0 && value.length < minLength) return;
 
-        // Prepare URL with query param
-        const separator = url.includes('?') ? '&' : '?';
-        const name = input.name || 'q';
-        const requestUrl = `${url}${separator}${name}=${encodeURIComponent(value)}`;
-
-        // Use Surf.navigate logic (GET request replacing target)
-        Surf.go(requestUrl, { target });
+        // Check if input belongs to a commit-mode form for silent update
+        const form = input.closest('form');
+        if (form && form.getAttribute('d-pulse') === 'commit') {
+          Surf.commit(form, target || form.getAttribute('d-target'));
+        } else {
+          // Standard navigation with history
+          const separator = url.includes('?') ? '&' : '?';
+          const name = input.name || 'q';
+          const requestUrl = `${url}${separator}${name}=${encodeURIComponent(value)}`;
+          Surf.go(requestUrl, { target });
+        }
       }, delay);
 
       timers.set(input, timer);
