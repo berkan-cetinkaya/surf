@@ -25,7 +25,7 @@ let Surf =
   typeof window !== 'undefined' && window.Surf
     ? window.Surf
     : {
-        version: '0.2.0',
+        version: '0.3.1',
         plugins: [],
         _pulseBound: false,
       };

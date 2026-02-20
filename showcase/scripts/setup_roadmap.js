@@ -19,7 +19,7 @@ db.exec('DELETE FROM comments');
 const sprintId = 'sprint-v0-2-0';
 db.prepare('INSERT INTO sprints (id, title, sprint_order, status) VALUES (?, ?, ?, ?)').run(
   sprintId,
-  'v0.2.0 Release',
+  'v0.3.1 Release',
   0,
   'active'
 );
