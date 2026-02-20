@@ -14,32 +14,33 @@
         <img src="/brand/surf-logo.png" alt="SURF">
         <span class="logo-text">Surf</span>
         <span class="beta-tag">Beta</span>
-        <span class="version-tag">v0.2.0</span>
+        <span class="version-tag">v0.3.1</span>
     </a>
 
-    <div class="sidebar-group">
-        <h3 class="group-title">Workspace</h3>
-        <nav class="nav-menu">
-            <a href="/showcase/kanban" class="nav-item" d-pulse="navigate" d-target="body"
-                d-signal="click: sidebarOpen = false">
-                <span class="icon">⊞</span>
-                Board
+    <nav class="sidebar-nav">
+        <!-- Dashboard Button -->
+        <div class="nav-item">
+            <a href="/kanban" d-pulse="navigate" d-target="#kanban-main"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <span class="icon">📊</span>
+                Dashboard
             </a>
-            <a href="/showcase/kanban/backlog" class="nav-item" d-pulse="navigate" d-target="body"
-                d-signal="click: sidebarOpen = false">
-                <span class="icon">≣</span>
-                Planning
+        </div>
+
+        <!-- Backlog Button -->
+        <div class="nav-item">
+            <a href="/kanban/backlog" d-pulse="navigate" d-target="#kanban-main"
+                style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <span class="icon">📝</span>
+                Backlog
             </a>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
     <div class="sidebar-footer">
-        <div class="engine-card">
-            <div class="engine-header">
-                <span class="flash-icon">⚡</span>
-                <span class="engine-title">SURF Engine</span>
-            </div>
-            <p class="engine-status">Running <span class="version">v0.2.0</span>. Server-driven reactivity is active.
+        <div class="status-indicator">
+            <div class="pulse-dot"></div>
+            <p class="engine-status">Running <span class="version">v0.3.1</span>. Server-driven reactivity is active.
             </p>
         </div>
     </div>
