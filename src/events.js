@@ -1,7 +1,11 @@
 /**
- * Surf Event Bus
- *
- * Centralized lifecycle events for plugins and internal coordination.
+ * Events Module (1 of 7 Core Modules)
+ * 
+ * Provides a lightweight event emitter for internal cross-module communication
+ * and public lifecycle hooks.
+ * 
+ * Architecture Note: Built independently to avoid cyclic dependencies between
+ * Pulse, Echo, and Patch modules.
  */
 
 const listeners = new Map();

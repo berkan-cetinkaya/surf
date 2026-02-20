@@ -557,7 +557,7 @@
                                     HTML, Surf replaces DOM regions (<strong>Surfaces</strong>) while preserving local
                                     widget state (<strong>Cells</strong>).</p>
 
-                                <p>The framework consists of <strong>6 core modules</strong>, each with a single
+                                <p>The framework consists of <strong>7 core modules</strong>, each with a single
                                     responsibility:</p>
 
                                 <div class="arch-grid">
@@ -584,6 +584,10 @@
                                     <div class="arch-card">
                                         <h4>🔄 Echo</h4>
                                         <p>State preservation across updates</p>
+                                    </div>
+                                    <div class="arch-card highlight-card">
+                                        <h4>📡 Events</h4>
+                                        <p>Global lifecycle & communication</p>
                                     </div>
                                 </div>
 
@@ -1048,7 +1052,8 @@ Surf.<span class="fn">use</span>(MyPlugin, { <span class="comment">/* options */
                                 <ul>
                                     <li><strong>Clipboard:</strong> Copying + "Copied!" feedback + timeout reset</li>
                                     <li><strong>Auto-Refresh:</strong> Survives DOM patches via
-                                        <code>MutationObserver</code>. Refreshes surfaces with polling.</li>
+                                        <code>MutationObserver</code>. Refreshes surfaces with polling.
+                                    </li>
                                     <li><strong>Drag & Drop:</strong> Also uses <code>MutationObserver</code>.
                                         Automatically attaches drag events to newly patched DOM elements without manual
                                         re-initialization.</li>
