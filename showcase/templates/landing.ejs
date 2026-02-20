@@ -946,7 +946,7 @@
             <span
                 style="font-size: 0.6rem; background: var(--purple); color: #282a36; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; vertical-align: middle; line-height: 1;">Beta</span>
             <span
-                style="font-size: 0.65rem; color: var(--muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.2.0</span>
+                style="font-size: 0.65rem; color: var(--muted); margin-left: 0.4rem; font-family: monospace; opacity: 0.7;">v0.3.1</span>
         </a>
 
         <button class="mobile-menu-btn" d-signal="click: navOpen = !navOpen" aria-label="Menu">
@@ -978,7 +978,7 @@
     <section class="hero" d-cell="{ modal: false }" d-id="hero-cell">
         <span class="badge">
             <span class="badge-dot"></span>
-            v0.2.0 — HTML-first framework
+            v0.3.1 — HTML-first framework
         </span>
 
         <h1><span class="highlight">Surface</span> changes,<br><span class="highlight">Cell</span> lives.</h1>
@@ -1017,7 +1017,7 @@
                         </button>
                     </div>
                     <pre
-                        style="font-size: 0.8rem; padding: 1rem 1.25rem; background: rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; text-align: left;"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+                        style="font-size: 0.8rem; padding: 1rem 1.25rem; background: rgba(0,0,0,0.2); white-space: pre-wrap; word-break: break-all; text-align: left;"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"https://unpkg.com/surf-core@latest/dist/surf.min.js"</span> <span class="attr">defer</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
                 </div>
 
                 <p class="modal-note">No build step required. Just HTML.</p>
@@ -1133,7 +1133,7 @@
     <!-- API Stats Summary -->
     <div class="api-stats" style="margin: 4rem auto 2rem;">
         <div class="stat-pill">10 Attributes</div>
-        <div class="stat-pill">9 Methods</div>
+        <div class="stat-pill">12 Methods</div>
         <div class="stat-pill">0 Build Steps</div>
     </div>
 
@@ -1197,7 +1197,7 @@
             </div>
 
             <div class="api-category">
-                <h3>9 Methods</h3>
+                <h3>12 Methods</h3>
                 <div class="api-list">
                     <div class="api-item">
                         <code>Surf.go()</code>
@@ -1208,12 +1208,24 @@
                         <span>Reload specific surface</span>
                     </div>
                     <div class="api-item">
+                        <code>Surf.submit()</code>
+                        <span>Submit a form manually</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.commit()</code>
+                        <span>Silent form data sync</span>
+                    </div>
+                    <div class="api-item">
                         <code>Surf.on()</code>
                         <span>Listen to lifecycle events</span>
                     </div>
                     <div class="api-item">
                         <code>Surf.off()</code>
                         <span>Remove event listeners</span>
+                    </div>
+                    <div class="api-item">
+                        <code>Surf.emit()</code>
+                        <span>Trigger framework events</span>
                     </div>
                     <div class="api-item">
                         <code>Surf.getState()</code>
@@ -1321,8 +1333,13 @@
             <p>State survival</p>
         </div>
         <div class="feature">
+            <div class="icon">📡</div>
+            <h4>Events</h4>
+            <p>Global lifecycle hooks</p>
+        </div>
+        <div class="feature">
             <div class="icon">⚡</div>
-            <h4>&lt;10KB</h4>
+            <h4>~7.2 KB</h4>
             <p>Tiny bundle</p>
         </div>
     </section>
