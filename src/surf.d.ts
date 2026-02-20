@@ -57,6 +57,26 @@ declare namespace Surf {
   function setState(cellOrSelector: Element | string, state: any): void;
 
   /**
+   * Submit a form programmatically
+   * @param element - The form element to submit
+   */
+  function submit(element: HTMLFormElement): Promise<void>;
+
+  /**
+   * Commit form data (silent update)
+   * @param form - The form containing data
+   * @param target - The target surface selector
+   */
+  function commit(form: HTMLFormElement, target: string): Promise<void>;
+
+  /**
+   * Emit a framework event
+   * @param event - Event name
+   * @param detail - Event payload
+   */
+  function emit(event: string, detail?: any): void;
+
+  /**
    * Manually apply a patch response
    * @param patchHtml - The patch HTML string
    */
