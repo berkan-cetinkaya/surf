@@ -101,10 +101,20 @@ export async function createServer() {
     console.error('Failed to load CSS for inlining:', e);
   }
 
-  // Global Content-Type and CSS Injection
+  // Load package.json once to get the current version
+  let pkgVersion = '0.0.0';
+  try {
+    const pkg = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf-8'));
+    pkgVersion = pkg.version;
+  } catch (e) {
+    console.error('Failed to read package.json version:', e);
+  }
+
+  // Global Content-Type and CSS/Version Injection
   fastify.addHook('preHandler', (req, reply, done) => {
     reply.locals = {
       css: cssContent,
+      version: pkgVersion,
       ...reply.locals,
     };
     done();
