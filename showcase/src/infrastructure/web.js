@@ -103,9 +103,6 @@ export async function createServer() {
 
   // Global Content-Type and CSS Injection
   fastify.addHook('preHandler', (req, reply, done) => {
-    // Default to HTML for this showcase app
-    reply.type('text/html; charset=utf-8');
-
     reply.locals = {
       css: cssContent,
       ...reply.locals,
@@ -114,6 +111,11 @@ export async function createServer() {
   });
 
   // Routes
+
+  // Favicon
+  fastify.get('/favicon.ico', (req, reply) => {
+    return reply.sendFile('brand/favicon/favicon.ico');
+  });
 
   // Landing Page (Homepage) - default version
   fastify.get('/', async (req, reply) => {
