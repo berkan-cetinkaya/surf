@@ -620,7 +620,7 @@
     </style>
 </head>
 
-<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }" d-id="body">
+<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }" d-id="body" d-cell-strategy="reset">
     <div class="mobile-overlay" d-attr="class.open: sidebarOpen" d-signal="click: sidebarOpen = false"></div>
     <div class="dashboard-layout" d-id="kanban-layout">
         <%- include('partials/sidebar.ejs') %>

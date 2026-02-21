@@ -329,6 +329,8 @@
             min-width: 100px;
             padding: 0.2em 0.4em;
             border-radius: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .api-item .check {
@@ -1132,7 +1134,7 @@
 
     <!-- API Stats Summary -->
     <div class="api-stats" style="margin: 4rem auto 2rem;">
-        <div class="stat-pill">10 Attributes</div>
+        <div class="stat-pill">11 Attributes</div>
         <div class="stat-pill">12 Methods</div>
         <div class="stat-pill">0 Build Steps</div>
     </div>
@@ -1141,7 +1143,7 @@
     <section class="api-details" style="padding-top: 2rem; margin-top: 0; border-top: none;">
         <div class="api-grid">
             <div class="api-category">
-                <h3>10 Attributes</h3>
+                <h3>11 Attributes</h3>
 
                 <h4
                     style="color: var(--cyan); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
@@ -1172,6 +1174,10 @@
                     <div class="api-item">
                         <code>d-cell</code>
                         <span>Creates local reactive state (can take initial value)</span>
+                    </div>
+                    <div class="api-item">
+                        <code>d-cell-strategy</code>
+                        <span>Strategy for state survival on updates (e.g. "reset")</span>
                     </div>
                     <div class="api-item">
                         <code>d-id</code>
