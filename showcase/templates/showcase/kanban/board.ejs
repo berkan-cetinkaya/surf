@@ -22,6 +22,12 @@
             --danger: #ef4444;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', system-ui, sans-serif;
             background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
@@ -113,12 +119,12 @@
     </style>
 </head>
 
-<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }">
+<body d-cell="{ sidebarOpen: false, mobileSearchOpen: false }" d-id="body">
     <div class="mobile-overlay" d-attr="class.open: sidebarOpen" d-signal="click: sidebarOpen = false"></div>
     <div class="dashboard-layout" d-id="kanban-layout">
         <%- include('partials/sidebar.ejs') %>
 
-            <div class="dashboard-main">
+            <div class="dashboard-main" id="kanban-main">
                 <%- include('partials/header.ejs') %>
 
                     <div class="board-toolbar">

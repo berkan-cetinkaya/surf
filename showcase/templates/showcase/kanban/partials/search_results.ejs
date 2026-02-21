@@ -1,7 +1,8 @@
 <% if (tasks && tasks.length> 0) { %>
     <div class="search-dropdown">
         <% tasks.forEach(task=> { %>
-            <a href="/showcase/kanban/task/<%= task.id %>" class="search-item" d-pulse="navigate" d-target="body">
+            <a href="/showcase/kanban/task/<%= task.id %>" class="search-item" d-pulse="navigate"
+                d-target="body">
 
                 <div class="search-icon">
                     <% if (task.type==='bug' ) { %>

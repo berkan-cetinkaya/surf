@@ -20,7 +20,7 @@
     <nav class="sidebar-nav">
         <!-- Dashboard Button -->
         <div class="nav-item">
-            <a href="/kanban" d-pulse="navigate" d-target="#kanban-main"
+            <a href="/showcase/kanban" d-pulse="navigate" d-target="body"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
                 <span class="icon">📊</span>
                 Dashboard
@@ -29,7 +29,7 @@
 
         <!-- Backlog Button -->
         <div class="nav-item">
-            <a href="/kanban/backlog" d-pulse="navigate" d-target="#kanban-main"
+            <a href="/showcase/kanban/backlog" d-pulse="navigate" d-target="body"
                 style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
                 <span class="icon">📝</span>
                 Backlog
@@ -171,7 +171,7 @@
         }
 
         .nav-logo {
-            display: none !important;
+            display: none;
         }
     }
 
