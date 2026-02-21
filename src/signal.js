@@ -600,7 +600,10 @@ function bindSignalElement(element) {
  */
 export function initAll(container = document) {
   // Find all signal elements and bind them
-  const signalElements = container.querySelectorAll(`[${SIGNAL_ATTR}]`);
+  const signalElements = Array.from(container.querySelectorAll(`[${SIGNAL_ATTR}]`));
+  if (container !== document && container.hasAttribute(SIGNAL_ATTR)) {
+    signalElements.unshift(container);
+  }
   signalElements.forEach((el) => bindSignalElement(el));
 
   // Initialize bindings for all cells
@@ -613,7 +616,10 @@ export function initAll(container = document) {
  * @param {Element} container
  */
 export function cleanup(container) {
-  const signalElements = container.querySelectorAll(`[${SIGNAL_ATTR}]`);
+  const signalElements = Array.from(container.querySelectorAll(`[${SIGNAL_ATTR}]`));
+  if (container !== document && container.hasAttribute(SIGNAL_ATTR)) {
+    signalElements.unshift(container);
+  }
   signalElements.forEach((el) => {
     const existingListeners = boundListeners.get(el);
     if (existingListeners) {

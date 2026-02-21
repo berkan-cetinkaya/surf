@@ -140,6 +140,31 @@ describe('Cell Module', () => {
       Events.off('cell:warn', warnSpy);
       spy.mockRestore();
     });
+
+    it('should NOT preserve state when d-cell-strategy="reset"', () => {
+      // 1. Init first element
+      const el1 = document.createElement('div');
+      el1.setAttribute('d-cell', 'count: 1');
+      el1.setAttribute('d-id', 'reset-cell');
+      container.appendChild(el1);
+      Cell.init(el1);
+
+      // 2. Modify state
+      Cell.setState(el1, { count: 99 });
+
+      // 3. Remove el1 and create el2 with same ID and d-cell-strategy=reset
+      container.removeChild(el1);
+
+      const el2 = document.createElement('div');
+      el2.setAttribute('d-cell', 'count: 1'); // Original seed
+      el2.setAttribute('d-id', 'reset-cell'); // Same ID
+      el2.setAttribute('d-cell-strategy', 'reset'); // NEW RULE
+      container.appendChild(el2);
+
+      // 4. Init new element -> Should have Seed State (1) not Preserved (99)
+      const state = Cell.init(el2);
+      expect(state.count).toBe(1);
+    });
   });
 
   describe('Edge Cases', () => {

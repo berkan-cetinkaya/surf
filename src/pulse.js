@@ -136,6 +136,12 @@ async function sendPulse(url, options, targetSelector) {
         if (surface.tagName === 'BODY' && html.includes('<body')) {
           const parser = new DOMParser();
           const doc = parser.parseFromString(html, 'text/html');
+          
+          // Apply attributes from incoming body (like d-cell-strategy) to current body
+          Array.from(doc.body.attributes).forEach(attr => {
+            surface.setAttribute(attr.name, attr.value);
+          });
+          
           content = doc.body.innerHTML;
         }
 

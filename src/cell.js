@@ -57,7 +57,11 @@ export function getCellId(element) {
  * @returns {NodeListOf<Element>}
  */
 export function findAll(container = document) {
-  return container.querySelectorAll(`[${CELL_ATTR}]`);
+  const cells = Array.from(container.querySelectorAll(`[${CELL_ATTR}]`));
+  if (container !== document && container.hasAttribute(CELL_ATTR)) {
+    cells.unshift(container);
+  }
+  return cells;
 }
 
 /**
@@ -73,8 +77,12 @@ export function init(element) {
 
   const cellId = getCellId(element);
 
+  // Check strategy for state preservation. Default is 'keep' (Echo rule)
+  const strategy = element.getAttribute('d-cell-strategy') || 'keep';
+  const forceReset = strategy === 'reset';
+
   // Check if we have preserved state from Echo
-  if (cellId && cellIdStates.has(cellId)) {
+  if (!forceReset && cellId && cellIdStates.has(cellId)) {
     const preservedState = cellIdStates.get(cellId);
     cellStates.set(element, preservedState);
     return preservedState;
