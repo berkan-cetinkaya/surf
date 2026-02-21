@@ -22,7 +22,7 @@ describe('Surf Public API (surf.js)', () => {
 
   describe('Core Lifecycle', () => {
     it('should expose version', () => {
-      expect(Surf.version).toBe('0.2.0');
+      expect(Surf.version).toBe('0.3.1');
     });
 
     it('should expose core modules', () => {
