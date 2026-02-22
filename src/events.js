@@ -1,9 +1,9 @@
 /**
  * Events Module (1 of 7 Core Modules)
- * 
+ *
  * Provides a lightweight event emitter for internal cross-module communication
  * and public lifecycle hooks.
- * 
+ *
  * Architecture Note: Built independently to avoid cyclic dependencies between
  * Pulse, Echo, and Patch modules.
  */

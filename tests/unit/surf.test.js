@@ -112,7 +112,7 @@ describe('Surf Public API (surf.js)', () => {
     });
 
     it('should ignore patches for non-existent targets', () => {
-      const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const _spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       Surf.applyPatch('<div d-id="missing"></div>');
       // No crash, maybe a warning from Surface.replace (depends on implementation)
     });

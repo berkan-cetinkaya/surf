@@ -9,7 +9,7 @@ const AutoRefresh = {
   name: 'SurfAutoRefresh',
 
   install(Surf, options = {}) {
-    const { Surface, Patch, Echo } = Surf._modules;
+    const { Surface, Echo } = Surf._modules;
     const initializedSurfaces = new WeakSet();
 
     async function refreshSurface(surface, url) {
@@ -38,10 +38,10 @@ const AutoRefresh = {
 
     function initAutoRefresh(root = document) {
       const surfaces = root.querySelectorAll ? root.querySelectorAll('[d-auto-refresh]') : [];
-      
+
       surfaces.forEach((surface) => {
         if (initializedSurfaces.has(surface)) return;
-        
+
         const intervalStr = surface.getAttribute('d-auto-refresh');
         const interval = parseInt(intervalStr) || 3000;
         const url = surface.getAttribute('d-auto-refresh-url') || window.location.href;
@@ -70,8 +70,11 @@ const AutoRefresh = {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === 1) {
-            if (node.hasAttribute('d-auto-refresh')) initAutoRefresh(node.parentElement || document);
-            else initAutoRefresh(node);
+            if (node.hasAttribute('d-auto-refresh')) {
+              initAutoRefresh(node.parentElement || document);
+            } else {
+              initAutoRefresh(node);
+            }
           }
         });
       });

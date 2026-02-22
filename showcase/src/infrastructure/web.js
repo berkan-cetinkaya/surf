@@ -228,10 +228,18 @@ export async function createServer() {
   // Pagination Example (dedicated route with actual pagination logic)
   const PAGINATION_ITEMS = Array.from({ length: 12 }, (_, i) => {
     const titles = [
-      'Interactive Surface Routing', 'State Persistence Protocol', 'Reactive DOM Patching',
-      'Cell Isolation Patterns', 'Server-Side Rendering', 'Signal Propagation',
-      'Navigation Architecture', 'Error Boundary Design', 'Lazy Surface Loading',
-      'Incremental Hydration', 'Edge-Side Composition', 'Streaming HTML Delivery',
+      'Interactive Surface Routing',
+      'State Persistence Protocol',
+      'Reactive DOM Patching',
+      'Cell Isolation Patterns',
+      'Server-Side Rendering',
+      'Signal Propagation',
+      'Navigation Architecture',
+      'Error Boundary Design',
+      'Lazy Surface Loading',
+      'Incremental Hydration',
+      'Edge-Side Composition',
+      'Streaming HTML Delivery',
     ];
     const descs = [
       'Demonstrating precise DOM updates across navigation nodes.',

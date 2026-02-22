@@ -372,7 +372,6 @@ export const VisualDebugger = {
     const refreshAll = () => {
       if (!isActive) return;
 
-      const states = Surf.Cell._cellIdStates;
       const warningLogs = logs.filter(
         (l) =>
           l.type === 'warn' ||
@@ -384,7 +383,7 @@ export const VisualDebugger = {
       let html = '';
 
       const allCells = Array.from(document.querySelectorAll('[d-cell]'));
-      
+
       html += renderSection(
         'Active Cells',
         'cells',
@@ -640,7 +639,7 @@ export const VisualDebugger = {
       window.addEventListener('scroll', drawBoundaries);
     };
 
-    Surf.on('cell:init', (detail) => {
+    Surf.on('cell:init', (_detail) => {
       if (isActive) refreshAll();
     });
 

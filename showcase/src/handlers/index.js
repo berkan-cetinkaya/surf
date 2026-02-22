@@ -8,36 +8,33 @@ const seatUC = new SeatUseCase();
 const formUC = new FormUseCase();
 // Kanban uses functional exports, no instantiation needed
 
-export async function handleNews(req, reply) {
+export async function handleNews(req, _reply) {
   const data = newsUC.getFeed();
 
   // Use req.server.view to get the rendered HTML as a string
   const html = await req.server.view('templates/news_feed.ejs', data);
 
   // Set the correct content type for SURF patches
-
-
   return createPatch().addSurface('#news-surface', html).render();
 }
 
-export async function handleNewsRead(req, reply) {
+export async function handleNewsRead(req, _reply) {
   const { id } = req.params;
   newsUC.toggleReadStatus(id);
-
 
   return createPatch().render();
 }
 
-export async function handleSeats(req, reply) {
+export async function handleSeats(req, _reply) {
   const data = seatUC.getAvailability();
   const html = await req.server.view('templates/seat_availability.ejs', data);
 
   return createPatch().addSurface('#availability-surface', html).render();
 }
 
-export async function handleBookSeats(req, reply) {
+export async function handleBookSeats(req, _reply) {
   // Safely extract 'count' falling back to 1 if req.body or count is undefined
-  const count = (req.body && req.body.count) ? parseInt(req.body.count) : 1;
+  const count = req.body && req.body.count ? parseInt(req.body.count) : 1;
   const result = seatUC.book(count || 1);
 
   let html;
@@ -47,16 +44,15 @@ export async function handleBookSeats(req, reply) {
     html = await req.server.view('templates/seat_success.ejs', result);
   }
 
-
   return createPatch().addSurface('.selector-card', html).render();
 }
 
-export async function handleSeatSelector(req, reply) {
+export async function handleSeatSelector(req, _reply) {
   const html = await req.server.view('templates/partials/seat_selector.ejs', {});
   return createPatch().addSurface('.selector-card', html).render();
 }
 
-export async function handleForm(req, reply) {
+export async function handleForm(req, _reply) {
   const { name, email } = req.body;
   const result = formUC.validate(req.body);
 

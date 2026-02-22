@@ -185,7 +185,7 @@ describe('Visual Debugger Plugin', () => {
 
   it('should highlight signals onFramework Warning and allow targeting', async () => {
     // Suppress the expected warning in console for this test
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const _warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     container.innerHTML = `<div><div d-cell="{}"></div></div>`;
     Surf.Cell.initAll(container);
