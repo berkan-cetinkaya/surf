@@ -218,6 +218,7 @@
             overflow-x: auto;
         }
     </style>
+    <%- include('../../partials/core-scripts') %>
 </head>
 
 <body>
@@ -237,20 +238,6 @@
             <button class="open-btn" d-signal="click: open = true">
                 Launch Experience
             </button>
-
-            <!-- Modal with d-show -->
-            <div class="modal-overlay" d-show="open" style="display: none;">
-                <div class="modal">
-                    <h2>Premium Interaction</h2>
-                    <p>This modal is powered by Surf's local state management. Seamless, fast, and completely
-                        client-side.</p>
-
-                    <div class="modal-actions">
-                        <button class="cancel" d-signal="click: open = false">Dismiss</button>
-                        <button class="confirm" d-signal="click: open = false">Acknowledged</button>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="code-reveal">
@@ -264,9 +251,22 @@
 &lt;/div&gt;
             </code>
         </div>
+
+        <!-- Modal with d-show, outside demo-area to avoid stacking context issues -->
+        <div class="modal-overlay" d-show="open" style="display: none;">
+            <div class="modal">
+                <h2>Premium Interaction</h2>
+                <p>This modal is powered by Surf's local state management. Seamless, fast, and completely
+                    client-side.</p>
+
+                <div class="modal-actions">
+                    <button class="cancel" d-signal="click: open = false">Dismiss</button>
+                    <button class="confirm" d-signal="click: open = false">Acknowledged</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <%- include('../../partials/core-scripts') %>
 </body>
 
 </html>
