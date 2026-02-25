@@ -21,7 +21,7 @@ export async function getBoard(req, reply) {
       sprints,
       activeSprintId,
     });
-    return createPatch().addSurface('.board-container', html).render();
+    return createPatch().addSurface('.dashboard-content', html).render();
   }
 
   return reply.view('templates/showcase/kanban/board.ejs', {

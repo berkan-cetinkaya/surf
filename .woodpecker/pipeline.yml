@@ -21,3 +21,11 @@ steps:
     image: bash
     commands:
       - npm run coverage
+
+  e2e:
+    image: bash
+    commands:
+      - cd showcase
+      - npm install
+      - npx playwright install chromium --with-deps
+      - npm run test:e2e
