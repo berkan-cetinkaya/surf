@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const PORT = process.env.PORT || 3001;
+
 export default defineConfig({
   testDir: './tests/e2e',
   /* Maximum time one test can run for. */
@@ -14,7 +16,7 @@ export default defineConfig({
   reporter: 'html',
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3001',
+    baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
   },
 
@@ -33,7 +35,10 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm start',
-    port: 3001,
+    port: Number(PORT),
+    env: {
+      PORT: String(PORT),
+    },
     reuseExistingServer: true,
   },
 });
