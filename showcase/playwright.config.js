@@ -1,0 +1,44 @@
+import { defineConfig, devices } from '@playwright/test';
+
+const PORT = process.env.PORT || 3001;
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  /* Maximum time one test can run for. */
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 5000,
+  },
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: `http://localhost:${PORT}`,
+    trace: 'on-first-retry',
+  },
+
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+          ? { launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } }
+          : {}),
+      },
+    },
+  ],
+
+  /* Run your local dev server before starting the tests */
+  webServer: {
+    command: 'npm start',
+    port: Number(PORT),
+    env: {
+      PORT: String(PORT),
+    },
+    reuseExistingServer: true,
+  },
+});

@@ -1,5 +1,5 @@
 when:
-  event: [push, pull_request, tag, deployment, manual]
+  event: [push, tag, deployment, manual]
 
 steps:
   install:
@@ -21,3 +21,10 @@ steps:
     image: bash
     commands:
       - npm run coverage
+
+  e2e:
+    image: bash
+    commands:
+      - cd showcase
+      - npm install
+      - PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e

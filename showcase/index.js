@@ -1,6 +1,6 @@
 import { createServer } from './src/infrastructure/web.js';
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const start = async () => {
   try {
