@@ -122,7 +122,9 @@ try {
 try {
   const sprintCount = db.prepare('SELECT COUNT(*) as count FROM sprints').get().count;
   if (sprintCount === 0) {
-    db.prepare("INSERT INTO sprints (id, title, status, sprint_order) VALUES ('sprint-demo', 'Demo Sprint 1', 'active', 0)").run();
+    db.prepare(
+      "INSERT INTO sprints (id, title, status, sprint_order) VALUES ('sprint-demo', 'Demo Sprint 1', 'active', 0)"
+    ).run();
     console.log('Seeded initial Demo Sprint');
   }
 } catch (err) {
