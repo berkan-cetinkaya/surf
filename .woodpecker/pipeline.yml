@@ -27,4 +27,4 @@ steps:
     commands:
       - cd showcase
       - npm install
-      - npm run test:e2e
+      - PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$(which chromium || which chromium-browser) npm run test:e2e
