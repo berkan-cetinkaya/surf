@@ -147,9 +147,7 @@ test.describe('Kanban User Journey (E2E)', () => {
 
     if (count > 0) {
       // Intercept the underlying pulse/fetch network request and forcibly abort it for a simulated offline state
-      await page.route('**/showcase/kanban/move', (route) =>
-        route.abort('internetdisconnected')
-      );
+      await page.route('**/showcase/kanban/move', (route) => route.abort('internetdisconnected'));
 
       const source = firstTask;
       const targetColumn = page.locator('.column[d-drop-zone]').nth(1);
