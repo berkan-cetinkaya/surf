@@ -23,7 +23,7 @@ steps:
       - npm run coverage
 
   e2e:
-    image: node:22-bookworm
+    image: bash
     commands:
       - cd showcase
       - npm install
