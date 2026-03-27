@@ -8,6 +8,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 import * as handlers from '../handlers/index.js';
+import { createPatch } from '#helpers/node/patch.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -274,6 +275,14 @@ export async function createServer() {
       totalPages: TOTAL_PAGES,
       items,
     };
+
+    const isSurf = req.headers['x-surf-request'] === 'true';
+
+    if (isSurf) {
+      const html = await req.server.view('templates/partials/pagination-content.ejs', data);
+      reply.type('text/html');
+      return createPatch().addSurface('#content-surface', html).render();
+    }
 
     return reply.view('templates/showcase/03-navigation/36-pagination.ejs', data);
   });

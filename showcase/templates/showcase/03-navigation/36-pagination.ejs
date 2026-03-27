@@ -234,42 +234,7 @@
 
         <!-- Paginated content surface -->
         <div id="content-surface">
-            <div class="items-list">
-                <% items.forEach(item=> { %>
-                    <div class="item">
-                        <div class="item-number">
-                            <%= item.number %>
-                        </div>
-                        <div class="item-content">
-                            <h4 class="item-title">
-                                <%= item.title %>
-                            </h4>
-                            <p class="item-desc">
-                                <%= item.desc %>
-                            </p>
-                        </div>
-                    </div>
-                    <% }) %>
-            </div>
-            <div class="pagination">
-                <a href="/showcase/03-navigation/36-pagination?page=<%= currentPage - 1 %>"
-                    class="page-link<%= currentPage <= 1 ? ' disabled' : '' %>" d-pulse="navigate"
-                    d-target="#content-surface">Prev</a>
-
-                <% for (let p=1; p <=totalPages; p++) { %>
-                    <a href="/showcase/03-navigation/36-pagination?page=<%= p %>"
-                        class="page-link<%= p === currentPage ? ' active' : '' %>" d-pulse="navigate"
-                        d-target="#content-surface">
-                        <%= p %>
-                    </a>
-                    <% } %>
-
-                        <a href="/showcase/03-navigation/36-pagination?page=<%= currentPage + 1 %>"
-                            class="page-link<%= currentPage >= totalPages ? ' disabled' : '' %>" d-pulse="navigate"
-                            d-target="#content-surface">Next</a>
-            </div>
-            <div class="page-info">Viewing Page <%= currentPage %> of <%= totalPages %>
-            </div>
+            <%- include('../../partials/pagination-content.ejs') %>
         </div>
     </div>
 
